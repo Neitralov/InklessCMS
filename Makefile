@@ -27,6 +27,7 @@ run-dev:
     --replace \
     inkless-dev
 
+	cd client && bun install
 	cd client && bun run dev
 
 test:
