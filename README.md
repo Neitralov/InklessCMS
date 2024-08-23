@@ -3,7 +3,7 @@
   ![image](https://github.com/user-attachments/assets/144aa0ba-64f2-4f62-a16e-2e8854c8458d)
   
   <h3 align="center">
-    Headless CMS для создания и управления блогами.
+    Headless CMS для создания и управления блогами
   </h3>
 </div>
 
