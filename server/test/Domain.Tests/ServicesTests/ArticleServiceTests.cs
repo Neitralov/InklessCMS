@@ -59,13 +59,13 @@ public class ArticleServiceTests
     public async Task Published_articles_will_be_received()
     {
         var articleRepositoryMock = new Mock<IArticleRepository>();
-        articleRepositoryMock.Setup(repository => 
+        articleRepositoryMock.Setup(repository =>
             repository
-                .GetPublishedArticles(It.IsAny<int>(), It.IsAny<int>()).Result)
+                .GetPublishedArticles(null, It.IsAny<int>(), It.IsAny<int>()).Result)
                 .Returns(new PagedList<Article>([], 0));
         var sut = new ArticleService(articleRepositoryMock.Object);
 
-        var result = await sut.GetPublishedArticles(page: 1, size: 10);
+        var result = await sut.GetPublishedArticles(null, page: 1, size: 10);
 
         result.Should().BeEmpty();
     }

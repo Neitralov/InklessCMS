@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Database.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20240821113033_InititalCreate")]
-    partial class InititalCreate
+    [Migration("20240824131715_InitialCommit")]
+    partial class InitialCommit
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,6 +24,21 @@ namespace Database.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+
+            modelBuilder.Entity("ArticleCollection", b =>
+                {
+                    b.Property<string>("ArticlesArticleId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("CollectionId")
+                        .HasColumnType("text");
+
+                    b.HasKey("ArticlesArticleId", "CollectionId");
+
+                    b.HasIndex("CollectionId");
+
+                    b.ToTable("ArticleCollection");
+                });
 
             modelBuilder.Entity("Domain.Entities.Article", b =>
                 {
@@ -60,6 +75,20 @@ namespace Database.Migrations
                     b.HasKey("ArticleId");
 
                     b.ToTable("Articles");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Collection", b =>
+                {
+                    b.Property<string>("CollectionId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("CollectionId");
+
+                    b.ToTable("Collections");
                 });
 
             modelBuilder.Entity("Domain.Entities.User", b =>
@@ -109,6 +138,21 @@ namespace Database.Migrations
                     b.HasKey("UserSessionId");
 
                     b.ToTable("UserSessions");
+                });
+
+            modelBuilder.Entity("ArticleCollection", b =>
+                {
+                    b.HasOne("Domain.Entities.Article", null)
+                        .WithMany()
+                        .HasForeignKey("ArticlesArticleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.Collection", null)
+                        .WithMany()
+                        .HasForeignKey("CollectionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }
