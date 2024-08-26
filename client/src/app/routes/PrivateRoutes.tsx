@@ -1,6 +1,6 @@
-import {useAuthStore} from "../../shared/model/useAuthStore.ts";
-import {Navigate, Outlet} from "react-router-dom";
-import {useEffect} from "react";
+import { useAuthStore } from "../../shared/model/useAuthStore.ts"
+import { Navigate, Outlet } from "react-router-dom"
+import { useEffect } from "react"
 
 export const PrivateRoutes = () => {
   const isAuth = useAuthStore(state => state.isAuth)
@@ -9,7 +9,7 @@ export const PrivateRoutes = () => {
 
   useEffect(() => {
     checkAuth()
-  }, [checkAuth]);
+  }, [checkAuth])
 
   if (!isLoading) {
     if (isAuth) {

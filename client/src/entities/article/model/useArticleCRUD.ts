@@ -1,4 +1,4 @@
-import {useArticleStore} from "./useArticleStore.ts";
+import { useArticleStore } from "./useArticleStore.ts"
 
 export const useArticleCRUD = () => {
   const addArticle = useArticleStore(state => state.addArticle)
