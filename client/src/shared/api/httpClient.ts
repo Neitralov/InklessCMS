@@ -1,13 +1,13 @@
-import axios from "axios";
-import AuthService from "./authService.ts";
-import {ApiUrl} from "../config/config.ts";
+import axios from "axios"
+import AuthService from "./authService.ts"
+import { ApiUrl } from "../config/config.ts"
 
 export const httpClient = axios.create({
   baseURL: ApiUrl,
 })
 
 httpClient.interceptors.request.use((config) => {
-  config.headers.Authorization = `Bearer ${localStorage.getItem('accessToken')}`
+  config.headers.Authorization = `Bearer ${ localStorage.getItem('accessToken') }`
   return config
 })
 

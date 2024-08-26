@@ -1,19 +1,29 @@
-import {BrowserRouter, Route, Routes} from "react-router-dom";
-import {ArticlesPage, EditorPage, LoginPage} from "../../pages";
-import {Layout} from "../layout/Layout.tsx";
-import {PrivateRoutes} from "./PrivateRoutes.tsx";
-import {EditorModes} from "../../pages/article-editor/model/editorModes.ts";
+import { BrowserRouter, Route, Routes } from "react-router-dom"
+import {
+  ArticlesPage,
+  ArticleEditorPage,
+  ArticleEditorModes,
+  LoginPage,
+  CollectionsPage,
+  CollectionEditorPage,
+  CollectionEditorModes,
+} from "../../pages"
+import { Layout } from "../layout/Layout.tsx"
+import { PrivateRoutes } from "./PrivateRoutes.tsx"
 
 export const Routing = () => {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path={"login"} element={<LoginPage />}/>
+        <Route path={"login"} element={<LoginPage />} />
         <Route element={<PrivateRoutes />}>
           <Route path={"/"} element={<Layout />}>
-            <Route index element={<ArticlesPage />}/>
-            <Route path={"editor/edit/:articleId"} element={<EditorPage editorMode={EditorModes.Editing}/>}/>
-            <Route path={"editor/new"} element={<EditorPage editorMode={EditorModes.Addititon}/>}/>
+            <Route index element={<ArticlesPage />} />
+            <Route path={"articles/editor/edit/:articleId"} element={<ArticleEditorPage editorMode={ArticleEditorModes.Editing} />} />
+            <Route path={"articles/editor/new"} element={<ArticleEditorPage editorMode={ArticleEditorModes.Addititon} />} />
+            <Route path={"collections"} element={<CollectionsPage />} />
+            <Route path={"collections/editor/edit/:collectionId"} element={<CollectionEditorPage editorMode={CollectionEditorModes.Editing} />} />
+            <Route path={"collections/editor/new"} element={<CollectionEditorPage editorMode={CollectionEditorModes.Addititon} />} />
           </Route>
         </Route>
       </Routes>

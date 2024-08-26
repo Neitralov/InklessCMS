@@ -31,13 +31,13 @@ public class Article
     )
     {
         List<Error> errors = [];
-        
+
         if (articleId.Trim().Length is < MinIdLength or > MaxIdLength)
             errors.Add(Errors.Article.InvalidIdLength);
-        
+
         if (!Regex.IsMatch(articleId.Trim(), ArticleIdPattern, RegexOptions.Compiled))
             errors.Add(Errors.Article.InvalidId);
-        
+
         if (title.Trim().Length is < MinTitleLength or > MaxTitleLength)
             errors.Add(Errors.Article.InvalidTitleLength);
 

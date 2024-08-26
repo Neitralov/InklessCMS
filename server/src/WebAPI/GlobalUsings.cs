@@ -24,6 +24,7 @@ global using Domain.Utils;
 global using Domain.Options;
 global using WebAPI;
 global using WebAPI.Contracts.Article;
+global using WebAPI.Contracts.Collection;
 global using WebAPI.Contracts.User;
 
 global using TokensPair = (string AccessToken, string RefreshToken);

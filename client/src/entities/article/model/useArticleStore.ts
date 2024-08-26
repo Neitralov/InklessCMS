@@ -1,10 +1,10 @@
 import { create } from 'zustand'
-import {Article} from "./article.ts";
-import ArticleService from "../api/articleService.ts";
-import {CreateArticleRequest} from "./createArticleRequest.ts";
-import {UpdateArticleRequest} from "./updateArticleRequest.ts";
-import {AxiosError} from "axios";
-import {UseFormSetError} from "react-hook-form";
+import { Article } from "./article.ts"
+import ArticleService from "../api/articleService.ts"
+import { CreateArticleRequest } from "./createArticleRequest.ts"
+import { UpdateArticleRequest } from "./updateArticleRequest.ts"
+import { AxiosError } from "axios"
+import { UseFormSetError } from "react-hook-form"
 
 interface UseArticleStore {
   articles: Article[]

@@ -22,6 +22,21 @@ namespace Database.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("ArticleCollection", b =>
+                {
+                    b.Property<string>("ArticlesArticleId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("CollectionId")
+                        .HasColumnType("text");
+
+                    b.HasKey("ArticlesArticleId", "CollectionId");
+
+                    b.HasIndex("CollectionId");
+
+                    b.ToTable("ArticleCollection");
+                });
+
             modelBuilder.Entity("Domain.Entities.Article", b =>
                 {
                     b.Property<string>("ArticleId")
@@ -57,6 +72,20 @@ namespace Database.Migrations
                     b.HasKey("ArticleId");
 
                     b.ToTable("Articles");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Collection", b =>
+                {
+                    b.Property<string>("CollectionId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("CollectionId");
+
+                    b.ToTable("Collections");
                 });
 
             modelBuilder.Entity("Domain.Entities.User", b =>
@@ -106,6 +135,21 @@ namespace Database.Migrations
                     b.HasKey("UserSessionId");
 
                     b.ToTable("UserSessions");
+                });
+
+            modelBuilder.Entity("ArticleCollection", b =>
+                {
+                    b.HasOne("Domain.Entities.Article", null)
+                        .WithMany()
+                        .HasForeignKey("ArticlesArticleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.Collection", null)
+                        .WithMany()
+                        .HasForeignKey("CollectionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

@@ -1,6 +1,6 @@
-import {useEffect} from "react";
-import {useArticleStore} from "../../../entities/article/model/useArticleStore.ts";
-import {ArticleItem} from "./ArticleItem.tsx";
+import { useEffect } from "react"
+import { useArticleStore } from "../../../entities/article/model/useArticleStore.ts"
+import { ArticleItem } from "./ArticleItem.tsx"
 
 export const ArticlesList = () => {
   const articles = useArticleStore(state => state.articles)
@@ -10,7 +10,7 @@ export const ArticlesList = () => {
 
   useEffect(() => {
     getArticles(pageNumber, pageSize).then()
-  }, [pageNumber, pageSize]);
+  }, [pageNumber, pageSize])
 
   return (
     <table>
@@ -22,7 +22,7 @@ export const ArticlesList = () => {
       </tr>
       </thead>
       <tbody>
-      {articles.map(article => <ArticleItem key={article.articleId} article={article}/>)}
+      { articles.map(article => <ArticleItem key={ article.articleId } article={ article } />) }
       </tbody>
     </table>
   );

@@ -1,4 +1,4 @@
-import {useArticleStore} from "../../../entities/article/model/useArticleStore.ts";
+import { useArticleStore } from "../../../entities/article/model/useArticleStore.ts"
 
 export const PageNavigation = () => {
   const loadPrevPage = useArticleStore(state => state.loadPrevPage)
@@ -17,20 +17,25 @@ export const PageNavigation = () => {
 
   return (
     <div className={"flex gap-1"}>
-      <p onClick={loadPrevPage}
-         className={"px-2 py-1 text-neutral-500 bg-neutral-200 hover:bg-neutral-300 rounded-l cursor-pointer aria-disabled:cursor-not-allowed"}
-         aria-disabled={pageNumber == 1}>Назад</p>
-      {
-        pagesArray.map(page =>
-          <div key={page} onClick={() => setPageNumber(page)}
-               className={`${page == pageNumber ? "bg-neutral-300 text-black" : "bg-neutral-200 text-neutral-500"} px-2 py-1 hover:bg-neutral-300 cursor-pointer`}>
-            {page}
-          </div>
-        )
-      }
-      <p onClick={loadNextPage}
-         className={"px-2 py-1 text-neutral-500 bg-neutral-200 hover:bg-neutral-300 rounded-r cursor-pointer aria-disabled:cursor-not-allowed"}
-         aria-disabled={pageNumber == maxPage}>Вперед</p>
+      <p
+        onClick={ loadPrevPage }
+        className={"px-2 py-1 text-neutral-500 bg-neutral-200 hover:bg-neutral-300 rounded-l cursor-pointer aria-disabled:cursor-not-allowed"}
+        aria-disabled={ pageNumber == 1 }>
+        Назад
+      </p>
+      { pagesArray.map(page =>
+        <div
+          key={ page }
+          onClick={() => setPageNumber(page)}
+          className={`${ page == pageNumber ? "bg-neutral-300 text-black" : "bg-neutral-200 text-neutral-500"} px-2 py-1 hover:bg-neutral-300 cursor-pointer`}>
+          { page }
+        </div>) }
+      <p
+        onClick={ loadNextPage }
+        className={"px-2 py-1 text-neutral-500 bg-neutral-200 hover:bg-neutral-300 rounded-r cursor-pointer aria-disabled:cursor-not-allowed"}
+        aria-disabled={ pageNumber == maxPage }>
+        Вперед
+      </p>
     </div>
   )
 }

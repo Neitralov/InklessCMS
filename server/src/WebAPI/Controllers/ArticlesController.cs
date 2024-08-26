@@ -7,6 +7,7 @@ public class ArticlesController(ArticleService articleService, IAuthorizationSer
     /// <summary>Создать статью</summary>
     /// <response code="201">Статья создана</response>
     /// <response code="400">
+    /// Id статьи указан некорректно;
     /// Заголовок статьи указан некорректно;
     /// Описание статьи указано некорректно
     /// </response>
@@ -24,7 +25,7 @@ public class ArticlesController(ArticleService articleService, IAuthorizationSer
 
         return createArticleResult.Match(_ => CreatedAtGetArticle(article), Problem);
     }
-    
+
     /// <summary>Получить список статей</summary>
     /// <response code="200">Список статей</response>
     [HttpGet, Authorize(Policy = "CanManageArticles")]
@@ -41,9 +42,9 @@ public class ArticlesController(ArticleService articleService, IAuthorizationSer
     /// <response code="200">Список опубликованных статей</response>
     [HttpGet("published")]
     [ProducesResponseType(typeof(List<ArticlePreviewResponse>), 200)]
-    public async Task<IActionResult> GetPublishedArticles([FromQuery] int page = 1, [FromQuery] int size = 10)
+    public async Task<IActionResult> GetPublishedArticles([FromQuery] string? collectionId, [FromQuery] int page = 1, [FromQuery] int size = 10)
     {
-        PagedList<Article> publishedArticles = await articleService.GetPublishedArticles(page, size);
+        PagedList<Article> publishedArticles = await articleService.GetPublishedArticles(collectionId, page, size);
 
         Response.Headers.Append("X-Total-Count", publishedArticles.TotalCount.ToString());
         return Ok(publishedArticles.Adapt<List<ArticlePreviewResponse>>());
@@ -61,7 +62,7 @@ public class ArticlesController(ArticleService articleService, IAuthorizationSer
 
         if (getArticleResult.IsError)
             return Problem(getArticleResult.Errors);
-        
+
         var authResult = await authService.AuthorizeAsync(User, "CanManageArticles");
         if (getArticleResult.Value.IsPublished == false && !authResult.Succeeded)
             getArticleResult = Errors.Article.NotFound;
@@ -72,6 +73,7 @@ public class ArticlesController(ArticleService articleService, IAuthorizationSer
     /// <summary>Обновить статью</summary>
     /// <response code="204">Статья обновлена</response>
     /// <response code="400">
+    /// Id статьи указан некорректно;
     /// Заголовок статьи указан некорректно;
     /// Описание статьи указано некорректно
     /// </response>

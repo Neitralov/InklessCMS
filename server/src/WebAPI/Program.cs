@@ -24,11 +24,13 @@ builder.Services.AddTransient<ArticleService>();
 builder.Services.AddTransient<IAuthService, AuthService>();
 builder.Services.AddTransient<IUserRepository, UserRepository>();
 builder.Services.AddTransient<UserService>();
+builder.Services.AddTransient<ICollectionRepository, CollectionRepository>();
+builder.Services.AddTransient<CollectionService>();
 
 builder.Services.AddCors(
     options => options.AddPolicy("AllowInkless", policy =>
         policy
-            .WithOrigins(builder.Configuration["ClientUrl"] ?? throw new NullReferenceException("config variable ClientUrl is not defined"))
+            .WithOrigins(builder.Configuration["ClientUrl"] ?? throw new NullReferenceException("config variable \"ClientUrl\" is not defined"))
             .AllowAnyHeader()
             .AllowAnyMethod()
             .WithExposedHeaders("X-Total-Count")));
@@ -41,7 +43,7 @@ builder.Services
         {
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8
-                .GetBytes(builder.Configuration["Jwt:SecretKey"] ?? throw new NullReferenceException("config variable \"SigningKey\" is not defined"))),
+                .GetBytes(builder.Configuration["Jwt:SecretKey"] ?? throw new NullReferenceException("config variable \"SecretKey\" is not defined"))),
             ValidateIssuer = false,
             ValidateAudience = false,
             ValidateLifetime = true,
@@ -51,7 +53,7 @@ builder.Services
 
 builder.Services.AddAuthorizationBuilder()
     .AddPolicy(
-        name: nameof(User.CanManageArticles), 
+        name: nameof(User.CanManageArticles),
         configurePolicy: policyBuilder => policyBuilder.RequireClaim(nameof(User.CanManageArticles), true.ToString()));
 
 builder.Services.AddSwaggerGen(options =>
@@ -60,7 +62,7 @@ builder.Services.AddSwaggerGen(options =>
 
     var xmlDocPaths = Directory.GetFiles(AppContext.BaseDirectory, "*.xml", SearchOption.TopDirectoryOnly).ToList();
     xmlDocPaths.ForEach(xmlDocPath => options.IncludeXmlComments(xmlDocPath));
-    
+
     var jwtSecurityScheme = new OpenApiSecurityScheme
     {
         In = ParameterLocation.Header,
