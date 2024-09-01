@@ -1,16 +1,10 @@
-run-dev:
-	cd server/src/WebAPI && dotnet build
-	podman build ./server -t inkless-dev
+run:
+	make -j 2 run-backend run-frontend
 
-	podman pod create \
-	--name inkless \
-	-p 5432:5432 \
-	-p 8080:8080 \
-	--replace
-
+run-backend:
 	podman run \
-	--pod inkless \
     -d \
+    -p 5432:5432 \
     -v inkless-database:/var/lib/postgresql/data:Z \
     -e POSTGRES_DB=inkless \
     -e POSTGRES_USER=postgres \
@@ -19,16 +13,17 @@ run-dev:
     --replace \
     postgres:16.3
 
-	podman run \
-	--pod inkless \
-	-d \
-	-e ASPNETCORE_ENVIRONMENT=Development \
-    --name inkless-dev \
-    --replace \
-    inkless-dev
+	dotnet run --project server/src/WebAPI
 
+run-frontend:
 	cd client && bun install
 	cd client && bun run dev
+
+publish:
+	cd client && bun install
+	cd client && bun run build
+	cp -rfT client/dist server/src/WebAPI/wwwroot
+	cd server/src/WebAPI && dotnet publish
 
 test:
 	cd server && dotnet test
