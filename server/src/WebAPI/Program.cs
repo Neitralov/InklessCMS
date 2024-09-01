@@ -28,9 +28,17 @@ builder.Services.AddTransient<ICollectionRepository, CollectionRepository>();
 builder.Services.AddTransient<CollectionService>();
 
 builder.Services.AddCors(
-    options => options.AddPolicy("AllowInkless", policy =>
+    options => options.AddPolicy("AllowClient", policy =>
         policy
             .WithOrigins(builder.Configuration["ClientUrl"] ?? throw new NullReferenceException("config variable \"ClientUrl\" is not defined"))
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .WithExposedHeaders("X-Total-Count")));
+
+builder.Services.AddCors(
+    options => options.AddPolicy("AllowInkless", policy =>
+        policy
+            .WithOrigins(builder.Configuration["DashboardUrl"] ?? throw new NullReferenceException("config variable \"DashboardUrl\" is not defined"))
             .AllowAnyHeader()
             .AllowAnyMethod()
             .WithExposedHeaders("X-Total-Count")));
@@ -92,6 +100,7 @@ else
 }
 
 app.UseCors("AllowInkless");
+app.UseCors("AllowClient");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
