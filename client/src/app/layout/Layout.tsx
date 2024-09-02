@@ -23,14 +23,14 @@ export const Layout = () => {
           <div className={"flex flex-col gap-5"}>
             <NavGroup title={"Контент"}>
               <NavLink
-                to={""}
+                to={"/inkless"}
                 className={({ isActive }) => (isActive ? "font-medium " : "") + "flex items-center gap-1.5 hover:font-medium"}>
                 <FileIcon width="20px" height="20px" />
                 Статьи
               </NavLink>
               <NavLink
                 end
-                to={"/collections"}
+                to={"/inkless/collections"}
                 className={({ isActive }) => (isActive ? "font-medium " : "") + "flex items-center gap-1.5 hover:font-medium"}>
                 <CollectionsIcon />
                 Коллекции

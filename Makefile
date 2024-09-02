@@ -23,7 +23,7 @@ publish:
 	cd client && bun install
 	cd client && bun run build
 	cp -rfT client/dist server/src/WebAPI/wwwroot
-	cd server/src/WebAPI && dotnet publish
+	cd server/src/WebAPI && dotnet publish -c Release
 
 test:
 	cd server && dotnet test

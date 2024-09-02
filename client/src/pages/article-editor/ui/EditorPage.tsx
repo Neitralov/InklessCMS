@@ -43,29 +43,29 @@ export const EditorPage = ({ editorMode }: { editorMode: EditorModes }) => {
     ? handleSubmit(async (data: CreateArticleRequest) => {
       const finalData = { ...data, isPublished: true }
       const success = await addArticle(finalData, setError)
-      if (success) navigate('/')
+      if (success) navigate('/inkless')
     })
     : handleSubmit(async (data: UpdateArticleRequest) => {
       const finalData = { ...data, isPublished: true }
       await updateArticle(finalData)
-      navigate('/')
+      navigate('/inkless')
     })
 
   const save = editorMode === EditorModes.Addititon
     ? handleSubmit(async (data: CreateArticleRequest) => {
       const finalData = { ...data, isPublished: false }
       const success = await addArticle(finalData, setError)
-      if (success) navigate('/')
+      if (success) navigate('/inkless')
     })
     : handleSubmit(async (data: UpdateArticleRequest) => {
       const finalData = { ...data, isPublished: false }
       await updateArticle(finalData)
-      navigate('/')
+      navigate('/inkless')
     })
 
   const remove = handleSubmit(async (data: CreateArticleRequest) => {
     await deleteArticle(data.articleId)
-    navigate('/')
+    navigate('/inkless')
   })
 
   return(

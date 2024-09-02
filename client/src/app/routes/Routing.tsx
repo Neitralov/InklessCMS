@@ -15,9 +15,9 @@ export const Routing = () => {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path={"login"} element={<LoginPage />} />
+        <Route path={"inkless/login"} element={<LoginPage />} />
         <Route element={<PrivateRoutes />}>
-          <Route path={"/"} element={<Layout />}>
+          <Route path={"inkless"} element={<Layout />}>
             <Route index element={<ArticlesPage />} />
             <Route path={"articles/editor/edit/:articleId"} element={<ArticleEditorPage editorMode={ArticleEditorModes.Editing} />} />
             <Route path={"articles/editor/new"} element={<ArticleEditorPage editorMode={ArticleEditorModes.Addititon} />} />

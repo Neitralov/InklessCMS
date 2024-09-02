@@ -28,4 +28,10 @@
     <ProjectReference Include="..\WebAPI.Contracts\WebAPI.Contracts.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="wwwroot\**">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

@@ -15,7 +15,7 @@ export const PrivateRoutes = () => {
     if (isAuth) {
       return(<Outlet />)
     } else {
-      return <Navigate to={"/login"} />
+      return <Navigate to={"/inkless/login"} />
     }
   }
 }

@@ -22,7 +22,7 @@ export const useAuthStore = create<UseAuthStore>((set) => ({
       localStorage.setItem('accessToken', response.data.accessToken)
       localStorage.setItem('refreshToken', response.data.refreshToken)
       set({isAuth: true})
-      navigate('/')
+      navigate('/inkless')
     } catch (error) {
       set({isLoginDenied: true})
       console.error(error)
@@ -32,7 +32,7 @@ export const useAuthStore = create<UseAuthStore>((set) => ({
     localStorage.removeItem('accessToken')
     localStorage.removeItem('refreshToken')
     set({ isAuth: false })
-    window.location.href = '/login'
+    window.location.href = '/inkless/login'
   },
   checkIsAuth: async () => {
     const accessToken = localStorage.getItem('accessToken')
@@ -51,7 +51,7 @@ export const useAuthStore = create<UseAuthStore>((set) => ({
       localStorage.setItem('refreshToken', response.data.refreshToken)
       set({ isAuth: true, isLoading: false })
     } catch {
-      window.location.href = '/login'
+      window.location.href = '/inkless/login'
     }
   }
 }))

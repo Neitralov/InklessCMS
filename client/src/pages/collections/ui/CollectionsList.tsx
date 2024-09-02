@@ -18,7 +18,7 @@ export const CollectionsList = () => {
         className={"px-3 py-2 text-lg font-medium border border-black/20 rounded-md"}>
         <h2
           className={"w-fit hover:underline decoration-2 underline-offset-2 cursor-pointer"}
-          onClick={() => navigate(`/collections/editor/edit/${collection.collectionId}`)}>
+          onClick={() => navigate(`/inkless/collections/editor/edit/${collection.collectionId}`)}>
           { collection.title }
         </h2>
       </div>)

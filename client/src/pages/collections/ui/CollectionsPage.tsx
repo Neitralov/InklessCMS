@@ -11,7 +11,7 @@ export const CollectionsPage = () => {
       <header className={"flex justify-between items-center px-5 py-5 border-b border-black/20"}>
         <h1 className={"text-2xl font-medium"}>Коллекции</h1>
         <HeaderButton
-          OnClick={() => { navigate("/collections/editor/new") }}>
+          OnClick={() => { navigate("/inkless/collections/editor/new") }}>
           Новая коллекция
           <AddIcon />
         </HeaderButton>

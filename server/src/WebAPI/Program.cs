@@ -101,8 +101,11 @@ else
 
 app.UseCors("AllowInkless");
 app.UseCors("AllowClient");
+app.UsePathBase("/inkless");
+app.UseFileServer();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+app.MapFallbackToFile("index.html");
 await app.MigrateDatabaseAsync(app.Services.GetRequiredService<IOptionsMonitor<AdminAccountOptions>>().CurrentValue);
 await app.RunAsync();

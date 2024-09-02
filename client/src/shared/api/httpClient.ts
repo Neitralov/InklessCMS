@@ -28,7 +28,7 @@ httpClient.interceptors.response.use(response => {
       localStorage.setItem('refreshToken', response.data.refreshToken)
       return httpClient.request(originalRequest)
     } catch (error) {
-      window.location.href = '/login'
+      window.location.href = '/inkless/login'
       return Promise.reject(error);
     }
   } else if (error.status === 403) {

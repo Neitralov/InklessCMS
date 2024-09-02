@@ -51,16 +51,16 @@ export const EditorPage = ({ editorMode }: { editorMode: EditorModes }) => {
     editorMode === EditorModes.Addititon
       ? handleSubmit(async (data: CreateCollectionRequest) => {
           const success = await createCollection(data, setError)
-          if (success) navigate("/collections")
+          if (success) navigate("/inkless/collections")
         })
       : handleSubmit(async (data: UpdateCollectionRequest) => {
           await updateCollection(data)
-          navigate("/collections")
+          navigate("/inkless/collections")
         });
 
   const remove = handleSubmit(async (data: CreateCollectionRequest) => {
     await deleteCollection(data.collectionId);
-    navigate("/collections");
+    navigate("/inkless/collections");
   });
 
   return (
