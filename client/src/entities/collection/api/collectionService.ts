@@ -7,23 +7,23 @@ import { AddArticleToCollectionRequest } from "../model/addArticleToCollectionRe
 
 export default class CollectionService {
   static getCollections = async () : Promise<AxiosResponse<Collection[]>> =>
-    await httpClient.get<Collection[]>(`/collections`)
+    await httpClient.get<Collection[]>(`api/collections`)
 
   static getCollection = async(collectionId: string) : Promise<AxiosResponse<Collection>> =>
-    await httpClient.get<Collection>(`/collections/${collectionId}`)
+    await httpClient.get<Collection>(`api/collections/${collectionId}`)
 
   static createCollection = async (request: CreateCollectionRequest) : Promise<AxiosResponse<Collection>> =>
-    await httpClient.post<Collection>('/collections', request)
+    await httpClient.post<Collection>('api/collections', request)
 
   static updateCollection = async (request: UpdateCollectionRequest) : Promise<AxiosResponse<Collection>> =>
-    await httpClient.put('/collections', request)
+    await httpClient.put('api/collections', request)
 
   static deleteCollection = async (collectionId: string) : Promise<AxiosResponse> =>
-    await httpClient.delete(`/collections/${collectionId}`)
+    await httpClient.delete(`api/collections/${collectionId}`)
 
   static addArticleToCollection = async (collectionId: string, request: AddArticleToCollectionRequest) : Promise<AxiosResponse> =>
-    await httpClient.post(`/collections/${collectionId}`, request)
+    await httpClient.post(`api/collections/${collectionId}`, request)
 
   static deleteArticleFromCollection = async (collectionId: string, articleId: string) : Promise<AxiosResponse> =>
-    await httpClient.delete(`/collections/${collectionId}/articles/${articleId}`)
+    await httpClient.delete(`api/collections/${collectionId}/articles/${articleId}`)
 }

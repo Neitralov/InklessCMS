@@ -3,7 +3,7 @@ import AuthService from "./authService.ts"
 import { ApiUrl } from "../config/config.ts"
 
 export const httpClient = axios.create({
-  baseURL: ApiUrl,
+  baseURL: ApiUrl ?? window.location.origin,
 })
 
 httpClient.interceptors.request.use((config) => {

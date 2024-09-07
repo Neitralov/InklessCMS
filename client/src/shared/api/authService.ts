@@ -6,8 +6,8 @@ import { RefreshUserTokenRequest } from "../model/RefreshUserTokenRequest.ts"
 
 export default class AuthService {
   static login = async (request: LoginUserRequest ) : Promise<AxiosResponse<LoginUserResponse>> =>
-    await httpClient.post<LoginUserResponse>('users/login', request)
+    await httpClient.post<LoginUserResponse>('api/users/login', request)
 
   static refreshTokens = async (request: RefreshUserTokenRequest ) : Promise<AxiosResponse<LoginUserResponse>> =>
-    await httpClient.post<LoginUserResponse>('users/refresh-tokens', request)
+    await httpClient.post<LoginUserResponse>('api/users/refresh-tokens', request)
 }
