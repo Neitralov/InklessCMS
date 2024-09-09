@@ -42,9 +42,9 @@ public class ArticlesController(ArticleService articleService, IAuthorizationSer
     /// <response code="200">Список опубликованных статей</response>
     [HttpGet("published")]
     [ProducesResponseType(typeof(List<ArticlePreviewResponse>), 200)]
-    public async Task<IActionResult> GetPublishedArticles([FromQuery] string? collectionId, [FromQuery] int page = 1, [FromQuery] int size = 10)
+    public async Task<IActionResult> GetPublishedArticles([FromQuery] int page = 1, [FromQuery] int size = 10)
     {
-        PagedList<Article> publishedArticles = await articleService.GetPublishedArticles(collectionId, page, size);
+        PagedList<Article> publishedArticles = await articleService.GetPublishedArticles(page, size);
 
         Response.Headers.Append("X-Total-Count", publishedArticles.TotalCount.ToString());
         return Ok(publishedArticles.Adapt<List<ArticlePreviewResponse>>());

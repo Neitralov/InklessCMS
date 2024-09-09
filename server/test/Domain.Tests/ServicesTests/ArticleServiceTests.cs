@@ -47,7 +47,7 @@ public class ArticleServiceTests
     public async Task Article_wont_be_received_if_it_does_not_exists()
     {
         var articleRepositoryMock = new Mock<IArticleRepository>();
-        articleRepositoryMock.Setup(repository => repository.FindArticleById(It.IsAny<string>()).Result).Returns(value: null);
+        articleRepositoryMock.Setup(repository => repository.FindArticleById(It.IsAny<string>()).Result).Returns(Errors.Article.NotFound);
         var sut = new ArticleService(articleRepositoryMock.Object);
 
         var result = await sut.GetArticle("some-id");
@@ -61,11 +61,11 @@ public class ArticleServiceTests
         var articleRepositoryMock = new Mock<IArticleRepository>();
         articleRepositoryMock.Setup(repository =>
             repository
-                .GetPublishedArticles(null, It.IsAny<int>(), It.IsAny<int>()).Result)
+                .GetPublishedArticles(It.IsAny<int>(), It.IsAny<int>()).Result)
                 .Returns(new PagedList<Article>([], 0));
         var sut = new ArticleService(articleRepositoryMock.Object);
 
-        var result = await sut.GetPublishedArticles(null, page: 1, size: 10);
+        var result = await sut.GetPublishedArticles(page: 1, size: 10);
 
         result.Should().BeEmpty();
     }
@@ -113,7 +113,7 @@ public class ArticleServiceTests
             isPublished: true);
 
         var articleRepositoryMock = new Mock<IArticleRepository>();
-        articleRepositoryMock.Setup(repository => repository.FindArticleById(It.IsAny<string>()).Result).Returns(value: null);
+        articleRepositoryMock.Setup(repository => repository.FindArticleById(It.IsAny<string>()).Result).Returns(Errors.Article.NotFound);
         var sut = new ArticleService(articleRepositoryMock.Object);
 
         var result = await sut.UpdateArticle(article.Value);
@@ -169,7 +169,7 @@ public class ArticleServiceTests
     public async Task Article_wont_change_is_pinned_if_it_does_not_exists()
     {
         var articleRepositoryMock = new Mock<IArticleRepository>();
-        articleRepositoryMock.Setup(repository => repository.FindArticleById(It.IsAny<string>()).Result).Returns(value: null);
+        articleRepositoryMock.Setup(repository => repository.FindArticleById(It.IsAny<string>()).Result).Returns(Errors.Article.NotFound);
         var sut = new ArticleService(articleRepositoryMock.Object);
 
         var result = await sut.ChangePinState("some-id");
@@ -204,7 +204,7 @@ public class ArticleServiceTests
     public async Task Views_counter_of_article_wont_be_increased_if_article_does_not_exists()
     {
         var articleRepositoryMock = new Mock<IArticleRepository>();
-        articleRepositoryMock.Setup(repository => repository.FindArticleById(It.IsAny<string>()).Result).Returns(value: null);
+        articleRepositoryMock.Setup(repository => repository.FindArticleById(It.IsAny<string>()).Result).Returns(Errors.Article.NotFound);
         var sut = new ArticleService(articleRepositoryMock.Object);
 
         var result = await sut.IncreaseViewsCounter("some-id");
@@ -217,7 +217,7 @@ public class ArticleServiceTests
     public async Task Article_will_be_deleted_if_it_exists()
     {
         var articleRepositoryMock = new Mock<IArticleRepository>();
-        articleRepositoryMock.Setup(repository => repository.DeleteArticle(It.IsAny<string>()).Result).Returns(true);
+        articleRepositoryMock.Setup(repository => repository.DeleteArticle(It.IsAny<string>()).Result).Returns(Result.Deleted);
         var sut = new ArticleService(articleRepositoryMock.Object);
 
         var result = await sut.DeleteArticle("some-id");
@@ -230,7 +230,7 @@ public class ArticleServiceTests
     public async Task Article_wont_be_deleted_if_it_does_not_exists()
     {
         var articleRepositoryMock = new Mock<IArticleRepository>();
-        articleRepositoryMock.Setup(repository => repository.DeleteArticle(It.IsAny<string>()).Result).Returns(false);
+        articleRepositoryMock.Setup(repository => repository.DeleteArticle(It.IsAny<string>()).Result).Returns(Errors.Article.NotFound);
         var sut = new ArticleService(articleRepositoryMock.Object);
 
         var result = await sut.DeleteArticle("some-id");

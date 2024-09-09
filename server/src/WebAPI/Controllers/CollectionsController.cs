@@ -49,17 +49,34 @@ public class CollectionsController(CollectionService collectionService) : ApiCon
         return Ok(collections.Adapt<List<CollectionPreviewResponse>>());
     }
 
-    /// <summary>Получить коллекцию</summary>
+    /// <summary>Получить коллекцию со статьями</summary>
     /// <response code="200">Коллекция получена</response>
     /// <response code="404">Коллекция не найдена</response>
     [HttpGet("{collectionId}"), Authorize(Policy = "CanManageArticles")]
     [ProducesResponseType(typeof(List<CollectionResponse>), 200)]
     public async Task<IActionResult> GetCollection([Required] string collectionId)
     {
-        // TODO: Реализовать передачку ID коллекции в endpoint-ы получения статей для фильтрации статей
         ErrorOr<Collection> getCollectionResult = await collectionService.GetCollection(collectionId);
 
         return getCollectionResult.Match(collection => Ok(collection.Adapt<CollectionResponse>()), Problem);
+    }
+
+    /// <summary>Получить список опубликованных статей из коллекции</summary>
+    /// <response code="200">Список опубликованных статей из коллекции</response>
+    /// <response code="404">Коллекция не найдена</response>
+    [HttpGet("{collectionId}/published")]
+    [ProducesResponseType(typeof(List<ArticlePreviewResponse>), 200)]
+    public async Task<IActionResult> GetPublishedArticlesFromCollection([Required] string collectionId, [FromQuery] int page = 1, [FromQuery] int size = 10)
+    {
+        ErrorOr<PagedList<Article>> getPublishedArticlesFromCollectionResult = await collectionService.GetPublishedArticlesFromCollection(collectionId, page, size);
+
+        if (getPublishedArticlesFromCollectionResult.IsError)
+            return Problem(getPublishedArticlesFromCollectionResult.Errors);
+
+        var publishedArticlesFromCollection = getPublishedArticlesFromCollectionResult.Value;
+
+        Response.Headers.Append("X-Total-Count", publishedArticlesFromCollection.TotalCount.ToString());
+        return Ok(publishedArticlesFromCollection.Adapt<List<ArticlePreviewResponse>>());
     }
 
     /// <summary>Обновить коллекцию</summary>

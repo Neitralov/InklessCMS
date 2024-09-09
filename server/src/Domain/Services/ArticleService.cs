@@ -20,28 +20,26 @@ public class ArticleService(IArticleRepository articleRepository)
         return drafts;
     }
 
-    public async Task<PagedList<Article>> GetPublishedArticles(string? collectionId, int page, int size)
+    public async Task<PagedList<Article>> GetPublishedArticles(int page, int size)
     {
-        var publishedArticles = await articleRepository.GetPublishedArticles(collectionId, page, size);
+        var publishedArticles = await articleRepository.GetPublishedArticles(page, size);
 
         return publishedArticles;
     }
 
     public async Task<ErrorOr<Article>> GetArticle(string articleId)
     {
-        var article = await articleRepository.FindArticleById(articleId);
-
-        return article is not null ? article : Errors.Article.NotFound;
+        return await articleRepository.FindArticleById(articleId);
     }
 
     public async Task<ErrorOr<Updated>> UpdateArticle(Article updatedArticle)
     {
         var currentArticle = await articleRepository.FindArticleById(updatedArticle.ArticleId);
 
-        if (currentArticle is null)
-            return Errors.Article.NotFound;
+        if (currentArticle.IsError)
+            return currentArticle.Errors;
 
-        var result = currentArticle.Update(updatedArticle);
+        var result = currentArticle.Value.Update(updatedArticle);
 
         if (result == Result.Updated)
             await articleRepository.SaveChanges();
@@ -53,10 +51,10 @@ public class ArticleService(IArticleRepository articleRepository)
     {
         var article = await articleRepository.FindArticleById(articleId);
 
-        if (article is null)
-            return Errors.Article.NotFound;
+        if (article.IsError)
+            return article.Errors;
 
-        var result = article.ChangePinState();
+        var result = article.Value.ChangePinState();
 
         if (result == Result.Updated)
             await articleRepository.SaveChanges();
@@ -68,10 +66,10 @@ public class ArticleService(IArticleRepository articleRepository)
     {
         var article = await articleRepository.FindArticleById(articleId);
 
-        if (article is null)
-            return Errors.Article.NotFound;
+        if (article.IsError)
+            return article.Errors;
 
-        var result = article.IncreaseViewsCounter();
+        var result = article.Value.IncreaseViewsCounter();
 
         if (result == Result.Updated)
             await articleRepository.SaveChanges();
@@ -83,9 +81,9 @@ public class ArticleService(IArticleRepository articleRepository)
     {
         var result = await articleRepository.DeleteArticle(articleId);
 
-        if (result)
+        if (result == Result.Deleted)
             await articleRepository.SaveChanges();
 
-        return result ? Result.Deleted : Errors.Article.NotFound;
+        return result;
     }
 }

@@ -7,9 +7,11 @@ public class ArticleRepository(DatabaseContext database) : IArticleRepository
         await database.AddAsync(newArticle);
     }
 
-    public async Task<Article?> FindArticleById(string articleId)
+    public async Task<ErrorOr<Article>> FindArticleById(string articleId)
     {
-        return await database.Articles.SingleOrDefaultAsync(article => article.ArticleId == articleId);
+        var foundArticle = await database.Articles.SingleOrDefaultAsync(article => article.ArticleId == articleId);
+
+        return foundArticle is null ? Errors.Article.NotFound : foundArticle;
     }
 
     public async Task<PagedList<Article>> GetArticles(int page, int size)
@@ -20,29 +22,14 @@ public class ArticleRepository(DatabaseContext database) : IArticleRepository
             .ToPagedList(page, size);
     }
 
-    public async Task<PagedList<Article>> GetPublishedArticles(string? collectionId, int page, int size)
+    public async Task<PagedList<Article>> GetPublishedArticles(int page, int size)
     {
-        if (collectionId is null)
-        {
-            return await database.Articles
-                .AsNoTracking()
-                .Where(article => article.IsPublished)
-                .OrderByDescending(article => article.IsPinned)
-                .ThenByDescending(article => article.PublishDate)
-                .ToPagedList(page, size);
-        }
-        else
-        {
-            return await database.Collections
-                .AsNoTracking()
-                .Include(collection => collection.Articles)
-                .Where(collection => collection.CollectionId == collectionId)
-                .SelectMany(collection => collection.Articles)
-                .Where(article => article.IsPublished)
-                .OrderByDescending(article => article.IsPinned)
-                .ThenByDescending(article => article.PublishDate)
-                .ToPagedList(page, size);
-        }
+        return await database.Articles
+            .AsNoTracking()
+            .Where(article => article.IsPublished)
+            .OrderByDescending(article => article.IsPinned)
+            .ThenByDescending(article => article.PublishDate)
+            .ToPagedList(page, size);
     }
 
     public async Task<bool> IsArticleExists(string articleId)
@@ -50,14 +37,16 @@ public class ArticleRepository(DatabaseContext database) : IArticleRepository
         return await database.Articles.AnyAsync(article => article.ArticleId == articleId);
     }
 
-    public async Task<bool> DeleteArticle(string articleId)
+    public async Task<ErrorOr<Deleted>> DeleteArticle(string articleId)
     {
-        var storedArticle = await database.Articles.SingleOrDefaultAsync(article => article.ArticleId == articleId);
+        var storedArticle = await FindArticleById(articleId);
 
-        if (storedArticle is not null)
-            database.Remove(storedArticle);
+        if (storedArticle.IsError)
+            return storedArticle.Errors;
 
-        return storedArticle is not null;
+        database.Remove(storedArticle);
+
+        return Result.Deleted;
     }
 
     public async Task SaveChanges()

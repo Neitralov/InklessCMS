@@ -91,7 +91,7 @@ public class CollectionServiceTests
 
         var articleRepositoryMock = new Mock<IArticleRepository>();
         var collectionRepositoryMock = new Mock<ICollectionRepository>();
-        collectionRepositoryMock.Setup(repository => repository.FindCollectionById(It.IsAny<string>()).Result).Returns(value: null);
+        collectionRepositoryMock.Setup(repository => repository.FindCollectionById(It.IsAny<string>()).Result).Returns(Errors.Collection.NotFound);
         var sut = new CollectionService(collectionRepositoryMock.Object, articleRepositoryMock.Object);
 
         var result = await sut.UpdateCollection(updatedColection.Value);
@@ -172,7 +172,7 @@ public class CollectionServiceTests
         var articleRepositoryMock = new Mock<IArticleRepository>();
         articleRepositoryMock.Setup(repository => repository.FindArticleById(It.IsAny<string>()).Result).Returns(article.Value);
         var collectionRepositoryMock = new Mock<ICollectionRepository>();
-        collectionRepositoryMock.Setup(repository => repository.FindCollectionById(It.IsAny<string>()).Result).Returns(value: null);
+        collectionRepositoryMock.Setup(repository => repository.FindCollectionById(It.IsAny<string>()).Result).Returns(Errors.Collection.NotFound);
         var sut = new CollectionService(collectionRepositoryMock.Object, articleRepositoryMock.Object);
 
         var result = await sut.StoreArticleToCollection("some-id", "some-id");
@@ -190,7 +190,7 @@ public class CollectionServiceTests
         );
 
         var articleRepositoryMock = new Mock<IArticleRepository>();
-        articleRepositoryMock.Setup(repository => repository.FindArticleById(It.IsAny<string>()).Result).Returns(value: null);
+        articleRepositoryMock.Setup(repository => repository.FindArticleById(It.IsAny<string>()).Result).Returns(Errors.Article.NotFound);
         var collectionRepositoryMock = new Mock<ICollectionRepository>();
         collectionRepositoryMock.Setup(repository => repository.FindCollectionById(It.IsAny<string>()).Result).Returns(collection.Value);
         var sut = new CollectionService(collectionRepositoryMock.Object, articleRepositoryMock.Object);
@@ -224,7 +224,7 @@ public class CollectionServiceTests
     {
         var articleRepositoryMock = new Mock<IArticleRepository>();
         var collectionRepositoryMock = new Mock<ICollectionRepository>();
-        collectionRepositoryMock.Setup(repository => repository.FindCollectionById(It.IsAny<string>()).Result).Returns(value: null);
+        collectionRepositoryMock.Setup(repository => repository.FindCollectionById(It.IsAny<string>()).Result).Returns(Errors.Collection.NotFound);
         var sut = new CollectionService(collectionRepositoryMock.Object, articleRepositoryMock.Object);
 
         var result = await sut.GetCollection("some-id");
@@ -237,7 +237,7 @@ public class CollectionServiceTests
     {
         var articleRepositoryMock = new Mock<IArticleRepository>();
         var collectionRepositoryMock = new Mock<ICollectionRepository>();
-        collectionRepositoryMock.Setup(repository => repository.DeleteCollection(It.IsAny<string>()).Result).Returns(true);
+        collectionRepositoryMock.Setup(repository => repository.DeleteCollection(It.IsAny<string>()).Result).Returns(Result.Deleted);
         var sut = new CollectionService(collectionRepositoryMock.Object, articleRepositoryMock.Object);
 
         var result = await sut.DeleteCollection("some-id");
@@ -251,7 +251,7 @@ public class CollectionServiceTests
     {
         var articleRepositoryMock = new Mock<IArticleRepository>();
         var collectionRepositoryMock = new Mock<ICollectionRepository>();
-        collectionRepositoryMock.Setup(repository => repository.DeleteCollection(It.IsAny<string>()).Result).Returns(false);
+        collectionRepositoryMock.Setup(repository => repository.DeleteCollection(It.IsAny<string>()).Result).Returns(Errors.Collection.NotFound);
         var sut = new CollectionService(collectionRepositoryMock.Object, articleRepositoryMock.Object);
 
         var result = await sut.DeleteCollection("some-id");
@@ -320,7 +320,7 @@ public class CollectionServiceTests
 
         var articleRepositoryMock = new Mock<IArticleRepository>();
         var collectionRepositoryMock = new Mock<ICollectionRepository>();
-        collectionRepositoryMock.Setup(repository => repository.FindCollectionById(It.IsAny<string>()).Result).Returns(value: null);
+        collectionRepositoryMock.Setup(repository => repository.FindCollectionById(It.IsAny<string>()).Result).Returns(Errors.Collection.NotFound);
         var sut = new CollectionService(collectionRepositoryMock.Object, articleRepositoryMock.Object);
 
         var result = await sut.DeleteArticleFromCollection("some-id", "some-id");

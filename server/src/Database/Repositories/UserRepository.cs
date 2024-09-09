@@ -7,9 +7,11 @@ public class UserRepository(DatabaseContext database) : IUserRepository
         await database.AddAsync(newUserSession);
     }
 
-    public async Task<User?> FindUserByEmail(string email)
+    public async Task<ErrorOr<User>> FindUserByEmail(string email)
     {
-        return await database.Users.SingleOrDefaultAsync(user => user.Email == email);
+        var user = await database.Users.SingleOrDefaultAsync(user => user.Email == email);
+
+        return user is null ? Errors.User.NotFound : user;
     }
 
     public async Task<int> GetNumberOfUserSessionsForUser(Guid userId)
@@ -17,12 +19,14 @@ public class UserRepository(DatabaseContext database) : IUserRepository
         return await database.UserSessions.CountAsync(refreshTokenSession => refreshTokenSession.UserId == userId);
     }
 
-    public async Task<UserSession?> GetUserSession(Guid userId, string refreshToken)
+    public async Task<ErrorOr<UserSession>> GetUserSession(Guid userId, string refreshToken)
     {
-        return await database.UserSessions.SingleOrDefaultAsync(refreshTokenSession =>
+        var userSession = await database.UserSessions.SingleOrDefaultAsync(refreshTokenSession =>
             refreshTokenSession.UserId == userId &&
             refreshTokenSession.Token == refreshToken &&
             refreshTokenSession.ExpirationDate >= DateTime.UtcNow);
+
+        return userSession is null ? Errors.UserSession.NotFound : userSession;
     }
 
     public async Task DeleteAllUserSessionsForUser(Guid userId)
@@ -30,7 +34,7 @@ public class UserRepository(DatabaseContext database) : IUserRepository
         var usersRefreshTokenSessions = await database.UserSessions.Where(refreshTokenSession => refreshTokenSession.UserId == userId).ToListAsync();
         database.UserSessions.RemoveRange(usersRefreshTokenSessions);
     }
-    
+
     public async Task SaveChanges()
     {
         await DeleteAllInvalidRefreshTokenSessions();

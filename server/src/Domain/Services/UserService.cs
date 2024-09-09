@@ -6,13 +6,13 @@ public class UserService(IUserRepository userRepository, IAuthService authServic
     {
         var user = await userRepository.FindUserByEmail(email);
 
-        if (user is null)
+        if (user.Errors.Contains(Errors.User.NotFound))
             return Errors.Login.IncorrectEmailOrPassword;
 
-        if (user.VerifyPasswordHash(password) is false)
+        if (user.Value.VerifyPasswordHash(password) is false)
             return Errors.Login.IncorrectEmailOrPassword;
 
-        var userSession = UserSession.Create(user.UserId);
+        var userSession = UserSession.Create(user.Value.UserId);
 
         if (await AreThereTooManySessionsPerUser(userSession.UserId))
             await userRepository.DeleteAllUserSessionsForUser(userSession.UserId);
@@ -20,34 +20,34 @@ public class UserService(IUserRepository userRepository, IAuthService authServic
         await userRepository.AddUserSession(userSession);
         await userRepository.SaveChanges();
 
-        var accessToken = authService.CreateAccessToken(user);
+        var accessToken = authService.CreateAccessToken(user.Value);
         var refreshToken = userSession.Token;
 
         return (accessToken, refreshToken);
     }
-    
+
     public async Task<ErrorOr<TokensPair>> RefreshTokens(string expiredAccessToken, string refreshToken)
     {
         var userEmail = authService.GetEmailFromJwt(expiredAccessToken);
 
         if (userEmail.IsError)
             return userEmail.FirstError;
-        
+
         var user = await userRepository.FindUserByEmail(userEmail.Value);
 
-        if (user is null)
-            return Errors.User.NotFound;
+        if (user.IsError)
+            return user.Errors;
 
-        var userSession = await userRepository.GetUserSession(user.UserId, refreshToken);
+        var userSession = await userRepository.GetUserSession(user.Value.UserId, refreshToken);
 
-        if (userSession is null)
-            return Errors.UserSession.InvalidToken;
+        if (userSession.IsError)
+            return userSession.Errors;
 
-        await userSession.Update();
+        await userSession.Value.Update();
         await userRepository.SaveChanges();
 
-        var newAccessToken = authService.CreateAccessToken(user);
-        var newRefreshToken = userSession.Token;
+        var newAccessToken = authService.CreateAccessToken(user.Value);
+        var newRefreshToken = userSession.Value.Token;
 
         return (newAccessToken, newRefreshToken);
     }
