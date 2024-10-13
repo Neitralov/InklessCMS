@@ -10,4 +10,8 @@ public sealed class JwtOptions
     [Required]
     [MinLength(64)]
     public string SecretKey { get; set; } = string.Empty;
+
+    /// <summary>Время жизни access токена</summary>
+    [Required]
+    public int AccessTokenLifeTimeInMinutes { get; set; }
 }

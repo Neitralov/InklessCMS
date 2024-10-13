@@ -2,8 +2,6 @@ namespace Domain.Services;
 
 public class AuthService(IOptions<JwtOptions> options) : IAuthService
 {
-    private const int AccessTokenLifeTimeInMinutes = 15;
-    
     public string CreateAccessToken(User user)
     {
         var claims = new List<Claim>
@@ -19,7 +17,7 @@ public class AuthService(IOptions<JwtOptions> options) : IAuthService
 
         var token = new JwtSecurityToken(
             claims: claims,
-            expires: DateTime.UtcNow.AddMinutes(AccessTokenLifeTimeInMinutes),
+            expires: DateTime.UtcNow.AddMinutes(options.Value.AccessTokenLifeTimeInMinutes),
             signingCredentials: creds);
 
         return new JwtSecurityTokenHandler().WriteToken(token);
