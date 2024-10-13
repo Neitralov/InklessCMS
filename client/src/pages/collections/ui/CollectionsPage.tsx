@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom"
-import { AddIcon } from "../../../shared/ui/Icons.tsx"
 import { HeaderButton } from "../../../shared/ui/HeaderButton.tsx"
 import { CollectionsList } from "./CollectionsList.tsx"
+import { Icon } from "@iconify/react";
 
 export const CollectionsPage = () => {
   const navigate = useNavigate()
@@ -13,7 +13,7 @@ export const CollectionsPage = () => {
         <HeaderButton
           OnClick={() => { navigate("/inkless/collections/editor/new") }}>
           Новая коллекция
-          <AddIcon />
+          <Icon icon={"material-symbols:add"} className={"fill-inherit text-lg"} />
         </HeaderButton>
       </header>
 

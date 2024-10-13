@@ -3,12 +3,12 @@ import { useEffect, useState } from "react"
 import { HeaderButton } from "../../../shared/ui/HeaderButton.tsx"
 import { useForm } from "react-hook-form"
 import { EditorModes } from "../model/editorModes.ts"
-import { ApplyIcon, FileIcon, TrashBinIcon } from "../../../shared/ui/Icons.tsx"
 import { CreateCollectionRequest } from "../../../entities/collection/model/createCollectionRequest.ts"
 import { UpdateCollectionRequest } from "../../../entities/collection/model/updateCollectionRequest.ts"
 import { useCollectionStore } from "../../../entities/collection/model/useCollectionStore.ts"
 import { Select } from "./Select.tsx"
 import { useArticleStore } from "../../../entities/article/model/useArticleStore.ts"
+import { Icon } from "@iconify/react";
 
 export const EditorPage = ({ editorMode }: { editorMode: EditorModes }) => {
   const {
@@ -76,10 +76,10 @@ export const EditorPage = ({ editorMode }: { editorMode: EditorModes }) => {
             <div className={"flex gap-2"}>
               { editorMode === EditorModes.Editing && (
                 <HeaderButton OnClick={ remove }>
-                  Удалить <TrashBinIcon width="18px" height="18px" />
+                  Удалить <Icon icon={"material-symbols:delete-outline"} className={"fill-inherit text-lg"} />
                 </HeaderButton>) }
               <HeaderButton OnClick={ save }>
-                Сохранить <ApplyIcon />
+                Сохранить <Icon icon={"material-symbols:draft-outline"} className={"fill-inherit text-lg"} />
               </HeaderButton>
             </div>
           </header>
@@ -99,13 +99,13 @@ export const EditorPage = ({ editorMode }: { editorMode: EditorModes }) => {
                     { collection!.articles!.map(article =>
                       <div key={ article.articleId } className={"flex justify-between py-2 items-center border-b last:border-none border-black/20"}>
                         <div className={"flex gap-2 items-center"}>
-                          <FileIcon width="24px" height="24px" />
+                          <Icon icon={"material-symbols:draft-outline"} className={"fill-inherit text-2xl"} />
                           <h2 className={"text-lg font-medium"}>{ article.title }</h2>
                         </div>
                         <div
                           onClick={async () => await deleteArticleFromCollection(collectionId!, article.articleId)}
                           className={"fill-neutral-500 hover:fill-black cursor-pointer"}>
-                          <TrashBinIcon width="24px" height="24px" />
+                          <Icon icon={"material-symbols:delete-outline"} className={"fill-inherit text-2xl"} />
                         </div>
                       </div>) }
                   </div> }

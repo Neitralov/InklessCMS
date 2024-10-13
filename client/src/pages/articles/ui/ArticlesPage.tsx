@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom"
-import { EditIcon } from "../../../shared/ui/Icons.tsx"
+import { Icon } from "@iconify/react"
 import { ArticlesList } from "./ArticlesList.tsx"
 import { PageNavigation } from "./PageNavigation.tsx"
 import { useArticleStore } from "../../../entities/article/model/useArticleStore.ts"
@@ -19,7 +19,7 @@ export const ArticlesPage = () => {
         </h1>
         <HeaderButton OnClick={() => navigate("articles/editor/new") }>
           Новая статья
-          <EditIcon />
+          <Icon icon={"material-symbols:edit-outline"} className={"fill-inherit text-lg"} />
         </HeaderButton>
       </header>
 

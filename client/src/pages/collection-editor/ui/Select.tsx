@@ -1,6 +1,6 @@
 import { useState } from "react"
-import { ArrowIcon } from "../../../shared/ui/Icons"
 import { Article } from "../../../entities/article/model/article"
+import { Icon } from "@iconify/react";
 
 export const Select = ({ header, onSelect, data }: { header: string, onSelect: (selectedArticle: Article) => void, data: Article[] }) => {
   const [isOpen, setIsOpen] = useState(false)
@@ -18,7 +18,7 @@ export const Select = ({ header, onSelect, data }: { header: string, onSelect: (
         onClick={() => setIsOpen(!isOpen)}
         onBlur={() => setIsOpen(false)}>
         { header }
-        <ArrowIcon />
+        <Icon icon={"material-symbols:arrow-drop-down"} className={"fill-inherit text-2xl"} />
       </button>
 
       { data.length > 0

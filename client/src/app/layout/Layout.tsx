@@ -1,13 +1,8 @@
 import { NavLink, Outlet } from "react-router-dom"
-import {
-  ApiIcon,
-  CollectionsIcon,
-  ExitIcon,
-  FileIcon,
-} from "../../shared/ui/Icons.tsx"
 import { NavGroup } from "./NavGroup.tsx"
 import { Logo } from "../../shared/ui/Logo.tsx"
 import { useAuthStore } from "../../shared/model/useAuthStore.ts"
+import { Icon } from "@iconify/react";
 
 export const Layout = () => {
   const logout = useAuthStore((state) => state.logout)
@@ -25,14 +20,14 @@ export const Layout = () => {
               <NavLink
                 to={"/inkless"}
                 className={({ isActive }) => (isActive ? "font-medium " : "") + "flex items-center gap-1.5 hover:font-medium"}>
-                <FileIcon width="20px" height="20px" />
+                <Icon icon={"material-symbols:description-outline"} className={"fill-inherit text-xl"} />
                 Статьи
               </NavLink>
               <NavLink
                 end
                 to={"/inkless/collections"}
                 className={({ isActive }) => (isActive ? "font-medium " : "") + "flex items-center gap-1.5 hover:font-medium"}>
-                <CollectionsIcon />
+                <Icon icon={"material-symbols:collections-bookmark-outline"} className={"fill-inherit text-xl"} />
                 Коллекции
               </NavLink>
             </NavGroup>
@@ -41,7 +36,7 @@ export const Layout = () => {
                 href={"http://localhost:8080/swagger"}
                 target={"_blank"}
                 className={"flex items-center gap-1.5 hover:font-medium"}>
-                <ApiIcon />
+                <Icon icon={"material-symbols:api"} className={"fill-inherit text-xl"} />
                 REST API
               </a>
             </NavGroup>
@@ -52,7 +47,7 @@ export const Layout = () => {
               <p
                 className={"flex items-center gap-1.5 hover:font-medium cursor-pointer"}
                 onClick={ logout }>
-                <ExitIcon />
+                <Icon icon={"material-symbols:logout"} className={"fill-inherit text-xl"} />
                 Выход
               </p>
             </div>

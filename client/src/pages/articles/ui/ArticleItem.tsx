@@ -1,6 +1,6 @@
 import { FC } from "react"
 import { Article } from "../../../entities/article/model/article.ts"
-import { PinIcon, ViewsIcon } from "../../../shared/ui/Icons.tsx"
+import { Icon } from "@iconify/react"
 import { useNavigate } from "react-router-dom"
 
 interface Props {
@@ -22,12 +22,12 @@ export const ArticleItem: FC<Props> = ({ article }) => {
         </h2>
         { article.isPublished &&
           <div className={"flex gap-0.5 items-center w-fit h-7 px-2 py-1.5 text-sm border border-black rounded-full"}>
-            <ViewsIcon />
+            <Icon icon={"material-symbols:visibility-outline"} className={"fill-inherit text-base"} />
             { article.views }
           </div> }
         { article.isPinned &&
           <div className={"flex gap-0.5 items-center w-fit h-7 px-2 py-1.5 text-sm border border-black rounded-full"}>
-            <PinIcon />
+            <Icon icon={"material-symbols:push-pin-outline"} className={"fill-inherit text-base"} />
             Закреплено
           </div> }
       </td>

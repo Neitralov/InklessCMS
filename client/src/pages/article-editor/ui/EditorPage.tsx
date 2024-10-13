@@ -6,9 +6,9 @@ import { HeaderButton } from "../../../shared/ui/HeaderButton.tsx"
 import { Controller, useForm } from "react-hook-form"
 import { CreateArticleRequest } from "../../../entities/article/model/createArticleRequest.ts"
 import { EditorModes } from "../model/editorModes.ts"
-import { ApplyIcon, BlankFileIcon, TrashBinIcon } from "../../../shared/ui/Icons.tsx"
 import { UpdateArticleRequest } from "../../../entities/article/model/updateArticleRequest.ts"
 import { useArticleCRUD } from "../../../entities/article/model/useArticleCRUD.ts"
+import { Icon } from "@iconify/react";
 
 export const EditorPage = ({ editorMode }: { editorMode: EditorModes }) => {
   const {
@@ -84,16 +84,16 @@ export const EditorPage = ({ editorMode }: { editorMode: EditorModes }) => {
               { editorMode === EditorModes.Editing &&
                 <HeaderButton OnClick={ remove }>
                   Удалить
-                  <TrashBinIcon width={"18px"} height={"18px"} />
+                  <Icon icon={"material-symbols:delete-outline"} className={"fill-inherit text-lg"} />
                 </HeaderButton> }
               <HeaderButton OnClick={ save }>
                 Сохранить
-                <BlankFileIcon />
+                <Icon icon={"material-symbols:draft-outline"} className={"fill-inherit text-lg"} />
               </HeaderButton>
               { getValues("isPublished") === false &&
                 <HeaderButton OnClick={ publish }>
                   Опубликовать
-                  <ApplyIcon />
+                  <Icon icon={"material-symbols:check"} className={"fill-inherit text-lg"} />
                 </HeaderButton> }
             </div>
           </header>
