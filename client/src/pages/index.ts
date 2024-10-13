@@ -1,3 +1,4 @@
+export { NotFound } from "./404/ui/NotFound.tsx"
 export { LoginPage } from "./login/ui/LoginPage"
 
 export { ArticlesPage } from "./articles/ui/ArticlesPage"

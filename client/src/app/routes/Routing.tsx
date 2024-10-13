@@ -1,5 +1,6 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom"
 import {
+  NotFound,
   ArticlesPage,
   ArticleEditorPage,
   ArticleEditorModes,
@@ -15,6 +16,7 @@ export const Routing = () => {
   return (
     <BrowserRouter>
       <Routes>
+        <Route path={"*"} element={<NotFound />} />
         <Route path={"inkless/login"} element={<LoginPage />} />
         <Route element={<PrivateRoutes />}>
           <Route path={"inkless"} element={<Layout />}>
