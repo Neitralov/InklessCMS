@@ -66,9 +66,9 @@ public class CollectionsController(CollectionService collectionService) : ApiCon
     /// <response code="404">Коллекция не найдена</response>
     [HttpGet("{collectionId}/published")]
     [ProducesResponseType(typeof(List<ArticlePreviewResponse>), 200)]
-    public async Task<IActionResult> GetPublishedArticlesFromCollection([Required] string collectionId, [FromQuery] int page = 1, [FromQuery] int size = 10)
+    public async Task<IActionResult> GetPublishedArticlesFromCollection(CancellationToken cancellationToken, [Required] string collectionId, [FromQuery] int page = 1, [FromQuery] int size = 10)
     {
-        ErrorOr<PagedList<Article>> getPublishedArticlesFromCollectionResult = await collectionService.GetPublishedArticlesFromCollection(collectionId, page, size);
+        ErrorOr<PagedList<Article>> getPublishedArticlesFromCollectionResult = await collectionService.GetPublishedArticlesFromCollection(collectionId, page, size, cancellationToken);
 
         if (getPublishedArticlesFromCollectionResult.IsError)
             return Problem(getPublishedArticlesFromCollectionResult.Errors);

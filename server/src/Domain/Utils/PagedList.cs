@@ -10,14 +10,3 @@ public class PagedList<T> : List<T>
         AddRange(items);
     }
 }
-
-public static class PagedList
-{
-    public static Task<PagedList<T>> ToPagedList<T>(this IQueryable<T> source, int pageNumber, int pageSize)
-    {
-        var count = source.Count();
-        var items = source.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
-
-        return Task.FromResult(new PagedList<T>(items, count));
-    }
-}

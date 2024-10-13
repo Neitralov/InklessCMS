@@ -30,9 +30,9 @@ public class ArticlesController(ArticleService articleService, IAuthorizationSer
     /// <response code="200">Список статей</response>
     [HttpGet, Authorize(Policy = "CanManageArticles")]
     [ProducesResponseType(typeof(List<ArticlePreviewResponse>), 200)]
-    public async Task<IActionResult> GetArticles([FromQuery] int page = 1, [FromQuery] int size = 10)
+    public async Task<IActionResult> GetArticles(CancellationToken cancellationToken, [FromQuery] int page = 1, [FromQuery] int size = 10)
     {
-        PagedList<Article> articles = await articleService.GetArticles(page, size);
+        var articles = await articleService.GetArticles(page, size, cancellationToken);
 
         Response.Headers.Append("X-Total-Count", articles.TotalCount.ToString());
         return Ok(articles.Adapt<List<ArticlePreviewResponse>>());
@@ -42,9 +42,9 @@ public class ArticlesController(ArticleService articleService, IAuthorizationSer
     /// <response code="200">Список опубликованных статей</response>
     [HttpGet("published")]
     [ProducesResponseType(typeof(List<ArticlePreviewResponse>), 200)]
-    public async Task<IActionResult> GetPublishedArticles([FromQuery] int page = 1, [FromQuery] int size = 10)
+    public async Task<IActionResult> GetPublishedArticles(CancellationToken cancellationToken, [FromQuery] int page = 1, [FromQuery] int size = 10)
     {
-        PagedList<Article> publishedArticles = await articleService.GetPublishedArticles(page, size);
+        PagedList<Article> publishedArticles = await articleService.GetPublishedArticles(page, size, cancellationToken);
 
         Response.Headers.Append("X-Total-Count", publishedArticles.TotalCount.ToString());
         return Ok(publishedArticles.Adapt<List<ArticlePreviewResponse>>());

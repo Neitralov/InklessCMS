@@ -21,7 +21,7 @@ public class CollectionRepository(DatabaseContext database) : ICollectionReposit
         return await database.Collections.AsNoTracking().ToListAsync();
     }
 
-    public async Task<ErrorOr<PagedList<Article>>> GetPublishedArticlesFromColelction(string collectionId, int page, int size)
+    public async Task<ErrorOr<PagedList<Article>>> GetPublishedArticlesFromColelction(string collectionId, int page, int size, CancellationToken cancellationToken)
     {
         var foundCollection = await FindCollectionById(collectionId);
 
@@ -36,7 +36,7 @@ public class CollectionRepository(DatabaseContext database) : ICollectionReposit
             .Where(article => article.IsPublished)
             .OrderByDescending(article => article.IsPinned)
             .ThenByDescending(article => article.PublishDate)
-            .ToPagedList(page, size);
+            .ToPagedList(page, size, cancellationToken);
     }
 
     public async Task<bool> IsCollectionExists(string collectionId)

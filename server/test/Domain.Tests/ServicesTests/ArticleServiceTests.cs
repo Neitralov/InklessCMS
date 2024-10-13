@@ -58,14 +58,15 @@ public class ArticleServiceTests
     [Fact]
     public async Task Published_articles_will_be_received()
     {
+        var cancellationToken = CancellationToken.None;
         var articleRepositoryMock = new Mock<IArticleRepository>();
         articleRepositoryMock.Setup(repository =>
             repository
-                .GetPublishedArticles(It.IsAny<int>(), It.IsAny<int>()).Result)
+                .GetPublishedArticles(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()).Result)
                 .Returns(new PagedList<Article>([], 0));
         var sut = new ArticleService(articleRepositoryMock.Object);
 
-        var result = await sut.GetPublishedArticles(page: 1, size: 10);
+        var result = await sut.GetPublishedArticles(page: 1, size: 10, cancellationToken);
 
         result.Should().BeEmpty();
     }
@@ -73,11 +74,15 @@ public class ArticleServiceTests
     [Fact]
     public async Task Articles_will_be_received()
     {
+        var cancellationToken = CancellationToken.None;
         var articleRepositoryMock = new Mock<IArticleRepository>();
-        articleRepositoryMock.Setup(repository => repository.GetArticles(It.IsAny<int>(), It.IsAny<int>()).Result).Returns(new PagedList<Article>([], 0));
+        articleRepositoryMock.Setup(repository => 
+            repository
+                .GetArticles(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()).Result)
+                .Returns(new PagedList<Article>([], 0));
         var sut = new ArticleService(articleRepositoryMock.Object);
 
-        var result = await sut.GetArticles(page: 1, size: 10);
+        var result = await sut.GetArticles(page: 1, size: 10, cancellationToken);
 
         result.Should().BeEmpty();
     }

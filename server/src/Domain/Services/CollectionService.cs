@@ -53,9 +53,9 @@ public class CollectionService(ICollectionRepository collectionRepository, IArti
         return collection;
     }
 
-    public async Task<ErrorOr<PagedList<Article>>> GetPublishedArticlesFromCollection(string collectionId, int page, int size)
+    public async Task<ErrorOr<PagedList<Article>>> GetPublishedArticlesFromCollection(string collectionId, int page, int size, CancellationToken cancellationToken)
     {
-        var publishedArticlesFromCollection = await collectionRepository.GetPublishedArticlesFromColelction(collectionId, page, size);
+        var publishedArticlesFromCollection = await collectionRepository.GetPublishedArticlesFromColelction(collectionId, page, size, cancellationToken);
 
         return publishedArticlesFromCollection;
     }

@@ -13,16 +13,16 @@ public class ArticleService(IArticleRepository articleRepository)
         return Result.Created;
     }
 
-    public async Task<PagedList<Article>> GetArticles(int page, int size)
+    public async Task<PagedList<Article>> GetArticles(int page, int size, CancellationToken cancellationToken)
     {
-        var drafts = await articleRepository.GetArticles(page, size);
+        var drafts = await articleRepository.GetArticles(page, size, cancellationToken);
 
         return drafts;
     }
 
-    public async Task<PagedList<Article>> GetPublishedArticles(int page, int size)
+    public async Task<PagedList<Article>> GetPublishedArticles(int page, int size, CancellationToken cancellationToken)
     {
-        var publishedArticles = await articleRepository.GetPublishedArticles(page, size);
+        var publishedArticles = await articleRepository.GetPublishedArticles(page, size, cancellationToken);
 
         return publishedArticles;
     }
