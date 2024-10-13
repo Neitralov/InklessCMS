@@ -27,8 +27,7 @@ public class UserSession
     public Task Update()
     {
         Token = Guid.NewGuid().ToString();
-        ExpirationDate = DateTime.UtcNow.AddDays(ExpiresInDays);
-
+        
         return Task.CompletedTask;
     }
 }
