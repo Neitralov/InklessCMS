@@ -3,7 +3,6 @@ import { Article } from "./article.ts"
 import ArticleService from "../api/articleService.ts"
 import { CreateArticleRequest } from "./createArticleRequest.ts"
 import { UpdateArticleRequest } from "./updateArticleRequest.ts"
-import { AxiosError } from "axios"
 import { UseFormSetError } from "react-hook-form"
 
 interface UseArticleStore {
@@ -21,7 +20,7 @@ interface UseArticleStore {
   deleteArticle: (articleId: string) => Promise<void>
 }
 
-export const useArticleStore = create<UseArticleStore>(set => ({
+export const useArticleStore = create<UseArticleStore>((set, get) => ({
   articles: [],
   totalCount: 0,
   pageNumber: 1,
@@ -52,14 +51,17 @@ export const useArticleStore = create<UseArticleStore>(set => ({
     })
   },
   addArticle: async (request, setError) => {
+    if (get().articles.some(article => article.articleId === request.articleId)) {
+      setError("articleId", {type: "uniqueId", message: "Статья с таким ID уже существует"})
+      return false
+    }
+
     try {
-      await ArticleService.addArticle(request)
+      const response = await ArticleService.addArticle(request)
+      set(state => ({ articles: [...state.articles, response.data] })) 
       return true
     } catch (error) {
       console.error(error)
-      if (Object.keys((((error as AxiosError).response!.data) as ProblemDetails).errors)[0] === "Article.NonUniqueId") {
-        setError("articleId", { type: "uniqueId", message: "Статья с таким ID уже существует" })
-      }
       return false
     }
   },
@@ -94,7 +96,3 @@ export const useArticleStore = create<UseArticleStore>(set => ({
     }
   }
 }))
-
-interface ProblemDetails {
-  errors: { value: string }
-}
