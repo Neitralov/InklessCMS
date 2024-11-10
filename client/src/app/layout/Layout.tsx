@@ -31,15 +31,6 @@ export const Layout = () => {
                 Коллекции
               </NavLink>
             </NavGroup>
-            <NavGroup title={"API"}>
-              <a
-                href={"http://localhost:8080/swagger"}
-                target={"_blank"}
-                className={"flex items-center gap-1.5 hover:font-medium"}>
-                <Icon icon={"material-symbols:api"} className={"fill-inherit text-xl"} />
-                REST API
-              </a>
-            </NavGroup>
           </div>
 
           <div className={"flex flex-col mb-2"}>
