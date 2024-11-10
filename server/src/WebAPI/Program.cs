@@ -67,7 +67,7 @@ builder.Services.AddAuthorizationBuilder()
 
 builder.Services.AddSwaggerGen(options =>
 {
-    options.SwaggerDoc("v1", new OpenApiInfo { Title = "Inkless API", Version = "0.1" });
+    options.SwaggerDoc("v1", new OpenApiInfo { Title = "Inkless API", Version = "0.3" });
 
     var xmlDocPaths = Directory.GetFiles(AppContext.BaseDirectory, "*.xml", SearchOption.TopDirectoryOnly).ToList();
     xmlDocPaths.ForEach(xmlDocPath => options.IncludeXmlComments(xmlDocPath));
