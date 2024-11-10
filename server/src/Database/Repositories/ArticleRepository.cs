@@ -4,7 +4,7 @@ public class ArticleRepository(DatabaseContext database) : IArticleRepository
 {
     public async Task AddArticle(Article newArticle)
     {
-        await database.AddAsync(newArticle);
+        await database.Articles.AddAsync(newArticle);
     }
 
     public async Task<ErrorOr<Article>> FindArticleById(string articleId)
@@ -44,7 +44,7 @@ public class ArticleRepository(DatabaseContext database) : IArticleRepository
         if (storedArticle.IsError)
             return storedArticle.Errors;
 
-        database.Remove(storedArticle);
+        database.Articles.Remove(storedArticle.Value);
 
         return Result.Deleted;
     }

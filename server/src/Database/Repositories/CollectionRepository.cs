@@ -4,7 +4,7 @@ public class CollectionRepository(DatabaseContext database) : ICollectionReposit
 {
     public async Task AddCollection(Collection newCollection)
     {
-        await database.AddAsync(newCollection);
+        await database.Collections.AddAsync(newCollection);
     }
 
     public async Task<ErrorOr<Collection>> FindCollectionById(string collectionId)
@@ -51,7 +51,7 @@ public class CollectionRepository(DatabaseContext database) : ICollectionReposit
         if (collection.IsError)
             return collection.Errors;
 
-        database.Remove(collection);
+        database.Collections.Remove(collection.Value);
 
         return Result.Deleted;
     }
