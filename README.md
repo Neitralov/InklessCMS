@@ -21,7 +21,7 @@
 * Аутентификация посредством JWT токенов (access + refresh).
 
 # 🌆 Скриншоты
-![image](https://github.com/user-attachments/assets/b14a80e0-46bc-4ead-a378-6e75971f8729)
+![image](https://github.com/user-attachments/assets/6dbfd48c-eba4-4284-99ca-260ac09e3b6d)
 
 # 📑 Документация
 * [Макет сайта](https://www.figma.com/design/EjGgp0cHXhUf67yHmIk6JJ/Inkless)
