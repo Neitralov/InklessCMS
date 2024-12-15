@@ -1,6 +1,6 @@
 namespace Domain.Authorization;
 
-public sealed partial class UserSession
+public sealed class UserSession
 {
     public long UserSessionId { get; private set; }
     public Guid UserId { get; private set; }
