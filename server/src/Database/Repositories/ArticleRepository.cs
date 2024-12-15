@@ -8,7 +8,7 @@ public sealed class ArticleRepository(DatabaseContext database) : BaseRepository
 
     public async Task<ErrorOr<Article>> FindArticleById(string articleId) =>
         await _database.Articles.SingleOrDefaultAsync(article => article.ArticleId == articleId) ??
-        Domain.Articles.Errors.Article.NotFound.ToErrorOr<Article>();
+        Article.Errors.NotFound.ToErrorOr<Article>();
 
     public async Task<PagedList<Article>> GetArticles(
         PageOptions pageOptions,

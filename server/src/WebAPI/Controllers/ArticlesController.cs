@@ -69,7 +69,7 @@ public sealed class ArticlesController(ArticleService articleService, IAuthoriza
 
         var authResult = await authService.AuthorizeAsync(User, "CanManageArticles");
         if (getArticleResult.Value.IsPublished == false && !authResult.Succeeded)
-            getArticleResult = Domain.Articles.Errors.Article.NotFound;
+            getArticleResult = Article.Errors.NotFound;
 
         return getArticleResult.Match(article => Ok(article.Adapt<ArticleResponse>()), Problem);
     }

@@ -1,6 +1,6 @@
 namespace Domain.Collections;
 
-public sealed class Collection
+public sealed partial class Collection
 {
     public string CollectionId { get; private set; } = string.Empty;
     public string Title { get; private set; } = string.Empty;
@@ -20,13 +20,13 @@ public sealed class Collection
         List<Error> errors = [];
 
         if (collectionId.Trim().Length is < MinIdLength or > MaxIdLength)
-            errors.Add(Errors.Collection.InvalidIdLength);
+            errors.Add(Errors.InvalidIdLength);
 
         if (!Regex.IsMatch(collectionId.Trim(), CollectionIdPattern, RegexOptions.Compiled))
-            errors.Add(Errors.Collection.InvalidId);
+            errors.Add(Errors.InvalidId);
 
         if (title.Trim().Length is < MinTitleLength or > MaxTitleLength)
-            errors.Add(Errors.Collection.InvalidTitleLength);
+            errors.Add(Errors.InvalidTitleLength);
 
         if (errors.Count > 0)
             return errors;
@@ -57,7 +57,7 @@ public sealed class Collection
         var articleToRemove = _articles.SingleOrDefault(article => article.ArticleId == idOfArticleToDelete);
 
         if (articleToRemove is null)
-            return Errors.Collection.ArticleNotFound;
+            return Errors.ArticleNotFound;
 
         _articles.Remove(articleToRemove);
 

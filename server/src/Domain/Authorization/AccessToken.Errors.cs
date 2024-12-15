@@ -1,8 +1,8 @@
 namespace Domain.Authorization;
 
-public static partial class Errors
+public sealed partial record AccessToken
 {
-    public static class AccessToken
+    public static class Errors
     {
         public static Error NotFound => Error.NotFound(
             code: $"{nameof(AccessToken)}.{nameof(NotFound)}",

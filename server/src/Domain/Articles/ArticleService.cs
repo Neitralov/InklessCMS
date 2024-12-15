@@ -5,7 +5,7 @@ public sealed class ArticleService(IArticleRepository articleRepository)
     public async Task<ErrorOr<Created>> AddArticle(Article newArticle)
     {
         if (await articleRepository.IsArticleExists(newArticle.ArticleId))
-            return Errors.Article.NonUniqueId;
+            return Article.Errors.NonUniqueId;
 
         await articleRepository.AddArticle(newArticle);
         await articleRepository.SaveChanges();

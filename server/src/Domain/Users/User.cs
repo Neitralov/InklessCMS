@@ -1,6 +1,6 @@
 namespace Domain.Users;
 
-public sealed class User
+public sealed partial class User
 {
     public Guid UserId { get; private set; }
     public string Email { get; private set; } = string.Empty;
@@ -18,10 +18,10 @@ public sealed class User
         List<Error> errors = [];
 
         if (email.Contains('@') is false)
-            errors.Add(Errors.User.InvalidEmail);
+            errors.Add(Errors.InvalidEmail);
 
         if (password.Trim().Length < MinPasswordLength)
-            errors.Add(Errors.User.InvalidPassword);
+            errors.Add(Errors.InvalidPassword);
 
         if (errors.Count > 0)
             return errors;

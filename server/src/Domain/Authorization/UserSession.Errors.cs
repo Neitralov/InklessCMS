@@ -1,15 +1,15 @@
 namespace Domain.Authorization;
 
-public static partial class Errors
+public sealed partial class UserSession
 {
-    public static class UserSession
+    public static class Errors
     {
         public static Error NotFound => Error.NotFound(
-            code: $"{nameof(Authorization.UserSession)}.{nameof(NotFound)}",
+            code: $"{nameof(UserSession)}.{nameof(NotFound)}",
             description: "Токен обновления не найден.");
 
         public static Error InvalidToken => Error.Validation(
-            code: $"{nameof(Authorization.UserSession)}.{nameof(InvalidToken)}",
+            code: $"{nameof(UserSession)}.{nameof(InvalidToken)}",
             description: "Токен обновления недействителен.");
     }
 }

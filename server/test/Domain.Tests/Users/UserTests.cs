@@ -29,7 +29,7 @@ public sealed class UserTests
         var result = sut.FirstError;
 
         // Assert
-        result.Should().Be(Domain.Users.Errors.User.InvalidEmail);
+        result.Should().Be(User.Errors.InvalidEmail);
     }
 
     [Fact]
@@ -44,6 +44,6 @@ public sealed class UserTests
         var result = sut.FirstError;
 
         // Assert
-        result.Should().Be(Domain.Users.Errors.User.InvalidPassword);
+        result.Should().Be(User.Errors.InvalidPassword);
     }
 }

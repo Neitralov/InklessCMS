@@ -8,7 +8,7 @@ public sealed class UserRepository(DatabaseContext database) : BaseRepository(da
 
     public async Task<ErrorOr<User>> FindUserByEmail(string email) =>
         await _database.Users.SingleOrDefaultAsync(user => user.Email == email) ??
-        Domain.Users.Errors.User.NotFound.ToErrorOr<User>();
+        User.Errors.NotFound.ToErrorOr<User>();
 
     public async Task<int> GetNumberOfUserSessionsForUser(Guid userId) =>
         await _database.UserSessions.CountAsync(refreshTokenSession => refreshTokenSession.UserId == userId);
@@ -18,7 +18,7 @@ public sealed class UserRepository(DatabaseContext database) : BaseRepository(da
             refreshTokenSession.UserId == userId &&
             refreshTokenSession.Token == refreshToken &&
             refreshTokenSession.ExpirationDate >= DateTime.UtcNow) ??
-        Domain.Authorization.Errors.UserSession.NotFound.ToErrorOr<UserSession>();
+        UserSession.Errors.NotFound.ToErrorOr<UserSession>();
 
     public async Task DeleteAllUserSessionsForUser(Guid userId)
     {

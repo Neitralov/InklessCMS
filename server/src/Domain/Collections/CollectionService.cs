@@ -5,7 +5,7 @@ public sealed class CollectionService(ICollectionRepository collectionRepository
     public async Task<ErrorOr<Created>> AddCollection(Collection newCollection)
     {
         if (await collectionRepository.IsCollectionExists(newCollection.CollectionId))
-            return Errors.Collection.NonUniqueId;
+            return Collection.Errors.NonUniqueId;
 
         await collectionRepository.AddCollection(newCollection);
         await collectionRepository.SaveChanges();
@@ -26,7 +26,7 @@ public sealed class CollectionService(ICollectionRepository collectionRepository
             return article.Errors;
 
         if (collection.Value.Articles.Contains(article.Value))
-            return Errors.Collection.ArticleAlreadyAdded;
+            return Collection.Errors.ArticleAlreadyAdded;
 
         var result = collection.Value.AddArticle(article.Value);
 

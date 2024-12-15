@@ -2,13 +2,13 @@ namespace Domain.Authorization;
 
 public interface IAuthService
 {
-    string CreateAccessToken(User user);
+    AccessToken CreateAccessToken(User user);
     ErrorOr<string> GetEmailFromJwt(string expiredAccessToken);
 }
 
 public sealed class AuthService(IOptions<JwtOptions> options) : IAuthService
 {
-    public string CreateAccessToken(User user)
+    public AccessToken CreateAccessToken(User user)
     {
         var claims = new List<Claim>
         {
@@ -25,8 +25,8 @@ public sealed class AuthService(IOptions<JwtOptions> options) : IAuthService
             claims: claims,
             expires: DateTime.UtcNow.AddMinutes(options.Value.AccessTokenLifeTimeInMinutes),
             signingCredentials: creds);
-
-        return new JwtSecurityTokenHandler().WriteToken(token);
+        
+        return new AccessToken(new JwtSecurityTokenHandler().WriteToken(token));
     }
 
     public ErrorOr<string> GetEmailFromJwt(string accessToken)
@@ -52,7 +52,7 @@ public sealed class AuthService(IOptions<JwtOptions> options) : IAuthService
         }
         catch
         {
-            return Errors.AccessToken.InvalidToken;
+            return AccessToken.Errors.InvalidToken;
         }
     }
 }

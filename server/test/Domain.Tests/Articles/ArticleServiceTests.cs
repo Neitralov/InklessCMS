@@ -2,17 +2,17 @@ namespace Domain.Tests.Articles;
 
 public sealed class ArticleServiceTests
 {
-    private Mock<IArticleRepository> _articleRepositoryMock = new();
+    private readonly Mock<IArticleRepository> _articleRepositoryMock = new();
 
     private const string ArticleId = "article-id";
-    private Article _validArticle = Article.Create(
+    private readonly Article _validArticle = Article.Create(
         articleId: ArticleId,
         title: "Title",
         description: "Description",
         text: "Text",
         isPublished: true).Value;
 
-    private Article _pinnedValidArticle = Article.Create(
+    private readonly Article _pinnedValidArticle = Article.Create(
         articleId: ArticleId,
         title: "Title",
         description: "Description",
@@ -58,7 +58,7 @@ public sealed class ArticleServiceTests
         // Arrange
         _articleRepositoryMock
             .Setup(repository => repository.FindArticleById(It.IsAny<string>()).Result)
-            .Returns(Domain.Articles.Errors.Article.NotFound);
+            .Returns(Article.Errors.NotFound);
 
         var sut = new ArticleService(_articleRepositoryMock.Object);
 
@@ -66,7 +66,7 @@ public sealed class ArticleServiceTests
         var result = await sut.GetArticle(ArticleId);
 
         // Assert
-        result.FirstError.Should().Be(Domain.Articles.Errors.Article.NotFound);
+        result.FirstError.Should().Be(Article.Errors.NotFound);
     }
 
     [Fact]
@@ -129,7 +129,7 @@ public sealed class ArticleServiceTests
         // Arrange
         _articleRepositoryMock
             .Setup(repository => repository.FindArticleById(It.IsAny<string>()).Result)
-            .Returns(Domain.Articles.Errors.Article.NotFound);
+            .Returns(Article.Errors.NotFound);
 
         var sut = new ArticleService(_articleRepositoryMock.Object);
 
@@ -137,7 +137,7 @@ public sealed class ArticleServiceTests
         var result = await sut.UpdateArticle(_validArticle);
 
         // Assert
-        result.FirstError.Should().Be(Domain.Articles.Errors.Article.NotFound);
+        result.FirstError.Should().Be(Article.Errors.NotFound);
         _articleRepositoryMock.Verify(repository => repository.SaveChanges(), Times.Never);
     }
 
@@ -185,7 +185,7 @@ public sealed class ArticleServiceTests
         // Arrange
         _articleRepositoryMock
             .Setup(repository => repository.FindArticleById(It.IsAny<string>()).Result)
-            .Returns(Domain.Articles.Errors.Article.NotFound);
+            .Returns(Article.Errors.NotFound);
 
         var sut = new ArticleService(_articleRepositoryMock.Object);
 
@@ -193,7 +193,7 @@ public sealed class ArticleServiceTests
         var result = await sut.ChangePinState(ArticleId);
 
         // Assert
-        result.FirstError.Should().Be(Domain.Articles.Errors.Article.NotFound);
+        result.FirstError.Should().Be(Article.Errors.NotFound);
         _articleRepositoryMock.Verify(repository => repository.SaveChanges(), Times.Never);
     }
 
@@ -222,7 +222,7 @@ public sealed class ArticleServiceTests
         // Arrange
         _articleRepositoryMock
             .Setup(repository => repository.FindArticleById(It.IsAny<string>()).Result)
-            .Returns(Domain.Articles.Errors.Article.NotFound);
+            .Returns(Article.Errors.NotFound);
 
         var sut = new ArticleService(_articleRepositoryMock.Object);
 
@@ -230,7 +230,7 @@ public sealed class ArticleServiceTests
         var result = await sut.IncreaseViewsCounter(ArticleId);
 
         // Assert
-        result.FirstError.Should().Be(Domain.Articles.Errors.Article.NotFound);
+        result.FirstError.Should().Be(Article.Errors.NotFound);
         _articleRepositoryMock.Verify(repository => repository.SaveChanges(), Times.Never);
     }
 
@@ -258,7 +258,7 @@ public sealed class ArticleServiceTests
         // Arrange
         _articleRepositoryMock
             .Setup(repository => repository.DeleteArticle(It.IsAny<string>()).Result)
-            .Returns(Domain.Articles.Errors.Article.NotFound);
+            .Returns(Article.Errors.NotFound);
 
         var sut = new ArticleService(_articleRepositoryMock.Object);
 
@@ -266,7 +266,7 @@ public sealed class ArticleServiceTests
         var result = await sut.DeleteArticle(ArticleId);
 
         // Assert
-        result.FirstError.Should().Be(Domain.Articles.Errors.Article.NotFound);
+        result.FirstError.Should().Be(Article.Errors.NotFound);
         _articleRepositoryMock.Verify(repository => repository.SaveChanges(), Times.Never);
     }
 }

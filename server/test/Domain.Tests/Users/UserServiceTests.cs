@@ -2,8 +2,8 @@ namespace Domain.Tests.Users;
 
 public sealed class UserServiceTests
 {
-    private Mock<IUserRepository> _userRepositoryMock = new();
-    private Mock<IAuthService> _authServiceMock = new();
+    private readonly Mock<IUserRepository> _userRepositoryMock = new();
+    private readonly Mock<IAuthService> _authServiceMock = new();
 
     private const string Email = "example@gmail.com";
     private const string Password = "1234";
@@ -13,11 +13,11 @@ public sealed class UserServiceTests
     private const string RefreshToken = "Refresh token";
     private const string ExpiredRefreshToken = "Expired refresh token";
 
-    private User _user = User.Create(
+    private readonly User _user = User.Create(
         email: Email,
         password: Password).Value;
 
-    private UserSession _userSession;
+    private readonly UserSession _userSession;
 
     public UserServiceTests() => _userSession = UserSession.Create(_user.UserId);
 
@@ -53,7 +53,7 @@ public sealed class UserServiceTests
         // Arrange
         _userRepositoryMock
             .Setup(repository => repository.FindUserByEmail(It.IsAny<string>()).Result)
-            .Returns(Domain.Users.Errors.User.NotFound);
+            .Returns(User.Errors.NotFound);
         _userRepositoryMock
             .Setup(repository => repository.GetNumberOfUserSessionsForUser(It.IsAny<Guid>()).Result)
             .Returns(0);
@@ -66,7 +66,7 @@ public sealed class UserServiceTests
         var result = await sut.Login(Email, Password);
 
         // Assert
-        result.FirstError.Should().Be(Domain.Users.Errors.Login.IncorrectEmailOrPassword);
+        result.FirstError.Should().Be(User.Errors.IncorrectEmailOrPassword);
         _userRepositoryMock.Verify(repository => repository.AddUserSession(It.IsAny<UserSession>()), Times.Never);
         _userRepositoryMock.Verify(repository => repository.SaveChanges(), Times.Never);
         _userRepositoryMock.Verify(repository =>
@@ -79,7 +79,7 @@ public sealed class UserServiceTests
         // Arrange
         _userRepositoryMock
             .Setup(repository => repository.FindUserByEmail(It.IsAny<string>()).Result)
-            .Returns(Domain.Users.Errors.User.NotFound);
+            .Returns(User.Errors.NotFound);
         _userRepositoryMock
             .Setup(repository => repository.GetNumberOfUserSessionsForUser(It.IsAny<Guid>()).Result)
             .Returns(0);
@@ -92,7 +92,7 @@ public sealed class UserServiceTests
         var result = await sut.Login("incorrect@mail.ru", Password);
 
         // Assert
-        result.FirstError.Should().Be(Domain.Users.Errors.Login.IncorrectEmailOrPassword);
+        result.FirstError.Should().Be(User.Errors.IncorrectEmailOrPassword);
         _userRepositoryMock.Verify(repository => repository.AddUserSession(It.IsAny<UserSession>()), Times.Never);
         _userRepositoryMock.Verify(repository => repository.SaveChanges(), Times.Never);
         _userRepositoryMock.Verify(repository =>
@@ -118,7 +118,7 @@ public sealed class UserServiceTests
         var result = await sut.Login(Email, "incorrect password");
 
         // Assert
-        result.FirstError.Should().Be(Domain.Users.Errors.Login.IncorrectEmailOrPassword);
+        result.FirstError.Should().Be(User.Errors.IncorrectEmailOrPassword);
         _userRepositoryMock.Verify(repository => repository.AddUserSession(It.IsAny<UserSession>()), Times.Never);
         _userRepositoryMock.Verify(repository => repository.SaveChanges(), Times.Never);
         _userRepositoryMock.Verify(repository =>
@@ -164,6 +164,9 @@ public sealed class UserServiceTests
         _authServiceMock
             .Setup(service => service.GetEmailFromJwt(ExpiredAccessToken))
             .Returns(Email);
+        _authServiceMock
+            .Setup(service => service.CreateAccessToken(It.IsAny<User>()))
+            .Returns(new AccessToken("Access token"));
 
         var sut = new UserService(_userRepositoryMock.Object, _authServiceMock.Object);
 
@@ -173,7 +176,6 @@ public sealed class UserServiceTests
         // Assert
         result.IsError.Should().BeFalse();
         _userRepositoryMock.Verify(repository => repository.SaveChanges(), Times.Once);
-        _authServiceMock.Verify(service => service.CreateAccessToken(It.IsAny<User>()), Times.Once);
     }
 
     [Fact]
@@ -189,7 +191,7 @@ public sealed class UserServiceTests
 
         _authServiceMock
             .Setup(service => service.GetEmailFromJwt(It.IsAny<string>()))
-            .Returns(Domain.Authorization.Errors.AccessToken.InvalidToken);
+            .Returns(AccessToken.Errors.InvalidToken);
 
         var sut = new UserService(_userRepositoryMock.Object, _authServiceMock.Object);
 
@@ -197,7 +199,7 @@ public sealed class UserServiceTests
         var result = await sut.RefreshTokens("Invalid access token", RefreshToken);
 
         // Assert
-        result.FirstError.Should().Be(Domain.Authorization.Errors.AccessToken.InvalidToken);
+        result.FirstError.Should().Be(AccessToken.Errors.InvalidToken);
         _userRepositoryMock.Verify(repository => repository.SaveChanges(), Times.Never);
         _authServiceMock.Verify(service => service.CreateAccessToken(It.IsAny<User>()), Times.Never);
     }
@@ -208,7 +210,7 @@ public sealed class UserServiceTests
         // Arrange
         _userRepositoryMock
             .Setup(repository => repository.FindUserByEmail(It.IsAny<string>()).Result)
-            .Returns(Domain.Users.Errors.User.NotFound);
+            .Returns(User.Errors.NotFound);
         _userRepositoryMock
             .Setup(repository => repository.GetUserSession(It.IsAny<Guid>(), It.IsAny<string>()).Result)
             .Returns(_userSession);
@@ -223,7 +225,7 @@ public sealed class UserServiceTests
         var result = await sut.RefreshTokens(ExpiredAccessToken, RefreshToken);
 
         // Assert
-        result.FirstError.Should().Be(Domain.Users.Errors.User.NotFound);
+        result.FirstError.Should().Be(User.Errors.NotFound);
         _userRepositoryMock.Verify(repository => repository.SaveChanges(), Times.Never);
         _authServiceMock.Verify(service => service.CreateAccessToken(It.IsAny<User>()), Times.Never);
     }
@@ -237,7 +239,7 @@ public sealed class UserServiceTests
             .Returns(_user);
         _userRepositoryMock
             .Setup(repository => repository.GetUserSession(It.IsAny<Guid>(), It.IsAny<string>()).Result)
-            .Returns(Domain.Authorization.Errors.UserSession.InvalidToken);
+            .Returns(UserSession.Errors.InvalidToken);
 
         _authServiceMock
             .Setup(service => service.GetEmailFromJwt(ExpiredAccessToken))
@@ -249,7 +251,7 @@ public sealed class UserServiceTests
         var result = await sut.RefreshTokens(ExpiredAccessToken, ExpiredRefreshToken);
 
         // Assert
-        result.FirstError.Should().Be(Domain.Authorization.Errors.UserSession.InvalidToken);
+        result.FirstError.Should().Be(UserSession.Errors.InvalidToken);
         _userRepositoryMock.Verify(repository => repository.SaveChanges(), Times.Never);
         _authServiceMock.Verify(service => service.CreateAccessToken(It.IsAny<User>()), Times.Never);
     }

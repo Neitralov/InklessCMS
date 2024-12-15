@@ -97,7 +97,7 @@ public sealed class ArticleTests
         var result = sut.FirstError;
 
         // Assert
-        result.Should().Be(Domain.Articles.Errors.Article.InvalidId);
+        result.Should().Be(Article.Errors.InvalidId);
     }
 
     [Theory]
@@ -120,7 +120,7 @@ public sealed class ArticleTests
         var result = sut.FirstError;
 
         // Assert
-        result.Should().Be(Domain.Articles.Errors.Article.InvalidIdLength);
+        result.Should().Be(Article.Errors.InvalidIdLength);
     }
 
     [Theory]
@@ -143,7 +143,7 @@ public sealed class ArticleTests
         var result = sut.FirstError;
 
         // Assert
-        result.Should().Be(Domain.Articles.Errors.Article.InvalidTitleLength);
+        result.Should().Be(Article.Errors.InvalidTitleLength);
     }
 
     [Theory]
@@ -162,6 +162,6 @@ public sealed class ArticleTests
         var result = sut.FirstError;
 
         // Assert
-        result.Should().Be(Domain.Articles.Errors.Article.InvalidDescriptionLength);
+        result.Should().Be(Article.Errors.InvalidDescriptionLength);
     }
 }

@@ -2,11 +2,11 @@ namespace Domain.Tests.Collections;
 
 public sealed class CollectionServiceTests
 {
-    private Mock<IArticleRepository> _articleRepositoryMock = new();
-    private Mock<ICollectionRepository> _collectionRepositoryMock = new();
+    private readonly Mock<IArticleRepository> _articleRepositoryMock = new();
+    private readonly Mock<ICollectionRepository> _collectionRepositoryMock = new();
 
     private const string ArticleId = "article-id";
-    private Article _article = Article.Create(
+    private readonly Article _article = Article.Create(
         articleId: ArticleId,
         title: "Title",
         description: "Description",
@@ -14,7 +14,7 @@ public sealed class CollectionServiceTests
         isPublished: true).Value;
 
     private const string CollectionId = "collection-id";
-    private Collection _collection = Collection.Create(
+    private readonly Collection _collection = Collection.Create(
         collectionId: CollectionId,
         title: "Title").Value;
 
@@ -48,7 +48,7 @@ public sealed class CollectionServiceTests
         var result = await sut.AddCollection(_collection);
 
         // Assert
-        result.FirstError.Should().Be(Domain.Collections.Errors.Collection.NonUniqueId);
+        result.FirstError.Should().Be(Collection.Errors.NonUniqueId);
         _collectionRepositoryMock.Verify(repository => repository.IsCollectionExists(It.IsAny<string>()), Times.Once);
         _collectionRepositoryMock.Verify(repository => repository.AddCollection(It.IsAny<Collection>()), Times.Never);
         _collectionRepositoryMock.Verify(repository => repository.SaveChanges(), Times.Never);
@@ -75,10 +75,10 @@ public sealed class CollectionServiceTests
     public async Task Collection_title_can_be_updated()
     {
         // Arrange
-        const string UpdatedTitle = "Updated title";
+        const string updatedTitle = "Updated title";
         var updatedColection = Collection.Create(
             collectionId: CollectionId,
-            title: UpdatedTitle
+            title: updatedTitle
         ).Value;
 
         _collectionRepositoryMock
@@ -92,7 +92,7 @@ public sealed class CollectionServiceTests
 
         // Assert
         result.Value.Should().Be(Result.Updated);
-        _collection.Title.Should().Be(UpdatedTitle);
+        _collection.Title.Should().Be(updatedTitle);
         _collectionRepositoryMock.Verify(repository => repository.SaveChanges(), Times.Once);
     }
 
@@ -100,15 +100,15 @@ public sealed class CollectionServiceTests
     public async Task Collection_title_cant_be_updated_if_it_does_not_exists()
     {
         // Arrange
-        const string UpdatedTitle = "Updated title";
+        const string updatedTitle = "Updated title";
         var updatedColection = Collection.Create(
             collectionId: CollectionId,
-            title: UpdatedTitle
+            title: updatedTitle
         ).Value;
 
         _collectionRepositoryMock
             .Setup(repository => repository.FindCollectionById(It.IsAny<string>()).Result)
-            .Returns(Domain.Collections.Errors.Collection.NotFound);
+            .Returns(Collection.Errors.NotFound);
 
         var sut = new CollectionService(_collectionRepositoryMock.Object, _articleRepositoryMock.Object);
 
@@ -116,7 +116,7 @@ public sealed class CollectionServiceTests
         var result = await sut.UpdateCollection(updatedColection);
 
         // Assert
-        result.FirstError.Should().Be(Domain.Collections.Errors.Collection.NotFound);
+        result.FirstError.Should().Be(Collection.Errors.NotFound);
         _collectionRepositoryMock.Verify(repository => repository.SaveChanges(), Times.Never);
     }
 
@@ -163,7 +163,7 @@ public sealed class CollectionServiceTests
         var result = await sut.AddArticleToCollection(CollectionId, ArticleId);
 
         // Assert
-        result.FirstError.Should().Be(Domain.Collections.Errors.Collection.ArticleAlreadyAdded);
+        result.FirstError.Should().Be(Collection.Errors.ArticleAlreadyAdded);
         _collectionRepositoryMock.Verify(repository => repository.SaveChanges(), Times.Never);
     }
 
@@ -177,7 +177,7 @@ public sealed class CollectionServiceTests
 
         _collectionRepositoryMock
             .Setup(repository => repository.FindCollectionById(It.IsAny<string>()).Result)
-            .Returns(Domain.Collections.Errors.Collection.NotFound);
+            .Returns(Collection.Errors.NotFound);
 
         var sut = new CollectionService(_collectionRepositoryMock.Object, _articleRepositoryMock.Object);
 
@@ -185,7 +185,7 @@ public sealed class CollectionServiceTests
         var result = await sut.AddArticleToCollection(CollectionId, ArticleId);
 
         // Assert
-        result.FirstError.Should().Be(Domain.Collections.Errors.Collection.NotFound);
+        result.FirstError.Should().Be(Collection.Errors.NotFound);
         _collectionRepositoryMock.Verify(repository => repository.SaveChanges(), Times.Never);
     }
 
@@ -195,7 +195,7 @@ public sealed class CollectionServiceTests
         // Arrange
         _articleRepositoryMock
             .Setup(repository => repository.FindArticleById(It.IsAny<string>()).Result)
-            .Returns(Domain.Articles.Errors.Article.NotFound);
+            .Returns(Article.Errors.NotFound);
 
         _collectionRepositoryMock
             .Setup(repository => repository.FindCollectionById(It.IsAny<string>()).Result)
@@ -207,7 +207,7 @@ public sealed class CollectionServiceTests
         var result = await sut.AddArticleToCollection(CollectionId, ArticleId);
 
         // Assert
-        result.FirstError.Should().Be(Domain.Articles.Errors.Article.NotFound);
+        result.FirstError.Should().Be(Article.Errors.NotFound);
         _collectionRepositoryMock.Verify(repository => repository.SaveChanges(), Times.Never);
     }
 
@@ -234,7 +234,7 @@ public sealed class CollectionServiceTests
         // Arrange
         _collectionRepositoryMock
             .Setup(repository => repository.FindCollectionById(It.IsAny<string>()).Result)
-            .Returns(Domain.Collections.Errors.Collection.NotFound);
+            .Returns(Collection.Errors.NotFound);
 
         var sut = new CollectionService(_collectionRepositoryMock.Object, _articleRepositoryMock.Object);
 
@@ -242,7 +242,7 @@ public sealed class CollectionServiceTests
         var result = await sut.GetCollection(CollectionId);
 
         // Assert
-        result.FirstError.Should().Be(Domain.Collections.Errors.Collection.NotFound);
+        result.FirstError.Should().Be(Collection.Errors.NotFound);
     }
 
     [Fact]
@@ -269,7 +269,7 @@ public sealed class CollectionServiceTests
         // Arrange
         _collectionRepositoryMock
             .Setup(repository => repository.DeleteCollection(It.IsAny<string>()).Result)
-            .Returns(Domain.Collections.Errors.Collection.NotFound);
+            .Returns(Collection.Errors.NotFound);
 
         var sut = new CollectionService(_collectionRepositoryMock.Object, _articleRepositoryMock.Object);
 
@@ -277,7 +277,7 @@ public sealed class CollectionServiceTests
         var result = await sut.DeleteCollection(CollectionId);
 
         // Assert
-        result.FirstError.Should().Be(Domain.Collections.Errors.Collection.NotFound);
+        result.FirstError.Should().Be(Collection.Errors.NotFound);
         _collectionRepositoryMock.Verify(repository => repository.SaveChanges(), Times.Never);
     }
 
@@ -315,7 +315,7 @@ public sealed class CollectionServiceTests
         var result = await sut.DeleteArticleFromCollection(CollectionId, ArticleId);
 
         // Assert
-        result.FirstError.Should().Be(Domain.Collections.Errors.Collection.ArticleNotFound);
+        result.FirstError.Should().Be(Collection.Errors.ArticleNotFound);
         _collectionRepositoryMock.Verify(repository => repository.SaveChanges(), Times.Never);
     }
 
@@ -325,7 +325,7 @@ public sealed class CollectionServiceTests
         // Arrange
         _collectionRepositoryMock
             .Setup(repository => repository.FindCollectionById(It.IsAny<string>()).Result)
-            .Returns(Domain.Collections.Errors.Collection.NotFound);
+            .Returns(Collection.Errors.NotFound);
 
         var sut = new CollectionService(_collectionRepositoryMock.Object, _articleRepositoryMock.Object);
 
@@ -333,7 +333,7 @@ public sealed class CollectionServiceTests
         var result = await sut.DeleteArticleFromCollection(CollectionId, ArticleId);
 
         // Assert
-        result.FirstError.Should().Be(Domain.Collections.Errors.Collection.NotFound);
+        result.FirstError.Should().Be(Collection.Errors.NotFound);
         _collectionRepositoryMock.Verify(repository => repository.SaveChanges(), Times.Never);
     }
 }

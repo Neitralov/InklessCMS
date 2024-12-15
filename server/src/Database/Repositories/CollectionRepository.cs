@@ -10,7 +10,7 @@ public sealed class CollectionRepository(DatabaseContext database) : BaseReposit
         await _database.Collections
             .Include(collection => collection.Articles)
             .SingleOrDefaultAsync(collection => collection.CollectionId == collectionId) ??
-        Domain.Collections.Errors.Collection.NotFound.ToErrorOr<Collection>();
+        Collection.Errors.NotFound.ToErrorOr<Collection>();
 
     public async Task<List<Collection>> GetCollections() => await _database.Collections.AsNoTracking().ToListAsync();
 

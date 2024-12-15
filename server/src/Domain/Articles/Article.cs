@@ -1,6 +1,6 @@
 namespace Domain.Articles;
 
-public sealed class Article
+public sealed partial class Article
 {
     public string ArticleId { get; private set; } = string.Empty;
     public string Title { get; private set; } = string.Empty;
@@ -33,16 +33,16 @@ public sealed class Article
         List<Error> errors = [];
 
         if (articleId.Trim().Length is < MinIdLength or > MaxIdLength)
-            errors.Add(Errors.Article.InvalidIdLength);
+            errors.Add(Errors.InvalidIdLength);
 
         if (!Regex.IsMatch(articleId.Trim(), ArticleIdPattern, RegexOptions.Compiled))
-            errors.Add(Errors.Article.InvalidId);
+            errors.Add(Errors.InvalidId);
 
         if (title.Trim().Length is < MinTitleLength or > MaxTitleLength)
-            errors.Add(Errors.Article.InvalidTitleLength);
+            errors.Add(Errors.InvalidTitleLength);
 
         if (description.Trim().Length > MaxDescriptionLength)
-            errors.Add(Errors.Article.InvalidDescriptionLength);
+            errors.Add(Errors.InvalidDescriptionLength);
 
         if (errors.Count > 0)
             return errors;

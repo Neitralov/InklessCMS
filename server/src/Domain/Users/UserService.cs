@@ -6,11 +6,11 @@ public sealed class UserService(IUserRepository userRepository, IAuthService aut
     {
         var user = await userRepository.FindUserByEmail(email);
 
-        if (user.Errors.Contains(Errors.User.NotFound))
-            return Errors.Login.IncorrectEmailOrPassword;
+        if (user.Errors.Contains(User.Errors.NotFound))
+            return User.Errors.IncorrectEmailOrPassword;
 
         if (user.Value.VerifyPasswordHash(password) is false)
-            return Errors.Login.IncorrectEmailOrPassword;
+            return User.Errors.IncorrectEmailOrPassword;
 
         var userSession = UserSession.Create(user.Value.UserId);
 
@@ -21,9 +21,8 @@ public sealed class UserService(IUserRepository userRepository, IAuthService aut
         await userRepository.SaveChanges();
 
         var accessToken = authService.CreateAccessToken(user.Value);
-        var refreshToken = userSession.Token;
 
-        return (accessToken, refreshToken);
+        return (accessToken.Token, userSession.Token);
     }
 
     public async Task<ErrorOr<TokensPair>> RefreshTokens(string expiredAccessToken, string refreshToken)
@@ -47,9 +46,8 @@ public sealed class UserService(IUserRepository userRepository, IAuthService aut
         await userRepository.SaveChanges();
 
         var newAccessToken = authService.CreateAccessToken(user.Value);
-        var newRefreshToken = userSession.Value.Token;
 
-        return (newAccessToken, newRefreshToken);
+        return (newAccessToken.Token, userSession.Value.Token);
     }
 
     private async Task<bool> AreThereTooManySessionsPerUser(Guid userId) =>
