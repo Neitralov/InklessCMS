@@ -9,8 +9,8 @@ public static class PagedListExtensions
     {
         var count = await source.CountAsync(cancellationToken);
         var items = await source
-            .Skip((pageOptions.PageNumber - 1) * pageOptions.PageSize)
-            .Take(pageOptions.PageSize)
+            .Skip((pageOptions.Page - 1) * pageOptions.Size)
+            .Take(pageOptions.Size)
             .ToListAsync(cancellationToken);
         
         return new PagedList<T>(items, count);

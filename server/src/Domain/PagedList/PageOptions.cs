@@ -1,9 +1,5 @@
+using Microsoft.AspNetCore.Mvc;
+
 namespace Domain.PagedList;
 
-public struct PageOptions
-{
-    public int PageNumber { get; set; } = 1;
-    public int PageSize { get; set; } = 10;
-
-    public PageOptions() { }
-}
+public record PageOptions(int Page = 1, int Size = 10);
