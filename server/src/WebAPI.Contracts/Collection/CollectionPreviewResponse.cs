@@ -1,6 +1,6 @@
 namespace WebAPI.Contracts.Collection;
 
-public record CollectionPreviewResponse(
+public sealed record CollectionPreviewResponse(
     string CollectionId,
     string Title
 )

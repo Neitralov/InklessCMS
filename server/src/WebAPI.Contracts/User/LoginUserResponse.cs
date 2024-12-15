@@ -1,6 +1,6 @@
 namespace WebAPI.Contracts.User;
 
-public record LoginUserResponse(
+public sealed record LoginUserResponse(
     string AccessToken,
     string RefreshToken)
 {

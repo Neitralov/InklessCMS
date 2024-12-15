@@ -16,15 +16,12 @@ global using Swashbuckle.AspNetCore.Filters;
 
 global using Database;
 global using Database.Repositories;
-global using Domain.Services;
-global using Domain.Entities;
-global using Domain.Interfaces;
-global using Domain.DomainErrors;
-global using Domain.Utils;
-global using Domain.Options;
+global using Domain.Articles;
+global using Domain.Authorization;
+global using Domain.Collections;
+global using Domain.Users;
+global using Domain.PagedList;
 global using WebAPI;
 global using WebAPI.Contracts.Article;
 global using WebAPI.Contracts.Collection;
 global using WebAPI.Contracts.User;
-
-global using TokensPair = (string AccessToken, string RefreshToken);

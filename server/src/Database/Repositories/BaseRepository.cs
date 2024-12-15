@@ -1,6 +1,6 @@
 namespace Database.Repositories;
 
-public class BaseRepository
+public abstract class BaseRepository(DatabaseContext database)
 {
-    
+    public virtual async Task SaveChanges() => await database.SaveChangesAsync();
 }

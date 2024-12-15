@@ -31,7 +31,8 @@ builder.Services.AddTransient<CollectionService>();
 builder.Services.AddCors(
     options => options.AddPolicy("AllowClient", policy =>
         policy
-            .WithOrigins(builder.Configuration["ClientUrl"] ?? throw new NullReferenceException("config variable \"ClientUrl\" is not defined"))
+            .WithOrigins(builder.Configuration["ClientUrl"] ??
+                         throw new NullReferenceException("config variable \"ClientUrl\" is not defined"))
             .AllowAnyHeader()
             .AllowAnyMethod()
             .WithExposedHeaders("X-Total-Count")));
@@ -39,7 +40,8 @@ builder.Services.AddCors(
 builder.Services.AddCors(
     options => options.AddPolicy("AllowInkless", policy =>
         policy
-            .WithOrigins(builder.Configuration["DashboardUrl"] ?? throw new NullReferenceException("config variable \"DashboardUrl\" is not defined"))
+            .WithOrigins(builder.Configuration["DashboardUrl"] ??
+                         throw new NullReferenceException("config variable \"DashboardUrl\" is not defined"))
             .AllowAnyHeader()
             .AllowAnyMethod()
             .WithExposedHeaders("X-Total-Count")));
@@ -52,7 +54,8 @@ builder.Services
         {
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8
-                .GetBytes(builder.Configuration["Jwt:SecretKey"] ?? throw new NullReferenceException("config variable \"SecretKey\" is not defined"))),
+                .GetBytes(builder.Configuration["Jwt:SecretKey"] ??
+                          throw new NullReferenceException("config variable \"SecretKey\" is not defined"))),
             ValidateIssuer = false,
             ValidateAudience = false,
             ValidateLifetime = true,

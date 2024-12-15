@@ -11,7 +11,7 @@ public static class MigrationHelper
         var services = scope.ServiceProvider;
 
         await using var context = services.GetRequiredService<DatabaseContext>();
-        
+
         try
         {
             for (var tries = 0; tries < 5; tries++)
@@ -24,13 +24,13 @@ public static class MigrationHelper
                     {
                         var admin = User.Create(
                             email: options.Email,
-                            password: options.Password, 
+                            password: options.Password,
                             canManageArticles: true);
 
                         await context.Users.AddAsync(admin.Value);
                         await context.SaveChangesAsync();
                     }
-                    
+
                     break;
                 }
 
