@@ -1,6 +1,5 @@
 namespace WebAPI.Controllers;
 
-/// <inheritdoc />
 [Route("/api/articles")]
 public sealed class ArticlesController(ArticleService articleService, IAuthorizationService authService) : ApiController
 {

@@ -1,9 +1,7 @@
 namespace WebAPI;
 
-/// <summary>Класс, содержащий метод расширения для работы с миграциями</summary>
 public static class MigrationHelper
 {
-    /// <summary>Применить миграции после запуска приложения</summary>
     public static async Task MigrateDatabaseAsync(this IHost webHost, AdminAccountOptions options)
     {
         await using var scope = webHost.Services.CreateAsyncScope();

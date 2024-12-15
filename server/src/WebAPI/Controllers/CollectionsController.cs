@@ -1,6 +1,5 @@
 namespace WebAPI.Controllers;
 
-/// <inheritdoc />
 [Route("/api/collections")]
 public sealed class CollectionsController(CollectionService collectionService) : ApiController
 {

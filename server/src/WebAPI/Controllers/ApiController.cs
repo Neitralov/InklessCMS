@@ -1,10 +1,8 @@
 namespace WebAPI.Controllers;
 
-/// <inheritdoc/>
 [ApiController]
 public class ApiController : ControllerBase
 {
-    /// <summary></summary>>
     protected IActionResult Problem(List<Error> errors)
     {
         if (errors.All(e => e.Type == ErrorType.Validation))
@@ -37,6 +35,5 @@ public class ApiController : ControllerBase
             title: firstError.Description);
     }
     
-    /// <summary></summary>>
     protected Guid GetUserGuid() => Guid.Parse(HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 }

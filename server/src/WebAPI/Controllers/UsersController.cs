@@ -1,6 +1,5 @@
 namespace WebAPI.Controllers;
 
-/// <inheritdoc />
 [Route("/api/users"), Tags("Users")]
 public sealed class UsersController(UserService userService) : ApiController
 {
