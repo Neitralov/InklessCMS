@@ -4,7 +4,7 @@ public sealed partial class UserSession
 {
     public long UserSessionId { get; private set; }
     public Guid UserId { get; private set; }
-    public string Token { get; private set; } = string.Empty;
+    public RefreshToken RefreshToken { get; private set; } = default!;
     public DateTime ExpirationDate { get; private set; }
 
     public const int ExpiresInDays = 30;
@@ -14,19 +14,19 @@ public sealed partial class UserSession
 
     public static UserSession Create(Guid userId)
     {
-        var refreshToken = Guid.NewGuid().ToString();
+        var refreshToken = new RefreshToken(Guid.NewGuid().ToString());
 
         return new UserSession
         {
             UserId = userId,
-            Token = refreshToken,
+            RefreshToken = refreshToken,
             ExpirationDate = DateTime.UtcNow.AddDays(ExpiresInDays)
         };
     }
 
     public Task Update()
     {
-        Token = Guid.NewGuid().ToString();
+        RefreshToken = new RefreshToken(Guid.NewGuid().ToString());
 
         return Task.CompletedTask;
     }

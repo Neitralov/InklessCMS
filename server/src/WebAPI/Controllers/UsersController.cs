@@ -19,7 +19,7 @@ public sealed class UsersController(UserService userService) : ApiController
         var accessToken = loginUserResult.Value.AccessToken;
         var refreshToken = loginUserResult.Value.RefreshToken;
 
-        return Ok(new LoginUserResponse(accessToken, refreshToken));
+        return Ok(new LoginUserResponse(accessToken.Token, refreshToken.Token));
     }
 
     /// <summary>Обновить access и refresh токены</summary>
@@ -32,7 +32,9 @@ public sealed class UsersController(UserService userService) : ApiController
     [ProducesResponseType(typeof(LoginUserResponse), 200)]
     public async Task<IActionResult> RefreshTokens([Required] RefreshUserTokensRequest request)
     {
-        var refreshTokensResult = await userService.RefreshTokens(request.ExpiredAccessToken, request.RefreshToken);
+        var refreshTokensResult = await userService.RefreshTokens(
+            expiredAccessToken: new AccessToken(request.ExpiredAccessToken), 
+            refreshToken: new RefreshToken(request.RefreshToken));
 
         if (refreshTokensResult.IsError)
             return Problem(refreshTokensResult.Errors);
@@ -40,6 +42,6 @@ public sealed class UsersController(UserService userService) : ApiController
         var newAccessToken = refreshTokensResult.Value.AccessToken;
         var newRefreshToken = refreshTokensResult.Value.RefreshToken;
         
-        return Ok(new LoginUserResponse(newAccessToken, newRefreshToken));
+        return Ok(new LoginUserResponse(newAccessToken.Token, newRefreshToken.Token));
     }
 }

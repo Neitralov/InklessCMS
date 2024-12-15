@@ -22,10 +22,10 @@ public sealed class UserService(IUserRepository userRepository, IAuthService aut
 
         var accessToken = authService.CreateAccessToken(user.Value);
 
-        return (accessToken.Token, userSession.Token);
+        return (accessToken, userSession.RefreshToken);
     }
 
-    public async Task<ErrorOr<TokensPair>> RefreshTokens(string expiredAccessToken, string refreshToken)
+    public async Task<ErrorOr<TokensPair>> RefreshTokens(AccessToken expiredAccessToken, RefreshToken refreshToken)
     {
         var userEmail = authService.GetEmailFromJwt(expiredAccessToken);
 
@@ -47,7 +47,7 @@ public sealed class UserService(IUserRepository userRepository, IAuthService aut
 
         var newAccessToken = authService.CreateAccessToken(user.Value);
 
-        return (newAccessToken.Token, userSession.Value.Token);
+        return (newAccessToken, userSession.Value.RefreshToken);
     }
 
     private async Task<bool> AreThereTooManySessionsPerUser(Guid userId) =>

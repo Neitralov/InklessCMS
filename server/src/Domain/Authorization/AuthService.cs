@@ -3,7 +3,7 @@ namespace Domain.Authorization;
 public interface IAuthService
 {
     AccessToken CreateAccessToken(User user);
-    ErrorOr<string> GetEmailFromJwt(string expiredAccessToken);
+    ErrorOr<string> GetEmailFromJwt(AccessToken expiredAccessToken);
 }
 
 public sealed class AuthService(IOptions<JwtOptions> options) : IAuthService
@@ -29,7 +29,7 @@ public sealed class AuthService(IOptions<JwtOptions> options) : IAuthService
         return new AccessToken(new JwtSecurityTokenHandler().WriteToken(token));
     }
 
-    public ErrorOr<string> GetEmailFromJwt(string accessToken)
+    public ErrorOr<string> GetEmailFromJwt(AccessToken expiredAccessToken)
     {
         var configToken = options.Value.SecretKey;
         var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(configToken));
@@ -47,7 +47,8 @@ public sealed class AuthService(IOptions<JwtOptions> options) : IAuthService
 
         try
         {
-            var claimsPrincipal = tokenHandler.ValidateToken(accessToken, tokenValidationParameters, out _);
+            var claimsPrincipal = 
+                tokenHandler.ValidateToken(expiredAccessToken.Token, tokenValidationParameters, out _);
             return claimsPrincipal.Identity?.Name!;
         }
         catch

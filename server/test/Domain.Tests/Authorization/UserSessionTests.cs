@@ -30,11 +30,11 @@ public sealed class UserSessionTests
         var sut = UserSession.Create(user.Value.UserId);
 
         // Act
-        var oldTokenResult = sut.Token;
+        var oldRefreshTokenResult = sut.RefreshToken;
         sut.Update();
-        var newTokenResult = sut.Token;
+        var newRefreshTokenResult = sut.RefreshToken;
 
         // Assert
-        oldTokenResult.Should().NotBeEquivalentTo(newTokenResult);
+        oldRefreshTokenResult.Should().NotBeEquivalentTo(newRefreshTokenResult);
     }
 }

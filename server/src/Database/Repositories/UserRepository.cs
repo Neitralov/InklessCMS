@@ -11,36 +11,36 @@ public sealed class UserRepository(DatabaseContext database) : BaseRepository(da
         User.Errors.NotFound.ToErrorOr<User>();
 
     public async Task<int> GetNumberOfUserSessionsForUser(Guid userId) =>
-        await _database.UserSessions.CountAsync(refreshTokenSession => refreshTokenSession.UserId == userId);
+        await _database.UserSessions.CountAsync(userSession => userSession.UserId == userId);
 
-    public async Task<ErrorOr<UserSession>> GetUserSession(Guid userId, string refreshToken) =>
-        await _database.UserSessions.SingleOrDefaultAsync(refreshTokenSession =>
-            refreshTokenSession.UserId == userId &&
-            refreshTokenSession.Token == refreshToken &&
-            refreshTokenSession.ExpirationDate >= DateTime.UtcNow) ??
-        UserSession.Errors.NotFound.ToErrorOr<UserSession>();
+    public async Task<ErrorOr<UserSession>> GetUserSession(Guid userId, RefreshToken refreshToken) =>
+        await _database.UserSessions.SingleOrDefaultAsync(userSession =>
+            userSession.UserId == userId &&
+            userSession.RefreshToken == refreshToken &&
+            userSession.ExpirationDate >= DateTime.UtcNow) ??
+        RefreshToken.Errors.NotFound.ToErrorOr<UserSession>();
 
     public async Task DeleteAllUserSessionsForUser(Guid userId)
     {
-        var usersRefreshTokenSessions = await _database.UserSessions
-            .Where(refreshTokenSession => refreshTokenSession.UserId == userId)
+        var usersSessions = await _database.UserSessions
+            .Where(userSession => userSession.UserId == userId)
             .ToListAsync();
 
-        _database.UserSessions.RemoveRange(usersRefreshTokenSessions);
+        _database.UserSessions.RemoveRange(usersSessions);
     }
 
     public override async Task SaveChanges()
     {
-        await DeleteAllInvalidRefreshTokenSessions();
+        await DeleteAllInvalidUserSessions();
         await _database.SaveChangesAsync();
     }
 
-    private async Task DeleteAllInvalidRefreshTokenSessions()
+    private async Task DeleteAllInvalidUserSessions()
     {
-        var invalidSessions = await _database.UserSessions
-            .Where(session => session.ExpirationDate < DateTime.UtcNow)
+        var invalidUserSessions = await _database.UserSessions
+            .Where(userSession => userSession.ExpirationDate < DateTime.UtcNow)
             .ToListAsync();
 
-        _database.RemoveRange(invalidSessions);
+        _database.RemoveRange(invalidUserSessions);
     }
 }
