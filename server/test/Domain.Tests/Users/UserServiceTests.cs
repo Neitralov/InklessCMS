@@ -9,6 +9,7 @@ public sealed class UserServiceTests
     private const string Password = "1234";
     private const string SecretKey = "My favorite really secret key. 512 bit at least. (64 characters).";
 
+    private readonly AccessToken _accessToken = new ("Access token");
     private readonly AccessToken _expiredAccessToken = new ("Expired access token");
     private readonly RefreshToken _refreshToken = new ("Refresh token");
     private readonly RefreshToken _expiredRefreshToken = new ("Expired refresh token");
@@ -166,7 +167,7 @@ public sealed class UserServiceTests
             .Returns(Email);
         _authServiceMock
             .Setup(service => service.CreateAccessToken(It.IsAny<User>()))
-            .Returns(new AccessToken("Access token"));
+            .Returns(_accessToken);
 
         var sut = new UserService(_userRepositoryMock.Object, _authServiceMock.Object);
 
