@@ -1,6 +1,6 @@
 namespace WebAPI.Contracts.User;
 
-public record RefreshUserTokensRequest(
+public sealed record RefreshUserTokensRequest(
     string ExpiredAccessToken,
     string RefreshToken)
 {

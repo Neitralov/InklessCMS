@@ -1,6 +1,6 @@
 namespace WebAPI.Contracts.Article;
 
-public record CreateArticleRequest(
+public sealed record CreateArticleRequest(
     string ArticleId,
     string Title,
     string Description,

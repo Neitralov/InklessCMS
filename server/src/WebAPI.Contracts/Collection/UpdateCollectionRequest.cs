@@ -1,6 +1,6 @@
 namespace WebAPI.Contracts.Collection;
 
-public record UpdateCollectionRequest(
+public sealed record UpdateCollectionRequest(
     string CollectionId,
     string Title
 )

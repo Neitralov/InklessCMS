@@ -1,6 +1,6 @@
 namespace WebAPI.Contracts.Article;
 
-public record ArticlePreviewResponse(
+public sealed record ArticlePreviewResponse(
     string ArticleId,
     string Title,
     string Description,

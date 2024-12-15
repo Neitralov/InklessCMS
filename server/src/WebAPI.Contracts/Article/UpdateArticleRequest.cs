@@ -1,6 +1,6 @@
 namespace WebAPI.Contracts.Article;
 
-public record UpdateArticleRequest(
+public sealed record UpdateArticleRequest(
     string ArticleId,
     string Title,
     string Description,

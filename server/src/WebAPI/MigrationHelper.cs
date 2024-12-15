@@ -1,9 +1,7 @@
 namespace WebAPI;
 
-/// <summary>Класс, содержащий метод расширения для работы с миграциями</summary>
 public static class MigrationHelper
 {
-    /// <summary>Применить миграции после запуска приложения</summary>
     public static async Task MigrateDatabaseAsync(this IHost webHost, AdminAccountOptions options)
     {
         await using var scope = webHost.Services.CreateAsyncScope();
@@ -11,7 +9,7 @@ public static class MigrationHelper
         var services = scope.ServiceProvider;
 
         await using var context = services.GetRequiredService<DatabaseContext>();
-        
+
         try
         {
             for (var tries = 0; tries < 5; tries++)
@@ -24,13 +22,13 @@ public static class MigrationHelper
                     {
                         var admin = User.Create(
                             email: options.Email,
-                            password: options.Password, 
+                            password: options.Password,
                             canManageArticles: true);
 
                         await context.Users.AddAsync(admin.Value);
                         await context.SaveChangesAsync();
                     }
-                    
+
                     break;
                 }
 

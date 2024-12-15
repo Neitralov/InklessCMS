@@ -2,7 +2,7 @@ using WebAPI.Contracts.Article;
 
 namespace WebAPI.Contracts.Collection;
 
-public record CollectionResponse(
+public sealed record CollectionResponse(
     string CollectionId,
     string Title,
     List<ArticlePreviewResponse> Articles

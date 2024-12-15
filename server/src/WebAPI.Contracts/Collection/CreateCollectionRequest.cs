@@ -1,6 +1,6 @@
 namespace WebAPI.Contracts.Collection;
 
-public record CreateCollectionRequest(
+public sealed record CreateCollectionRequest(
     string CollectionId,
     string Title
 )

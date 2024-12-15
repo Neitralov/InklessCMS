@@ -1,8 +1,7 @@
 namespace WebAPI.Controllers;
 
-/// <inheritdoc />
 [Route("/api/collections")]
-public class CollectionsController(CollectionService collectionService) : ApiController
+public sealed class CollectionsController(CollectionService collectionService) : ApiController
 {
     /// <summary>Создать коллекцию</summary>
     /// <response code="201">Коллекция создана</response>
@@ -14,13 +13,13 @@ public class CollectionsController(CollectionService collectionService) : ApiCon
     [ProducesResponseType(typeof(CollectionPreviewResponse), 201)]
     public async Task<IActionResult> CreateCollection([Required] CreateCollectionRequest request)
     {
-        ErrorOr<Collection> requestToCollectionResult = CreateCollectionFrom(request);
+        var requestToCollectionResult = CreateCollectionFrom(request);
 
         if (requestToCollectionResult.IsError)
             return Problem(requestToCollectionResult.Errors);
 
         var collection = requestToCollectionResult.Value;
-        ErrorOr<Created> createCollectionResult = await collectionService.StoreCollection(collection);
+        var createCollectionResult = await collectionService.AddCollection(collection);
 
         return createCollectionResult.Match(_ => CreatedAtGetCollection(collection), Problem);
     }
@@ -31,9 +30,12 @@ public class CollectionsController(CollectionService collectionService) : ApiCon
     /// <response code="404">Коллекция не найдена; Статья не найдена</response>
     [HttpPost("{collectionId}"), Authorize(Policy = "CanManageArticles")]
     [ProducesResponseType(204)]
-    public async Task<IActionResult> AddArticleToCollection([Required] string collectionId, [Required] AddArticleToCollectionRequest request)
+    public async Task<IActionResult> AddArticleToCollection(
+        [Required] string collectionId, 
+        [Required] AddArticleToCollectionRequest request)
     {
-        ErrorOr<Success> requestToAddArticleInCollectionResult = await collectionService.StoreArticleToCollection(collectionId, request.ArticleId);
+        var requestToAddArticleInCollectionResult =
+            await collectionService.AddArticleToCollection(collectionId, request.ArticleId);
 
         return requestToAddArticleInCollectionResult.Match(_ => NoContent(), Problem);
     }
@@ -44,7 +46,7 @@ public class CollectionsController(CollectionService collectionService) : ApiCon
     [ProducesResponseType(typeof(List<CollectionPreviewResponse>), 200)]
     public async Task<IActionResult> GetCollections()
     {
-        List<Collection> collections = await collectionService.GetCollections();
+        var collections = await collectionService.GetCollections();
 
         return Ok(collections.Adapt<List<CollectionPreviewResponse>>());
     }
@@ -56,7 +58,7 @@ public class CollectionsController(CollectionService collectionService) : ApiCon
     [ProducesResponseType(typeof(List<CollectionResponse>), 200)]
     public async Task<IActionResult> GetCollection([Required] string collectionId)
     {
-        ErrorOr<Collection> getCollectionResult = await collectionService.GetCollection(collectionId);
+        var getCollectionResult = await collectionService.GetCollection(collectionId);
 
         return getCollectionResult.Match(collection => Ok(collection.Adapt<CollectionResponse>()), Problem);
     }
@@ -66,9 +68,13 @@ public class CollectionsController(CollectionService collectionService) : ApiCon
     /// <response code="404">Коллекция не найдена</response>
     [HttpGet("{collectionId}/published")]
     [ProducesResponseType(typeof(List<ArticlePreviewResponse>), 200)]
-    public async Task<IActionResult> GetPublishedArticlesFromCollection(CancellationToken cancellationToken, [Required] string collectionId, [FromQuery] int page = 1, [FromQuery] int size = 10)
+    public async Task<IActionResult> GetPublishedArticlesFromCollection(
+        [Required] string collectionId, 
+        [FromQuery] PageOptions pageOptions,
+        CancellationToken cancellationToken)
     {
-        ErrorOr<PagedList<Article>> getPublishedArticlesFromCollectionResult = await collectionService.GetPublishedArticlesFromCollection(collectionId, page, size, cancellationToken);
+        var getPublishedArticlesFromCollectionResult = 
+            await collectionService.GetPublishedArticlesFromCollection(collectionId, pageOptions, cancellationToken);
 
         if (getPublishedArticlesFromCollectionResult.IsError)
             return Problem(getPublishedArticlesFromCollectionResult.Errors);
@@ -87,13 +93,13 @@ public class CollectionsController(CollectionService collectionService) : ApiCon
     [ProducesResponseType(204)]
     public async Task<IActionResult> UpdateCollection([Required] UpdateCollectionRequest request)
     {
-        ErrorOr<Collection> requestToCollectionResult = CreateCollectionFrom(request);
+        var requestToCollectionResult = CreateCollectionFrom(request);
 
         if (requestToCollectionResult.IsError)
             return Problem(requestToCollectionResult.Errors);
 
         var collection = requestToCollectionResult.Value;
-        ErrorOr<Updated> updateCollectionResult = await collectionService.UpdateCollection(collection);
+        var updateCollectionResult = await collectionService.UpdateCollection(collection);
 
         return updateCollectionResult.Match(_ => NoContent(), Problem);
     }
@@ -105,7 +111,7 @@ public class CollectionsController(CollectionService collectionService) : ApiCon
     [ProducesResponseType(204)]
     public async Task<IActionResult> DeleteCollection([Required] string collectionId)
     {
-        ErrorOr<Deleted> deleteCollectionResult = await collectionService.DeleteCollection(collectionId);
+        var deleteCollectionResult = await collectionService.DeleteCollection(collectionId);
 
         return deleteCollectionResult.Match(_ => NoContent(), Problem);
     }
@@ -115,32 +121,29 @@ public class CollectionsController(CollectionService collectionService) : ApiCon
     /// <response code="404">Коллекция не найдена; Статья в коллекции не найдена</response>
     [HttpDelete("{collectionId}/articles/{articleId}"), Authorize(Policy = "CanManageArticles")]
     [ProducesResponseType(204)]
-    public async Task<IActionResult> DeleteArticleFromCollection([Required] string collectionId, [Required] string articleId)
+    public async Task<IActionResult> DeleteArticleFromCollection(
+        [Required] string collectionId, 
+        [Required] string articleId)
     {
-        ErrorOr<Deleted> deleteArticleFromCollectionResult = await collectionService.DeleteArticleFromCollection(collectionId, articleId);
+        var deleteArticleFromCollectionResult = 
+            await collectionService.DeleteArticleFromCollection(collectionId, articleId);
 
         return deleteArticleFromCollectionResult.Match(_ => NoContent(), Problem);
     }
 
-    private static ErrorOr<Collection> CreateCollectionFrom(CreateCollectionRequest request)
-    {
-        return Collection.Create(
+    private static ErrorOr<Collection> CreateCollectionFrom(CreateCollectionRequest request) =>
+        Collection.Create(
             collectionId: request.CollectionId,
             title: request.Title);
-    }
 
-    private static ErrorOr<Collection> CreateCollectionFrom(UpdateCollectionRequest request)
-    {
-        return Collection.Create(
+    private static ErrorOr<Collection> CreateCollectionFrom(UpdateCollectionRequest request) =>
+        Collection.Create(
             collectionId: request.CollectionId,
             title: request.Title);
-    }
 
-    private CreatedAtActionResult CreatedAtGetCollection(Collection collection)
-    {
-        return CreatedAtAction(
+    private CreatedAtActionResult CreatedAtGetCollection(Collection collection) =>
+        CreatedAtAction(
             actionName: nameof(GetCollection),
             routeValues: new { collectionId = collection.CollectionId },
             value: collection.Adapt<CollectionPreviewResponse>());
-    }
 }

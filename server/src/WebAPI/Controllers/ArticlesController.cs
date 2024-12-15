@@ -1,8 +1,7 @@
 namespace WebAPI.Controllers;
 
-/// <inheritdoc />
 [Route("/api/articles")]
-public class ArticlesController(ArticleService articleService, IAuthorizationService authService) : ApiController
+public sealed class ArticlesController(ArticleService articleService, IAuthorizationService authService) : ApiController
 {
     /// <summary>Создать статью</summary>
     /// <response code="201">Статья создана</response>
@@ -15,13 +14,13 @@ public class ArticlesController(ArticleService articleService, IAuthorizationSer
     [ProducesResponseType(typeof(ArticleResponse), 201)]
     public async Task<IActionResult> CreateArticle([Required] CreateArticleRequest request)
     {
-        ErrorOr<Article> requestToArticleResult = CreateArticleFrom(request);
+        var requestToArticleResult = CreateArticleFrom(request);
 
         if (requestToArticleResult.IsError)
             return Problem(requestToArticleResult.Errors);
 
         var article = requestToArticleResult.Value;
-        ErrorOr<Created> createArticleResult = await articleService.StoreArticle(article);
+        var createArticleResult = await articleService.AddArticle(article);
 
         return createArticleResult.Match(_ => CreatedAtGetArticle(article), Problem);
     }
@@ -30,9 +29,11 @@ public class ArticlesController(ArticleService articleService, IAuthorizationSer
     /// <response code="200">Список статей</response>
     [HttpGet, Authorize(Policy = "CanManageArticles")]
     [ProducesResponseType(typeof(List<ArticlePreviewResponse>), 200)]
-    public async Task<IActionResult> GetArticles(CancellationToken cancellationToken, [FromQuery] int page = 1, [FromQuery] int size = 10)
+    public async Task<IActionResult> GetArticles(
+        [FromQuery] PageOptions pageOptions,
+        CancellationToken cancellationToken)
     {
-        var articles = await articleService.GetArticles(page, size, cancellationToken);
+        var articles = await articleService.GetArticles(pageOptions, cancellationToken);
 
         Response.Headers.Append("X-Total-Count", articles.TotalCount.ToString());
         return Ok(articles.Adapt<List<ArticlePreviewResponse>>());
@@ -42,9 +43,11 @@ public class ArticlesController(ArticleService articleService, IAuthorizationSer
     /// <response code="200">Список опубликованных статей</response>
     [HttpGet("published")]
     [ProducesResponseType(typeof(List<ArticlePreviewResponse>), 200)]
-    public async Task<IActionResult> GetPublishedArticles(CancellationToken cancellationToken, [FromQuery] int page = 1, [FromQuery] int size = 10)
+    public async Task<IActionResult> GetPublishedArticles(
+        [FromQuery] PageOptions pageOptions,
+        CancellationToken cancellationToken)
     {
-        PagedList<Article> publishedArticles = await articleService.GetPublishedArticles(page, size, cancellationToken);
+        var publishedArticles = await articleService.GetPublishedArticles(pageOptions, cancellationToken);
 
         Response.Headers.Append("X-Total-Count", publishedArticles.TotalCount.ToString());
         return Ok(publishedArticles.Adapt<List<ArticlePreviewResponse>>());
@@ -58,14 +61,14 @@ public class ArticlesController(ArticleService articleService, IAuthorizationSer
     [ProducesResponseType(typeof(ArticleResponse), 200)]
     public async Task<IActionResult> GetArticle([Required] string articleId)
     {
-        ErrorOr<Article> getArticleResult = await articleService.GetArticle(articleId);
+        var getArticleResult = await articleService.GetArticle(articleId);
 
         if (getArticleResult.IsError)
             return Problem(getArticleResult.Errors);
 
         var authResult = await authService.AuthorizeAsync(User, "CanManageArticles");
         if (getArticleResult.Value.IsPublished == false && !authResult.Succeeded)
-            getArticleResult = Errors.Article.NotFound;
+            getArticleResult = Article.Errors.NotFound;
 
         return getArticleResult.Match(article => Ok(article.Adapt<ArticleResponse>()), Problem);
     }
@@ -82,13 +85,13 @@ public class ArticlesController(ArticleService articleService, IAuthorizationSer
     [ProducesResponseType(204)]
     public async Task<IActionResult> UpdateArticle([Required] UpdateArticleRequest request)
     {
-        ErrorOr<Article> requestToArticleResult = CreateArticleFrom(request);
+        var requestToArticleResult = CreateArticleFrom(request);
 
         if (requestToArticleResult.IsError)
             return Problem(requestToArticleResult.Errors);
 
         var article = requestToArticleResult.Value;
-        ErrorOr<Updated> updateArticleResult = await articleService.UpdateArticle(article);
+        var updateArticleResult = await articleService.UpdateArticle(article);
 
         return updateArticleResult.Match(_ => NoContent(), Problem);
     }
@@ -101,7 +104,7 @@ public class ArticlesController(ArticleService articleService, IAuthorizationSer
     [ProducesResponseType(204)]
     public async Task<IActionResult> ChangePinState([Required] string articleId)
     {
-        ErrorOr<Updated> changePinStateResult = await articleService.ChangePinState(articleId);
+        var changePinStateResult = await articleService.ChangePinState(articleId);
 
         return changePinStateResult.Match(_ => NoContent(), Problem);
     }
@@ -114,7 +117,7 @@ public class ArticlesController(ArticleService articleService, IAuthorizationSer
     [ProducesResponseType(204)]
     public async Task<IActionResult> IncreaseViewsCounter([Required] string articleId)
     {
-        ErrorOr<Updated> increaseViewsCounterResult = await articleService.IncreaseViewsCounter(articleId);
+        var increaseViewsCounterResult = await articleService.IncreaseViewsCounter(articleId);
 
         return increaseViewsCounterResult.Match(_ => NoContent(), Problem);
     }
@@ -127,38 +130,32 @@ public class ArticlesController(ArticleService articleService, IAuthorizationSer
     [ProducesResponseType(204)]
     public async Task<IActionResult> DeleteArticle([Required] string articleId)
     {
-        ErrorOr<Deleted> deleteArticleResult = await articleService.DeleteArticle(articleId);
+        var deleteArticleResult = await articleService.DeleteArticle(articleId);
 
         return deleteArticleResult.Match(_ => NoContent(), Problem);
     }
 
-    private static ErrorOr<Article> CreateArticleFrom(CreateArticleRequest request)
-    {
-        return Article.Create(
+    private static ErrorOr<Article> CreateArticleFrom(CreateArticleRequest request) =>
+        Article.Create(
             request.ArticleId,
             request.Title,
             request.Description,
             request.Text,
             request.IsPublished,
             request.IsPinned);
-    }
 
-    private static ErrorOr<Article> CreateArticleFrom(UpdateArticleRequest request)
-    {
-        return Article.Create(
+    private static ErrorOr<Article> CreateArticleFrom(UpdateArticleRequest request) =>
+        Article.Create(
             request.ArticleId,
             request.Title,
             request.Description,
             request.Text,
             request.IsPublished,
             request.IsPinned);
-    }
 
-    private CreatedAtActionResult CreatedAtGetArticle(Article article)
-    {
-        return CreatedAtAction(
+    private CreatedAtActionResult CreatedAtGetArticle(Article article) =>
+        CreatedAtAction(
             actionName: nameof(GetArticle),
             routeValues: new { articleId = article.ArticleId },
             value: article.Adapt<ArticleResponse>());
-    }
 }
