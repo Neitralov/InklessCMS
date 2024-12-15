@@ -12,5 +12,8 @@ public sealed class DatabaseContext(DbContextOptions<DatabaseContext> options) :
         modelBuilder.Entity<Collection>()
             .HasMany(p => p.Articles)
             .WithMany();
+
+        modelBuilder.Entity<UserSession>()
+            .ComplexProperty(p => p.RefreshToken);
     }
 }
