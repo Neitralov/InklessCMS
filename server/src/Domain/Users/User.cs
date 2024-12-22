@@ -23,12 +23,9 @@ public sealed partial class User
         if (password.Trim().Length < MinPasswordLength)
             errors.Add(Errors.InvalidPassword);
 
-        if (errors.Count > 0)
-            return errors;
-
         CreatePasswordHash(password.Trim(), out var passwordHash, out var passwordSalt);
 
-        return new User
+        return errors.Any() ? errors : new User
         {
             UserId = Guid.NewGuid(),
             Email = email.Trim(),

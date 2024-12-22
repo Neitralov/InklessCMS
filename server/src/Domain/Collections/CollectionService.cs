@@ -38,12 +38,8 @@ public sealed class CollectionService(ICollectionRepository collectionRepository
 
     public async Task<List<Collection>> GetCollections() => await collectionRepository.GetCollections();
 
-    public async Task<ErrorOr<Collection>> GetCollection(string collectionId)
-    {
-        var collection = await collectionRepository.FindCollectionById(collectionId);
-
-        return collection.IsError ? collection.Errors : collection;
-    }
+    public async Task<ErrorOr<Collection>> GetCollection(string collectionId) =>
+        await collectionRepository.FindCollectionById(collectionId);
 
     public async Task<ErrorOr<PagedList<Article>>> GetPublishedArticlesFromCollection(
         string collectionId,

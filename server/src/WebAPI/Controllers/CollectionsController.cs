@@ -31,7 +31,7 @@ public sealed class CollectionsController(CollectionService collectionService) :
     [HttpPost("{collectionId}"), Authorize(Policy = "CanManageArticles")]
     [ProducesResponseType(204)]
     public async Task<IActionResult> AddArticleToCollection(
-        [Required] string collectionId, 
+        [Required] string collectionId,
         [Required] AddArticleToCollectionRequest request)
     {
         var requestToAddArticleInCollectionResult =
@@ -69,11 +69,11 @@ public sealed class CollectionsController(CollectionService collectionService) :
     [HttpGet("{collectionId}/published")]
     [ProducesResponseType(typeof(List<ArticlePreviewResponse>), 200)]
     public async Task<IActionResult> GetPublishedArticlesFromCollection(
-        [Required] string collectionId, 
+        [Required] string collectionId,
         [FromQuery] PageOptions pageOptions,
         CancellationToken cancellationToken)
     {
-        var getPublishedArticlesFromCollectionResult = 
+        var getPublishedArticlesFromCollectionResult =
             await collectionService.GetPublishedArticlesFromCollection(collectionId, pageOptions, cancellationToken);
 
         if (getPublishedArticlesFromCollectionResult.IsError)
@@ -122,10 +122,10 @@ public sealed class CollectionsController(CollectionService collectionService) :
     [HttpDelete("{collectionId}/articles/{articleId}"), Authorize(Policy = "CanManageArticles")]
     [ProducesResponseType(204)]
     public async Task<IActionResult> DeleteArticleFromCollection(
-        [Required] string collectionId, 
+        [Required] string collectionId,
         [Required] string articleId)
     {
-        var deleteArticleFromCollectionResult = 
+        var deleteArticleFromCollectionResult =
             await collectionService.DeleteArticleFromCollection(collectionId, articleId);
 
         return deleteArticleFromCollectionResult.Match(_ => NoContent(), Problem);
