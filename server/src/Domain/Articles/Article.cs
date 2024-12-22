@@ -44,10 +44,7 @@ public sealed partial class Article
         if (description.Trim().Length > MaxDescriptionLength)
             errors.Add(Errors.InvalidDescriptionLength);
 
-        if (errors.Count > 0)
-            return errors;
-
-        return new Article
+        return errors.Any() ? errors : new Article
         {
             ArticleId = articleId.Trim(),
             Title = title.Trim(),

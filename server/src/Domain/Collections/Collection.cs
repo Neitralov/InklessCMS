@@ -28,10 +28,7 @@ public sealed partial class Collection
         if (title.Trim().Length is < MinTitleLength or > MaxTitleLength)
             errors.Add(Errors.InvalidTitleLength);
 
-        if (errors.Count > 0)
-            return errors;
-
-        return new Collection
+        return errors.Any() ? errors : new Collection
         {
             CollectionId = collectionId.Trim(),
             Title = title.Trim()
