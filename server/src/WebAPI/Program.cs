@@ -41,6 +41,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 app.MapFallbackToFile("index.html");
-await app.MigrateDatabaseAsync(app.Services.GetRequiredService<IOptionsMonitor<AdminAccountOptions>>().CurrentValue);
 app.MapHealthChecks("/healthz");
 await app.RunAsync();
+
+public partial class Program { }

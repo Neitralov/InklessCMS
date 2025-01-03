@@ -22,12 +22,6 @@ public static class ServiceCollectionExtensions
             .Bind(configuration.GetSection(JwtOptions.Section))
             .ValidateDataAnnotations()
             .ValidateOnStart();
-
-        services
-            .AddOptions<AdminAccountOptions>()
-            .Bind(configuration.GetSection(AdminAccountOptions.Section))
-            .ValidateDataAnnotations()
-            .ValidateOnStart();
     }
 
     public static void AddCors(this IServiceCollection services, IConfiguration configuration) => services
