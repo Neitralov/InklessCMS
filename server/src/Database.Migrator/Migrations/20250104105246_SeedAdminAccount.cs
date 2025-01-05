@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Database.Migrations
+namespace Database.Migrator.Migrations
 {
     /// <inheritdoc />
     public partial class SeedAdminAccount : Migration

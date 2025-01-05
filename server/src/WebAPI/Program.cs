@@ -9,7 +9,9 @@ builder.Services.AddRepositories();
 builder.Services.AddServices();
 
 builder.Services.AddDbContext<DatabaseContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseNpgsql(
+        builder.Configuration.GetConnectionString("DefaultConnection"), 
+        x => x.MigrationsAssembly("Database.Migrator")));
 
 builder.Services.AddJwtBearerAuthentication(builder.Configuration);
 builder.Services.AddAuthorizationBuilder()
