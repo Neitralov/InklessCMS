@@ -3,7 +3,10 @@ version ?= latest
 run:
 	make -j 2 run-backend run-frontend
 
-run-backend:
+run-backend: run-db
+	dotnet run --project server/src/WebAPI
+
+run-db:
 	podman run \
     -d \
     -p 5432:5432 \
@@ -14,8 +17,6 @@ run-backend:
     --name inkless-postgres \
     --replace \
     postgres:16.3
-
-	dotnet run --project server/src/WebAPI
 
 run-frontend:
 	cd client && bun install
