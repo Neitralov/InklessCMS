@@ -8,8 +8,7 @@ public sealed record ArticleResponse(
     bool IsPublished,
     DateTime? PublishDate,
     int Views,
-    bool IsPinned
-)
+    bool IsPinned)
 {
     ///<example>some-article-id</example>
     public string ArticleId { get; init; } = ArticleId;

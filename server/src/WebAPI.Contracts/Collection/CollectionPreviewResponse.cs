@@ -2,8 +2,7 @@ namespace WebAPI.Contracts.Collection;
 
 public sealed record CollectionPreviewResponse(
     string CollectionId,
-    string Title
-)
+    string Title)
 {
     ///<example>some-collection-id</example>
     public string CollectionId { get; init; } = CollectionId;

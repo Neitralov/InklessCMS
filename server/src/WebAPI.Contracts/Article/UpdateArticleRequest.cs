@@ -6,8 +6,7 @@ public sealed record UpdateArticleRequest(
     string Description,
     string Text,
     bool IsPublished,
-    bool IsPinned
-)
+    bool IsPinned)
 {
     ///<example>some-article-id</example>
     public string ArticleId { get; init; } = ArticleId;
