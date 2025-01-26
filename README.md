@@ -58,6 +58,7 @@ Backend:
 * [Mapster](https://github.com/MapsterMapper/Mapster)
 * [Swashbuckle.AspNetCore](https://github.com/domaindrivendev/Swashbuckle.AspNetCore)
 * [Swashbuckle.AspNetCore.Filters](https://github.com/mattfrear/Swashbuckle.AspNetCore.Filters)
+* [Respawn](https://github.com/jbogard/Respawn)
 
 Тесты:
 * [xUnit](https://github.com/xunit/xunit)
