@@ -13,6 +13,7 @@ public sealed class CustomWebApplicationFactory : WebApplicationFactory<Program>
         
         _respawner = await Respawner.CreateAsync(_connection, new RespawnerOptions
         {
+            TablesToIgnore = [ "Users" ],
             SchemasToInclude = [ "public" ],
             DbAdapter = DbAdapter.Postgres
         });
