@@ -1,11 +1,13 @@
 ﻿using System.Reflection;
-using Database;
-using Database.Migrator;
-using Domain.Users;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+
+using Database;
+using Database.Migrator;
+using Domain.Users;
 
 var configurationBuilder = new ConfigurationBuilder()
     .AddJsonFile("appsettings.json", optional: false)
@@ -35,17 +37,8 @@ try
 {
     await using var dbContext = new DatabaseContext(options);
     await dbContext.Database.MigrateAsync();
-    
-    if (!await dbContext.Users.AnyAsync())
-    {
-        var admin = User.Create(
-            email: adminAccount.Email,
-            password: adminAccount.Password,
-            canManageArticles: true);
 
-        await dbContext.Users.AddAsync(admin.Value);
-        await dbContext.SaveChangesAsync();
-    }
+    await SeedAdminAccount(dbContext, adminAccount);
     
     Console.ForegroundColor = ConsoleColor.Green;
     Console.WriteLine("Success!");
@@ -58,3 +51,17 @@ catch (Exception e)
 }
 
 return 0;
+
+async Task SeedAdminAccount(DatabaseContext dbContext, AdminAccountOptions adminAccountOptions)
+{
+    if (!await dbContext.Users.AnyAsync())
+    {
+        var admin = User.Create(
+            email: adminAccountOptions.Email,
+            password: adminAccountOptions.Password,
+            canManageArticles: true);
+
+        await dbContext.Users.AddAsync(admin.Value);
+        await dbContext.SaveChangesAsync();
+    }
+}
