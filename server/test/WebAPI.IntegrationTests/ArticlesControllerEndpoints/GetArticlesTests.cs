@@ -24,7 +24,7 @@ public sealed class GetArticlesTests(CustomWebApplicationFactory factory) : IAsy
     }
     
     [Fact]
-    public async Task ArticlesWillBeReturnedIfArticlesExists()
+    public async Task ArticlesWillBeReturnedIfArticlesExist()
     {
         // Arrange
         var customClient = factory.AuthorizeAs(UserTypes.Admin).CreateClient();
