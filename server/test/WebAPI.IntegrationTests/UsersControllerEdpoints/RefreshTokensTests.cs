@@ -1,17 +1,15 @@
 namespace WebAPI.IntegrationTests.UsersControllerEdpoints;
 
 [Collection("Tests")]
-public sealed class RefreshTokensTests(CustomWebApplicationFactory factory) : IAsyncLifetime
+public sealed class RefreshTokensTests(CustomWebApplicationFactory factory) : BaseIntegrationTest(factory)
 {
-    public Task InitializeAsync() => Task.CompletedTask;
-
-    public async Task DisposeAsync() => await factory.ResetDatabaseAsync();
+    private readonly CustomWebApplicationFactory _factory = factory;
     
     [Fact]
     public async Task ItIsPossibleToRefreshActualTokens()
     {
         // Arrange
-        var client = factory.CreateClient();
+        var client = _factory.CreateClient();
         
         var getLoginUserResponse = await client.PostAsJsonAsync(
             requestUri: "/api/users/login",
@@ -39,7 +37,7 @@ public sealed class RefreshTokensTests(CustomWebApplicationFactory factory) : IA
     public async Task ItIsImpossibleToRefreshInvalidAccessTokens()
     {
         // Arrange
-        var client = factory.CreateClient();
+        var client = _factory.CreateClient();
         
         var getLoginUserResponse = await client.PostAsJsonAsync(
             requestUri: "/api/users/login",
@@ -63,8 +61,7 @@ public sealed class RefreshTokensTests(CustomWebApplicationFactory factory) : IA
     [Fact]
     public Task ItIsImpossibleToRefreshTokensForUserThatDoesNotExist()
     {
-        // Сценарий возможен лишь теоретически. Чтобы это провернуть, нужно рефрешнуть токены пользователя,
-        //   который удалил свою учетку, но сейчас такой возможности нет.
+        // Сценарий возможен лишь теоретически. 
         
         return Task.CompletedTask;
     }

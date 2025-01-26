@@ -1,17 +1,15 @@
 namespace WebAPI.IntegrationTests.UsersControllerEdpoints;
 
 [Collection("Tests")]
-public sealed class LoginTests(CustomWebApplicationFactory factory) : IAsyncLifetime
+public sealed class LoginTests(CustomWebApplicationFactory factory) : BaseIntegrationTest(factory)
 {
-    public Task InitializeAsync() => Task.CompletedTask;
-
-    public async Task DisposeAsync() => await factory.ResetDatabaseAsync();
+    private readonly CustomWebApplicationFactory _factory = factory;
 
     [Fact]
     public async Task ItIsPossibleToLoginInAdminAccount()
     {
         // Arrange
-        var client = factory.CreateClient();
+        var client = _factory.CreateClient();
         
         // Act
         var response = await client.PostAsJsonAsync(
@@ -29,7 +27,7 @@ public sealed class LoginTests(CustomWebApplicationFactory factory) : IAsyncLife
     public async Task ItIsImpossibleToLoginInAdminAccountWithInvalidData()
     {
         // Arrange
-        var client = factory.CreateClient();
+        var client = _factory.CreateClient();
         
         // Act
         var response = await client.PostAsJsonAsync(

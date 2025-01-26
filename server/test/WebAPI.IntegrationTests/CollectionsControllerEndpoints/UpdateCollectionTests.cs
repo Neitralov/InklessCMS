@@ -1,17 +1,15 @@
 namespace WebAPI.IntegrationTests.CollectionsControllerEndpoints;
 
 [Collection("Tests")]
-public sealed class UpdateCollectionTests(CustomWebApplicationFactory factory) : IAsyncLifetime
+public sealed class UpdateCollectionTests(CustomWebApplicationFactory factory) : BaseIntegrationTest(factory)
 {
-    public Task InitializeAsync() => Task.CompletedTask;
-
-    public async Task DisposeAsync() => await factory.ResetDatabaseAsync();
+    private readonly CustomWebApplicationFactory _factory = factory;
 
     [Fact]
     public async Task CollectionCanBeUpdated()
     {
         // Arrange
-        var customClient = factory.AuthorizeAs(UserTypes.Admin).CreateClient();
+        var customClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient();
         const string defaultTitle = "Default title";
         const string updatedTitle = "Updated title";
         
@@ -48,7 +46,7 @@ public sealed class UpdateCollectionTests(CustomWebApplicationFactory factory) :
     public async Task CollectionCannotBeUpdatedIfItDoesNotExist()
     {
         // Arrange
-        var customClient = factory.AuthorizeAs(UserTypes.Admin).CreateClient();
+        var customClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient();
         const string collectionId = "collection-id";
         
         // Act
@@ -64,7 +62,7 @@ public sealed class UpdateCollectionTests(CustomWebApplicationFactory factory) :
     public async Task CollectionCannotBeUpdatedWithInvalidData()
     {
         // Arrange
-        var customClient = factory.AuthorizeAs(UserTypes.Admin).CreateClient();
+        var customClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient();
         const string defaultTitle = "Default title";
         const string tooShortTitle = "Aa";
         
@@ -94,7 +92,7 @@ public sealed class UpdateCollectionTests(CustomWebApplicationFactory factory) :
     public async Task OnlyAuthorizedUserCanUpdateCollection()
     {
         // Arrange
-        var client = factory.CreateClient();
+        var client = _factory.CreateClient();
         const string collectionId = "collection-id";
         
         // Act
@@ -110,7 +108,7 @@ public sealed class UpdateCollectionTests(CustomWebApplicationFactory factory) :
     public async Task OnlyUserWithCanManageArticlesClaimCanUpdateCollection()
     {
         // Arrange
-        var customClient = factory.AuthorizeAs(UserTypes.User).CreateClient();
+        var customClient = _factory.AuthorizeAs(UserTypes.User).CreateClient();
         const string collectionId = "collection-id";
         
         // Act

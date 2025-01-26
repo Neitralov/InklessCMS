@@ -1,18 +1,16 @@
 namespace WebAPI.IntegrationTests.ArticlesControllerEndpoints;
 
 [Collection("Tests")]
-public sealed class GetPublishedArticlesTests(CustomWebApplicationFactory factory) : IAsyncLifetime
+public sealed class GetPublishedArticlesTests(CustomWebApplicationFactory factory) : BaseIntegrationTest(factory)
 {
-    public Task InitializeAsync() => Task.CompletedTask;
-    
-    public async Task DisposeAsync() => await factory.ResetDatabaseAsync();
+    private readonly CustomWebApplicationFactory _factory = factory;
     
     [Fact]
     public async Task EmptyListWillBeReturnedIfNoPublishedArticlesExist()
     {
         // Arrange
-        var client = factory.CreateClient();
-        var customClient = factory.AuthorizeAs(UserTypes.Admin).CreateClient();
+        var client = _factory.CreateClient();
+        var customClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient();
         const int numberOfArticles = 0;
         
         await customClient.PostAsJsonAsync(
@@ -32,8 +30,8 @@ public sealed class GetPublishedArticlesTests(CustomWebApplicationFactory factor
     public async Task PublishedArticlesWillBeReturnedIfPublishedArticlesExist()
     {
         // Arrange
-        var client = factory.CreateClient();
-        var customClient = factory.AuthorizeAs(UserTypes.Admin).CreateClient();
+        var client = _factory.CreateClient();
+        var customClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient();
         const int numberOfPublishedArticles = 1;
 
         const string firstArticleId = "article-1";
@@ -60,8 +58,8 @@ public sealed class GetPublishedArticlesTests(CustomWebApplicationFactory factor
     public async Task PaginationShouldWork()
     {
         // Arrange
-        var client = factory.CreateClient();
-        var customClient = factory.AuthorizeAs(UserTypes.Admin).CreateClient();
+        var client = _factory.CreateClient();
+        var customClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient();
         const int numberOfPublishedArticles = 15;
         const int numberOfDrafts = 1;
         var draftArticleId = $"article-{numberOfPublishedArticles + numberOfDrafts}";

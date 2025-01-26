@@ -1,17 +1,15 @@
 namespace WebAPI.IntegrationTests.CollectionsControllerEndpoints;
 
 [Collection("Tests")]
-public sealed class DeleteArticleFromCollectionTests(CustomWebApplicationFactory factory) : IAsyncLifetime
+public sealed class DeleteArticleFromCollectionTests(CustomWebApplicationFactory factory) : BaseIntegrationTest(factory)
 {
-    public Task InitializeAsync() => Task.CompletedTask;
-
-    public async Task DisposeAsync() => await factory.ResetDatabaseAsync();
+    private readonly CustomWebApplicationFactory _factory = factory;
     
     [Fact]
     public async Task ArticleCanBeDeletedFromCollection()
     {
         // Arrange
-        var customClient = factory.AuthorizeAs(UserTypes.Admin).CreateClient();
+        var customClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient();
         
         const string collectionId = "collection-id"; 
         await customClient.PostAsJsonAsync(
@@ -37,16 +35,18 @@ public sealed class DeleteArticleFromCollectionTests(CustomWebApplicationFactory
             await customClient.GetAsync($"/api/collections/{collectionId}");
         
         // Assert
-        (await getCollectionBeforeArticleDeletionResponse.Content.ReadFromJsonAsync<CollectionResponse>())?.Articles.Should().NotBeEmpty();
+        (await getCollectionBeforeArticleDeletionResponse.Content.ReadFromJsonAsync<CollectionResponse>())?
+            .Articles.Should().NotBeEmpty();
         deleteArticleFromCollectionResponse.StatusCode.Should().Be(HttpStatusCode.NoContent);
-        (await getCollectionAfterArticleDeletionResponse.Content.ReadFromJsonAsync<CollectionResponse>())?.Articles.Should().BeEmpty();
+        (await getCollectionAfterArticleDeletionResponse.Content.ReadFromJsonAsync<CollectionResponse>())?
+            .Articles.Should().BeEmpty();
     }
     
     [Fact]
     public async Task ArticleCannotBeDeletedFromCollectionIfArticleDoesNotExist()
     {
         // Arrange
-        var customClient = factory.AuthorizeAs(UserTypes.Admin).CreateClient();
+        var customClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient();
         const string articleId = "article-id";
         
         const string collectionId = "collection-id"; 
@@ -65,7 +65,7 @@ public sealed class DeleteArticleFromCollectionTests(CustomWebApplicationFactory
     public async Task ArticleCannotBeDeletedFromCollectionIfCollectionDoesNotExist()
     {
         // Arrange
-        var customClient = factory.AuthorizeAs(UserTypes.Admin).CreateClient();
+        var customClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient();
         const string collectionId = "collection-id"; 
         
         const string articleId = "article-id";
@@ -84,7 +84,7 @@ public sealed class DeleteArticleFromCollectionTests(CustomWebApplicationFactory
     public async Task OnlyAuthorizedUserCanDeleteArticleFromCollection()
     {
         // Arrange
-        var client = factory.CreateClient();
+        var client = _factory.CreateClient();
         const string collectionId = "collection-id"; 
         const string articleId = "article-id";
         
@@ -99,7 +99,7 @@ public sealed class DeleteArticleFromCollectionTests(CustomWebApplicationFactory
     public async Task OnlyUserWithCanManageArticlesClaimCanDeleteArticleFromCollection()
     {
         // Arrange
-        var customClient = factory.AuthorizeAs(UserTypes.User).CreateClient();
+        var customClient = _factory.AuthorizeAs(UserTypes.User).CreateClient();
         const string collectionId = "collection-id"; 
         const string articleId = "article-id";
         

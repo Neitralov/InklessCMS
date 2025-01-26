@@ -1,17 +1,15 @@
 namespace WebAPI.IntegrationTests.ArticlesControllerEndpoints;
 
 [Collection("Tests")]
-public sealed class CreateArticleTests(CustomWebApplicationFactory factory) : IAsyncLifetime
+public sealed class CreateArticleTests(CustomWebApplicationFactory factory) : BaseIntegrationTest(factory)
 {
-    public Task InitializeAsync() => Task.CompletedTask;
-    
-    public async Task DisposeAsync() => await factory.ResetDatabaseAsync();
-    
+    private readonly CustomWebApplicationFactory _factory = factory;
+
     [Fact]
     public async Task ArticleCanBeCreated()
     {
         // Arrange
-        var customClient = factory.AuthorizeAs(UserTypes.Admin).CreateClient();
+        var customClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient();
         const string articleId = "article-id";
         
         // Act
@@ -28,7 +26,7 @@ public sealed class CreateArticleTests(CustomWebApplicationFactory factory) : IA
     public async Task InvalidArticleCannotBeCreated()
     {
         // Arrange
-        var customClient = factory.AuthorizeAs(UserTypes.Admin).CreateClient();
+        var customClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient();
         const string invalidArticleId = "Inv@lid-Id";
         
         // Act
@@ -44,7 +42,7 @@ public sealed class CreateArticleTests(CustomWebApplicationFactory factory) : IA
     public async Task OnlyAuthorizedUserCanCreateArticle()
     {
         // Arrange
-        var client = factory.CreateClient();
+        var client = _factory.CreateClient();
         
         // Act
         var response = await client.PostAsJsonAsync(
@@ -59,7 +57,7 @@ public sealed class CreateArticleTests(CustomWebApplicationFactory factory) : IA
     public async Task OnlyUserWithCanManageArticlesClaimCanCreateArticle()
     {
         // Arrange
-        var customClient = factory.AuthorizeAs(UserTypes.User).CreateClient();
+        var customClient = _factory.AuthorizeAs(UserTypes.User).CreateClient();
         
         // Act
         var response = await customClient.PostAsJsonAsync(

@@ -1,17 +1,15 @@
 namespace WebAPI.IntegrationTests.CollectionsControllerEndpoints;
 
 [Collection("Tests")]
-public sealed class CreateCollectionTests(CustomWebApplicationFactory factory) : IAsyncLifetime
+public sealed class CreateCollectionTests(CustomWebApplicationFactory factory) : BaseIntegrationTest(factory)
 {
-    public Task InitializeAsync() => Task.CompletedTask;
-
-    public async Task DisposeAsync() => await factory.ResetDatabaseAsync();
+    private readonly CustomWebApplicationFactory _factory = factory;
     
     [Fact]
     public async Task CollectionCanBeCreated()
     {
         // Arrange
-        var customClient = factory.AuthorizeAs(UserTypes.Admin).CreateClient();
+        var customClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient();
         const string collectionId = "collection-id";
 
         // Act
@@ -28,7 +26,7 @@ public sealed class CreateCollectionTests(CustomWebApplicationFactory factory) :
     public async Task InvalidCollectionCannotBeCreated()
     {
         // Arrange
-        var customClient = factory.AuthorizeAs(UserTypes.Admin).CreateClient();
+        var customClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient();
         const string collectionId = "inv@lid-id";
         
         // Act
@@ -44,7 +42,7 @@ public sealed class CreateCollectionTests(CustomWebApplicationFactory factory) :
     public async Task OnlyAuthorizedUserCanCreateCollection()
     {
         // Arrange
-        var client = factory.CreateClient();
+        var client = _factory.CreateClient();
         
         // Act
         var response = await client.PostAsJsonAsync(
@@ -59,7 +57,7 @@ public sealed class CreateCollectionTests(CustomWebApplicationFactory factory) :
     public async Task OnlyUserWithCanManageArticlesClaimCanCreateCollection()
     {
         // Arrange
-        var customClient = factory.AuthorizeAs(UserTypes.User).CreateClient();
+        var customClient = _factory.AuthorizeAs(UserTypes.User).CreateClient();
         
         // Act
         var response = await customClient.PostAsJsonAsync(

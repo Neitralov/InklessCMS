@@ -1,17 +1,15 @@
 namespace WebAPI.IntegrationTests.CollectionsControllerEndpoints;
 
 [Collection("Tests")]
-public sealed class AddArticleToCollectionTests(CustomWebApplicationFactory factory) : IAsyncLifetime
+public sealed class AddArticleToCollectionTests(CustomWebApplicationFactory factory) : BaseIntegrationTest(factory)
 {
-    public Task InitializeAsync() => Task.CompletedTask;
-
-    public async Task DisposeAsync() => await factory.ResetDatabaseAsync();
+    private readonly CustomWebApplicationFactory _factory = factory;
     
     [Fact]
     public async Task ArticleCanBeAddedToCollection()
     {
         // Arrange
-        var customClient = factory.AuthorizeAs(UserTypes.Admin).CreateClient();
+        var customClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient();
         
         const string collectionId = "collection-id"; 
         await customClient.PostAsJsonAsync(
@@ -40,7 +38,7 @@ public sealed class AddArticleToCollectionTests(CustomWebApplicationFactory fact
     public async Task SameArticleCannotBeAddedToCollection()
     {
         // Arrange
-        var customClient = factory.AuthorizeAs(UserTypes.Admin).CreateClient();
+        var customClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient();
         
         const string collectionId = "collection-id"; 
         await customClient.PostAsJsonAsync(
@@ -68,7 +66,7 @@ public sealed class AddArticleToCollectionTests(CustomWebApplicationFactory fact
     public async Task ArticleCanBeAddedInSeveralCollectionsAtOnce()
     {
         // Arrange
-        var customClient = factory.AuthorizeAs(UserTypes.Admin).CreateClient();
+        var customClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient();
         
         const string firstCollectionId = "collection-1"; 
         await customClient.PostAsJsonAsync(
@@ -101,7 +99,7 @@ public sealed class AddArticleToCollectionTests(CustomWebApplicationFactory fact
     public async Task ArticleThatDoesNotExistCannotBeAddedToCollection()
     {
         // Arrange
-        var customClient = factory.AuthorizeAs(UserTypes.Admin).CreateClient();
+        var customClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient();
         
         const string collectionId = "collection-id"; 
         await customClient.PostAsJsonAsync(
@@ -121,7 +119,7 @@ public sealed class AddArticleToCollectionTests(CustomWebApplicationFactory fact
     public async Task ArticleCannotBeAddedToCollectionThatDoesNotExist()
     {
         // Arrange
-        var customClient = factory.AuthorizeAs(UserTypes.Admin).CreateClient();
+        var customClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient();
         const string collectionId = "collection-id"; 
         
         const string articleId = "article-id";
@@ -142,7 +140,7 @@ public sealed class AddArticleToCollectionTests(CustomWebApplicationFactory fact
     public async Task OnlyAuthorizedUserCanAddArticleToCollection()
     {
         // Arrange
-        var client = factory.CreateClient();
+        var client = _factory.CreateClient();
         const string collectionId = "collection-id"; 
         
         // Act
@@ -158,7 +156,7 @@ public sealed class AddArticleToCollectionTests(CustomWebApplicationFactory fact
     public async Task OnlyUserWithCanManageArticlesClaimCanAddArticleToCollection()
     {
         // Arrange
-        var customClient = factory.AuthorizeAs(UserTypes.User).CreateClient();
+        var customClient = _factory.AuthorizeAs(UserTypes.User).CreateClient();
         const string collectionId = "collection-id"; 
         
         // Act

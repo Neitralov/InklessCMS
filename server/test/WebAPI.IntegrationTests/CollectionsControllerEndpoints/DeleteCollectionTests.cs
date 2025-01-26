@@ -1,17 +1,15 @@
 namespace WebAPI.IntegrationTests.CollectionsControllerEndpoints;
 
 [Collection("Tests")]
-public sealed class DeleteCollectionTests(CustomWebApplicationFactory factory) : IAsyncLifetime
+public sealed class DeleteCollectionTests(CustomWebApplicationFactory factory) : BaseIntegrationTest(factory)
 {
-    public Task InitializeAsync() => Task.CompletedTask;
-
-    public async Task DisposeAsync() => await factory.ResetDatabaseAsync();
+    private readonly CustomWebApplicationFactory _factory = factory;
     
     [Fact]
     public async Task CollectionCanBeDeleted()
     {
         // Arrange
-        var customClient = factory.AuthorizeAs(UserTypes.Admin).CreateClient();
+        var customClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient();
         
         const string collectionId = "collection-id";
         await customClient.PostAsJsonAsync(
@@ -31,7 +29,7 @@ public sealed class DeleteCollectionTests(CustomWebApplicationFactory factory) :
     public async Task CollectionCannotBeDeletedIfItDoesNotExist()
     {
         // Arrange
-        var customClient = factory.AuthorizeAs(UserTypes.Admin).CreateClient();
+        var customClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient();
         const string collectionId = "collection-id";
         
         // Act
@@ -45,7 +43,7 @@ public sealed class DeleteCollectionTests(CustomWebApplicationFactory factory) :
     public async Task CascadingDeletionOfArticlesWontOccurIfDeleteCollectionWithArticles()
     {
         // Arrange
-        var customClient = factory.AuthorizeAs(UserTypes.Admin).CreateClient();
+        var customClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient();
         
         const string collectionId = "collection-id"; 
         await customClient.PostAsJsonAsync(
@@ -75,7 +73,7 @@ public sealed class DeleteCollectionTests(CustomWebApplicationFactory factory) :
     public async Task OnlyAuthorizedUserCanDeleteCollection()
     {
         // Arrange
-        var client = factory.CreateClient();
+        var client = _factory.CreateClient();
         const string collectionId = "collection-id"; 
         
         // Act
@@ -89,7 +87,7 @@ public sealed class DeleteCollectionTests(CustomWebApplicationFactory factory) :
     public async Task OnlyUserWithCanManageArticlesClaimCanDeleteCollection()
     {
         // Arrange
-        var customClient = factory.AuthorizeAs(UserTypes.User).CreateClient();
+        var customClient = _factory.AuthorizeAs(UserTypes.User).CreateClient();
         const string collectionId = "collection-id"; 
         
         // Act

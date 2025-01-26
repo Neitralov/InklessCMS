@@ -1,18 +1,16 @@
 namespace WebAPI.IntegrationTests.ArticlesControllerEndpoints;
 
 [Collection("Tests")]
-public sealed class GetArticleTests(CustomWebApplicationFactory factory) : IAsyncLifetime
+public sealed class GetArticleTests(CustomWebApplicationFactory factory) : BaseIntegrationTest(factory)
 {
-    public Task InitializeAsync() => Task.CompletedTask;
-    
-    public async Task DisposeAsync() => await factory.ResetDatabaseAsync();
+    private readonly CustomWebApplicationFactory _factory = factory;
 
     [Fact]
     public async Task ArticleWillBeReturnedIfItExists()
     {
        // Arrange
-       var client = factory.CreateClient();
-       var customClient = factory.AuthorizeAs(UserTypes.Admin).CreateClient();
+       var client = _factory.CreateClient();
+       var customClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient();
 
        const string firstArticleId = "article-1";
        await customClient.PostAsJsonAsync(
@@ -40,7 +38,7 @@ public sealed class GetArticleTests(CustomWebApplicationFactory factory) : IAsyn
     public async Task ArticleWontBeReturnedIfItDoesNotExist()
     {
         // Arrange
-        var client = factory.CreateClient();
+        var client = _factory.CreateClient();
         const string articleId = "article-id";
        
         // Act
@@ -54,8 +52,8 @@ public sealed class GetArticleTests(CustomWebApplicationFactory factory) : IAsyn
     public async Task DraftWontBeReturnedIfYouHaveNoCanManageArticlesClaim()
     {
         // Arrange
-        var client = factory.CreateClient();
-        var customClient = factory.AuthorizeAs(UserTypes.Admin).CreateClient();
+        var client = _factory.CreateClient();
+        var customClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient();
         const string articleId = "article-id";
         
         await customClient.PostAsJsonAsync(

@@ -1,17 +1,15 @@
 namespace WebAPI.IntegrationTests.CollectionsControllerEndpoints;
 
 [Collection("Tests")]
-public sealed class GetCollectionsTests(CustomWebApplicationFactory factory) : IAsyncLifetime
+public sealed class GetCollectionsTests(CustomWebApplicationFactory factory) : BaseIntegrationTest(factory)
 {
-    public Task InitializeAsync() => Task.CompletedTask;
-
-    public async Task DisposeAsync() => await factory.ResetDatabaseAsync();
+    private readonly CustomWebApplicationFactory _factory = factory;
     
     [Fact]
     public async Task EmptyListWillBeReturnedIfNoCollectionsExist()
     {
         // Arrange
-        var client = factory.CreateClient();
+        var client = _factory.CreateClient();
         
         // Act
         var response = await client.GetAsync("/api/collections");
@@ -25,7 +23,7 @@ public sealed class GetCollectionsTests(CustomWebApplicationFactory factory) : I
     public async Task CollectionsWillBeReturnedIfCollectionsExist()
     {
         // Arrange
-        var customClient = factory.AuthorizeAs(UserTypes.Admin).CreateClient();
+        var customClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient();
         const int numberOfCollections = 2;
 
         for (var index = 1; index <= numberOfCollections; index++)
@@ -36,7 +34,7 @@ public sealed class GetCollectionsTests(CustomWebApplicationFactory factory) : I
                     CollectionId = $"collection-{index}"
                 });
         
-        var client = factory.CreateClient();
+        var client = _factory.CreateClient();
 
         // Act
         var response = await client.GetAsync("/api/collections");

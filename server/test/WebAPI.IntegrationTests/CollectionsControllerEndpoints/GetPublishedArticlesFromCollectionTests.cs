@@ -1,24 +1,23 @@
 namespace WebAPI.IntegrationTests.CollectionsControllerEndpoints;
 
 [Collection("Tests")]
-public sealed class GetPublishedArticlesFromCollectionTests(CustomWebApplicationFactory factory) : IAsyncLifetime
+public sealed class GetPublishedArticlesFromCollectionTests(CustomWebApplicationFactory factory)
+    : BaseIntegrationTest(factory)
 {
-    public Task InitializeAsync() => Task.CompletedTask;
-
-    public async Task DisposeAsync() => await factory.ResetDatabaseAsync();
+    private readonly CustomWebApplicationFactory _factory = factory;
     
     [Fact]
     public async Task EmptyListWillBeReturnedIfCollectionDoesNotContainPublishedArticles()
     {
         // Arrange
-        var customClient = factory.AuthorizeAs(UserTypes.Admin).CreateClient();
+        var customClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient();
         const string collectionId = "collection-id"; 
         
         await customClient.PostAsJsonAsync(
             requestUri: "/api/collections",
             value: DataGenerator.Collection.GetCreateCollectionRequest() with { CollectionId = collectionId });
 
-        var client = factory.CreateClient();
+        var client = _factory.CreateClient();
 
         // Act
         var response = await client.GetAsync($"/api/collections/{collectionId}/published");
@@ -32,7 +31,7 @@ public sealed class GetPublishedArticlesFromCollectionTests(CustomWebApplication
     public async Task PublishedArticlesWillBeReturnedIfCollectionContainsPublishedArticles()
     {
         // Arrange
-        var customClient = factory.AuthorizeAs(UserTypes.Admin).CreateClient();
+        var customClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient();
         const string collectionId = "collection-id"; 
         const int numberOfPublishedArticles = 1;
         
@@ -56,7 +55,7 @@ public sealed class GetPublishedArticlesFromCollectionTests(CustomWebApplication
             requestUri: $"/api/collections/{collectionId}",
             value: DataGenerator.Collection.GetAddArticleToCollectionRequest() with { ArticleId = secondArticleId });
         
-        var client = factory.CreateClient();
+        var client = _factory.CreateClient();
         
         // Act
         var response = await client.GetAsync($"/api/collections/{collectionId}/published");
@@ -71,7 +70,7 @@ public sealed class GetPublishedArticlesFromCollectionTests(CustomWebApplication
     public async Task PublishedArticlesWontBeReturnedIfCollectionDoesNotExist()
     {
         // Arrange
-        var client = factory.CreateClient();
+        var client = _factory.CreateClient();
         const string collectionId = "collection-id"; 
         
         // Act
@@ -85,7 +84,7 @@ public sealed class GetPublishedArticlesFromCollectionTests(CustomWebApplication
     public async Task PaginationShouldWork()
     {
         // Arrange
-        var customClient = factory.AuthorizeAs(UserTypes.Admin).CreateClient();
+        var customClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient();
         const string collectionId = "collection-id"; 
         
         await customClient.PostAsJsonAsync(
@@ -119,7 +118,7 @@ public sealed class GetPublishedArticlesFromCollectionTests(CustomWebApplication
             requestUri: $"/api/collections/{collectionId}",
             value: DataGenerator.Collection.GetAddArticleToCollectionRequest() with { ArticleId = draftArticleId });
         
-        var client = factory.CreateClient();
+        var client = _factory.CreateClient();
         
         // Act
         var response1 = await client.GetAsync($"/api/collections/{collectionId}/published");

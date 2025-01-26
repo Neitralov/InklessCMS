@@ -1,17 +1,15 @@
 namespace WebAPI.IntegrationTests.ArticlesControllerEndpoints;
 
 [Collection("Tests")]
-public sealed class GetArticlesTests(CustomWebApplicationFactory factory) : IAsyncLifetime
+public sealed class GetArticlesTests(CustomWebApplicationFactory factory) : BaseIntegrationTest(factory)
 {
-    public Task InitializeAsync() => Task.CompletedTask;
-    
-    public async Task DisposeAsync() => await factory.ResetDatabaseAsync();
+    private readonly CustomWebApplicationFactory _factory = factory;
     
     [Fact]
     public async Task EmptyListWillBeReturnedIfNoArticlesExist()
     {
         // Arrange
-        var customClient = factory.AuthorizeAs(UserTypes.Admin).CreateClient();
+        var customClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient();
         const int numberOfArticles = 0;
 
         // Act
@@ -27,7 +25,7 @@ public sealed class GetArticlesTests(CustomWebApplicationFactory factory) : IAsy
     public async Task ArticlesWillBeReturnedIfArticlesExist()
     {
         // Arrange
-        var customClient = factory.AuthorizeAs(UserTypes.Admin).CreateClient();
+        var customClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient();
         const int numberOfArticles = 2;
         
         for (var index = 1; index <= numberOfArticles; index++)
@@ -48,7 +46,7 @@ public sealed class GetArticlesTests(CustomWebApplicationFactory factory) : IAsy
     public async Task OnlyAuthorizedUserCanReadArticles()
     {
         // Arrange
-        var client = factory.CreateClient();
+        var client = _factory.CreateClient();
         
         // Act
         var response = await client.GetAsync("/api/articles");
@@ -61,7 +59,7 @@ public sealed class GetArticlesTests(CustomWebApplicationFactory factory) : IAsy
     public async Task OnlyUserWithCanManageArticlesClaimCanReadArticles()
     {
         // Arrange
-        var customClient = factory.AuthorizeAs(UserTypes.User).CreateClient();
+        var customClient = _factory.AuthorizeAs(UserTypes.User).CreateClient();
         
         // Act
         var response = await customClient.GetAsync("/api/articles");
@@ -74,7 +72,7 @@ public sealed class GetArticlesTests(CustomWebApplicationFactory factory) : IAsy
     public async Task PaginationShouldWork()
     {
         // Arrange
-        var customClient = factory.AuthorizeAs(UserTypes.Admin).CreateClient();
+        var customClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient();
         const int numberOfDrafts = 15;
         const int numberOfPublishedArticles = 1;
         var publishedArticleId = $"article-{numberOfDrafts + numberOfPublishedArticles}";

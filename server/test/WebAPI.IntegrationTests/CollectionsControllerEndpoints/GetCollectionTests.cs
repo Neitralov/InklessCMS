@@ -1,17 +1,15 @@
 namespace WebAPI.IntegrationTests.CollectionsControllerEndpoints;
 
 [Collection("Tests")]
-public sealed class GetCollectionTests(CustomWebApplicationFactory factory) : IAsyncLifetime
+public sealed class GetCollectionTests(CustomWebApplicationFactory factory) : BaseIntegrationTest(factory)
 {
-    public Task InitializeAsync() => Task.CompletedTask;
-
-    public async Task DisposeAsync() => await factory.ResetDatabaseAsync();
+    private readonly CustomWebApplicationFactory _factory = factory;
     
     [Fact]
     public async Task EmptyListWillBeReturnedIfCollectionIsEmpty()
     {
         // Arrange
-        var customClient = factory.AuthorizeAs(UserTypes.Admin).CreateClient();
+        var customClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient();
         const string collectionId = "collection-id"; 
         
         await customClient.PostAsJsonAsync(
@@ -30,7 +28,7 @@ public sealed class GetCollectionTests(CustomWebApplicationFactory factory) : IA
     public async Task ArticlesWillBeReturnedIfCollectionContainsArticles()
     {
         // Arrange
-        var customClient = factory.AuthorizeAs(UserTypes.Admin).CreateClient();
+        var customClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient();
         const string collectionId = "collection-id"; 
         const int numberOfArticles = 2;
         
@@ -66,7 +64,7 @@ public sealed class GetCollectionTests(CustomWebApplicationFactory factory) : IA
     public async Task ArticlesWontBeReturnedIfCollectionDoesNotExist()
     {
         // Arrange
-        var customClient = factory.AuthorizeAs(UserTypes.Admin).CreateClient();
+        var customClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient();
         const string collectionId = "collection-id";
         
         // Act
@@ -80,7 +78,7 @@ public sealed class GetCollectionTests(CustomWebApplicationFactory factory) : IA
     public async Task OnlyAuthorizedUserCanGetCollection()
     {
         // Arrange
-        var client = factory.CreateClient();
+        var client = _factory.CreateClient();
         const string collectionId = "collection-id"; 
         
         // Act
@@ -94,7 +92,7 @@ public sealed class GetCollectionTests(CustomWebApplicationFactory factory) : IA
     public async Task OnlyUserWithCanManageArticlesClaimCanGetCollection()
     {
         // Arrange
-        var customClient = factory.AuthorizeAs(UserTypes.User).CreateClient();
+        var customClient = _factory.AuthorizeAs(UserTypes.User).CreateClient();
         const string collectionId = "collection-id"; 
         
         // Act
