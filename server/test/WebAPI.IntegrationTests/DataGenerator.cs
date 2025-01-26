@@ -1,5 +1,3 @@
-using WebAPI.Contracts.Collection;
-
 namespace WebAPI.IntegrationTests;
 
 public static class DataGenerator
@@ -44,6 +42,21 @@ public static class DataGenerator
         public static AddArticleToCollectionRequest GetAddArticleToCollectionRequest() => new
         (
             ArticleId: "article-id"
+        );
+    }
+
+    public static class User
+    {
+        public static LoginUserRequest GetLoginUserRequest() => new
+        (
+            Email: "admin@example.ru",
+            Password: "admin"
+        );
+        
+        public static RefreshUserTokensRequest GetRefreshTokenRequest() => new
+        (
+            RefreshToken: "refresh-token",
+            ExpiredAccessToken: "expired-access-token"
         );
     }
 }

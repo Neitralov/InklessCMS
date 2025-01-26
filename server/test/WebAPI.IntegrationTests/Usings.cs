@@ -18,3 +18,4 @@ global using Database;
 global using Domain.Users;
 global using WebAPI.Contracts.Article;
 global using WebAPI.Contracts.Collection;
+global using WebAPI.Contracts.User;
