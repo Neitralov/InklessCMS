@@ -112,7 +112,7 @@ public sealed class ArticlesController(ArticleService articleService, IAuthoriza
     /// <summary>Увеличить счетчик просмотров статьи на единицу</summary>
     /// <param name="articleId">Id статьи, которой нужно увеличить счетчик просмотров</param>
     /// <response code="204">Счетчик просмотров увеличен</response>
-    /// <response code="404">Статья не найдена; У статьи не найден счетчик просмотров</response>
+    /// <response code="404">Статья не найдена</response>
     [HttpPatch("{articleId}/increase-views")]
     [ProducesResponseType(204)]
     public async Task<IActionResult> IncreaseViewsCounter([Required] string articleId)

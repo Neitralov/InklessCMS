@@ -1,4 +1,6 @@
-namespace WebAPI;
+using System.ComponentModel.DataAnnotations;
+
+namespace Database.Migrator;
 
 public sealed class AdminAccountOptions
 {

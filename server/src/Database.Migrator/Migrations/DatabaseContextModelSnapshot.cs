@@ -9,7 +9,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace Database.Migrations
+namespace Database.Migrator.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
     partial class DatabaseContextModelSnapshot : ModelSnapshot
@@ -35,7 +35,7 @@ namespace Database.Migrations
 
                     b.HasIndex("CollectionId");
 
-                    b.ToTable("ArticleCollection");
+                    b.ToTable("ArticleCollection", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Articles.Article", b =>
@@ -72,7 +72,7 @@ namespace Database.Migrations
 
                     b.HasKey("ArticleId");
 
-                    b.ToTable("Articles");
+                    b.ToTable("Articles", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Authorization.UserSession", b =>
@@ -100,7 +100,7 @@ namespace Database.Migrations
 
                     b.HasKey("UserSessionId");
 
-                    b.ToTable("UserSessions");
+                    b.ToTable("UserSessions", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Collections.Collection", b =>
@@ -114,7 +114,7 @@ namespace Database.Migrations
 
                     b.HasKey("CollectionId");
 
-                    b.ToTable("Collections");
+                    b.ToTable("Collections", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Users.User", b =>
@@ -140,7 +140,7 @@ namespace Database.Migrations
 
                     b.HasKey("UserId");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("ArticleCollection", b =>

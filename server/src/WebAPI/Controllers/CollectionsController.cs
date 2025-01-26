@@ -55,7 +55,7 @@ public sealed class CollectionsController(CollectionService collectionService) :
     /// <response code="200">Коллекция получена</response>
     /// <response code="404">Коллекция не найдена</response>
     [HttpGet("{collectionId}"), Authorize(Policy = "CanManageArticles")]
-    [ProducesResponseType(typeof(List<CollectionResponse>), 200)]
+    [ProducesResponseType(typeof(CollectionResponse), 200)]
     public async Task<IActionResult> GetCollection([Required] string collectionId)
     {
         var getCollectionResult = await collectionService.GetCollection(collectionId);

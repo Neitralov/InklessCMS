@@ -1,7 +1,12 @@
+version ?= latest
+
 run:
 	make -j 2 run-backend run-frontend
 
-run-backend:
+run-backend: run-db
+	dotnet run --project server/src/WebAPI
+
+run-db:
 	podman run \
     -d \
     -p 5432:5432 \
@@ -13,17 +18,33 @@ run-backend:
     --replace \
     postgres:16.3
 
-	dotnet run --project server/src/WebAPI
-
 run-frontend:
 	cd client && bun install
 	cd client && bun run dev
 
-publish:
+publish-and-build-docker-images: publish build-docker-images
+
+publish: publish-inkless publish-database-migrator
+
+publish-inkless:
 	cd client && bun install
 	cd client && bun run build
 	cp -rfT client/dist server/src/WebAPI/wwwroot
 	cd server/src/WebAPI && dotnet publish -c Release
+
+publish-database-migrator:
+	cd server/src/Database.Migrator && dotnet publish -c Release
+
+build-docker-images: build-inkless-docker-image build-database-migrator-docker-image
+
+build-inkless-docker-image:
+	podman build ./server/src/WebAPI -t docker.io/neitralov/inkless:$(version)
+
+build-database-migrator-docker-image:
+	podman build ./server/src/Database.Migrator -t docker.io/neitralov/inkless-migrator:$(version)
+
+add-migration:
+	dotnet ef migrations add $(migration-name) --startup-project server/src/WebAPI --project server/src/Database.Migrator/
 
 test:
 	cd server && dotnet test

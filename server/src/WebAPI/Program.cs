@@ -9,7 +9,9 @@ builder.Services.AddRepositories();
 builder.Services.AddServices();
 
 builder.Services.AddDbContext<DatabaseContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseNpgsql(
+        builder.Configuration.GetConnectionString("DefaultConnection"), 
+        x => x.MigrationsAssembly("Database.Migrator")));
 
 builder.Services.AddJwtBearerAuthentication(builder.Configuration);
 builder.Services.AddAuthorizationBuilder()
@@ -41,6 +43,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 app.MapFallbackToFile("index.html");
-await app.MigrateDatabaseAsync(app.Services.GetRequiredService<IOptionsMonitor<AdminAccountOptions>>().CurrentValue);
 app.MapHealthChecks("/healthz");
 await app.RunAsync();
+
+public partial class Program { }
