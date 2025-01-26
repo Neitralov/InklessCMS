@@ -9,13 +9,6 @@ public sealed class DatabaseContext(DbContextOptions<DatabaseContext> options) :
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        var admin = User.Create(
-            email: "admin@example.ru",
-            password: "admin",
-            canManageArticles: true);
-
-        modelBuilder.Entity<User>().HasData(admin.Value);
-        
         modelBuilder.Entity<Collection>()
             .HasMany(p => p.Articles)
             .WithMany();
