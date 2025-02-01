@@ -10,6 +10,7 @@ jobs:
       - name: Get backend code
         uses: actions/checkout@v4
         with: 
-         sparse-checkout: server
+         sparse-checkout: |
+           server
       - name: Run unit tests
         run: dotnet test --filter FullyQualifiedName~Domain.Tests
