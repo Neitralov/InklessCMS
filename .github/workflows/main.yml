@@ -9,8 +9,6 @@ jobs:
     steps:
       - name: Get backend code
         uses: actions/checkout@v4
-        with: 
-         sparse-checkout: |
-           server
       - name: Run unit tests
+        working-directory: ./server
         run: dotnet test --filter FullyQualifiedName~Domain.Tests
