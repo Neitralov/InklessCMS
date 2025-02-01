@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-22.04
     services:
       postgres:
-        image: posgres:16.4
+        image: postgres:16.4
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: 1234
