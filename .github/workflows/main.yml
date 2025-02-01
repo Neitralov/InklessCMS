@@ -1,0 +1,15 @@
+name: Run backend unit tests
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [ master ]
+jobs:
+  tests:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Get backend code
+        uses: actions/checkout@v4
+        with: 
+         sparse-checkout: server
+      - name: Run unit tests
+        run: dotnet test --filter FullyQualifiedName~Domain.Tests
