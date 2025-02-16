@@ -9,10 +9,10 @@ public sealed class UserServiceTests
     private const string Password = "1234";
     private const string SecretKey = "My favorite really secret key. 512 bit at least. (64 characters).";
 
-    private readonly AccessToken _accessToken = new ("Access token");
-    private readonly AccessToken _expiredAccessToken = new ("Expired access token");
-    private readonly RefreshToken _refreshToken = new ("Refresh token");
-    private readonly RefreshToken _expiredRefreshToken = new ("Expired refresh token");
+    private readonly AccessToken _accessToken = new("Access token");
+    private readonly AccessToken _expiredAccessToken = new("Expired access token");
+    private readonly RefreshToken _refreshToken = new("Refresh token");
+    private readonly RefreshToken _expiredRefreshToken = new("Expired refresh token");
 
     private readonly User _user = User.Create(
         email: Email,

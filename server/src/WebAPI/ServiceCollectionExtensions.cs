@@ -7,7 +7,7 @@ public static class ServiceCollectionExtensions
             .AddTransient<IUserRepository, UserRepository>()
             .AddTransient<IArticleRepository, ArticleRepository>()
             .AddTransient<ICollectionRepository, CollectionRepository>();
-    
+
     public static void AddServices(this IServiceCollection services) =>
         services
             .AddTransient<IAuthService, AuthService>()
@@ -32,7 +32,7 @@ public static class ServiceCollectionExtensions
                 .AllowAnyHeader()
                 .AllowAnyMethod()
                 .WithExposedHeaders("X-Total-Count")))
-        .AddCors(options => options.AddPolicy("AllowInkless", 
+        .AddCors(options => options.AddPolicy("AllowInkless",
             policy => policy
                 .WithOrigins(configuration["DashboardUrl"] ??
                     throw new NullReferenceException("config variable \"DashboardUrl\" is not defined"))
@@ -45,7 +45,7 @@ public static class ServiceCollectionExtensions
         {
             options.SwaggerDoc("v1", new OpenApiInfo { Title = "Inkless API", Version = "0.3" });
 
-            var xmlDocPaths = 
+            var xmlDocPaths =
                 Directory.GetFiles(AppContext.BaseDirectory, "*.xml", SearchOption.TopDirectoryOnly).ToList();
             xmlDocPaths.ForEach(xmlDocPath => options.IncludeXmlComments(xmlDocPath));
 
@@ -63,7 +63,7 @@ public static class ServiceCollectionExtensions
             options.OperationFilter<AppendAuthorizeToSummaryOperationFilter>();
             options.OperationFilter<SecurityRequirementsOperationFilter>(true, JwtBearerDefaults.AuthenticationScheme);
         });
-    
+
     public static void AddJwtBearerAuthentication(this IServiceCollection services, IConfiguration configuration) =>
         services
             .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

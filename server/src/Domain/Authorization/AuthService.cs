@@ -25,7 +25,7 @@ public sealed class AuthService(IOptions<JwtOptions> options) : IAuthService
             claims: claims,
             expires: DateTime.UtcNow.AddMinutes(options.Value.AccessTokenLifeTimeInMinutes),
             signingCredentials: creds);
-        
+
         return new AccessToken(new JwtSecurityTokenHandler().WriteToken(token));
     }
 
@@ -47,7 +47,7 @@ public sealed class AuthService(IOptions<JwtOptions> options) : IAuthService
 
         try
         {
-            var claimsPrincipal = 
+            var claimsPrincipal =
                 tokenHandler.ValidateToken(expiredAccessToken.Token, tokenValidationParameters, out _);
             return claimsPrincipal.Identity?.Name!;
         }

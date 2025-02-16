@@ -15,7 +15,7 @@ public sealed partial class User
         public static Error InvalidPassword => Error.Validation(
             code: $"{nameof(User)}.{nameof(InvalidPassword)}",
             description: $"Пароль должен быть не короче {MinPasswordLength} символов.");
-        
+
         public static Error IncorrectEmailOrPassword => Error.Validation(
             code: $"{nameof(User)}.{nameof(IncorrectEmailOrPassword)}",
             description: "Электронная почта или пароль указаны неверно.");

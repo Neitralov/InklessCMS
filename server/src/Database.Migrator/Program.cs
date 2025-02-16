@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -12,11 +12,11 @@ using Domain.Users;
 var configurationBuilder = new ConfigurationBuilder()
     .AddJsonFile("appsettings.json", optional: false)
     .AddEnvironmentVariables();
-           
+
 var configuration = configurationBuilder.Build();
 
 var serviceCollection = new ServiceCollection();
-    
+
 serviceCollection
     .AddOptions<AdminAccountOptions>()
     .Bind(configuration.GetSection(AdminAccountOptions.Section))
@@ -25,7 +25,7 @@ serviceCollection
 
 var serviceProvider = serviceCollection.BuildServiceProvider();
 
-var adminAccount = serviceProvider.GetService<IOptions<AdminAccountOptions>>()?.Value 
+var adminAccount = serviceProvider.GetService<IOptions<AdminAccountOptions>>()?.Value
     ?? throw new NullReferenceException($"{nameof(AdminAccountOptions)} options are required.");
 
 var connectionString = args.FirstOrDefault() ?? configuration.GetConnectionString("DefaultConnection");
@@ -39,7 +39,7 @@ try
     await dbContext.Database.MigrateAsync();
 
     await SeedAdminAccount(dbContext, adminAccount);
-    
+
     Console.ForegroundColor = ConsoleColor.Green;
     Console.WriteLine("Success!");
     Console.ResetColor();
