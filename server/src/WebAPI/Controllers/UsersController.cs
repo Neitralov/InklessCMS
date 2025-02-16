@@ -32,7 +32,7 @@ public sealed class UsersController(UserService userService) : ApiController
     public async Task<IActionResult> RefreshTokens([Required] RefreshUserTokensRequest request)
     {
         var refreshTokensResult = await userService.RefreshTokens(
-            expiredAccessToken: new AccessToken(request.ExpiredAccessToken), 
+            expiredAccessToken: new AccessToken(request.ExpiredAccessToken),
             refreshToken: new RefreshToken(request.RefreshToken));
 
         if (refreshTokensResult.IsError)
@@ -40,7 +40,7 @@ public sealed class UsersController(UserService userService) : ApiController
 
         var newAccessToken = refreshTokensResult.Value.AccessToken;
         var newRefreshToken = refreshTokensResult.Value.RefreshToken;
-        
+
         return Ok(new LoginUserResponse(newAccessToken.Token, newRefreshToken.Token));
     }
 }

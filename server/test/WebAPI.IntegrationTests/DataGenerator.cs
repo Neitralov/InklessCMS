@@ -13,7 +13,7 @@ public static class DataGenerator
             IsPinned: false,
             IsPublished: false
         );
-    
+
         public static UpdateArticleRequest GetUpdateRequest() => new
         (
             ArticleId: "article-id",
@@ -32,13 +32,13 @@ public static class DataGenerator
             CollectionId: "collection-id",
             Title: "Title"
         );
-        
+
         public static UpdateCollectionRequest GetUpdateCollectionRequest() => new
         (
             CollectionId: "collection-id",
             Title: "Title"
         );
-        
+
         public static AddArticleToCollectionRequest GetAddArticleToCollectionRequest() => new
         (
             ArticleId: "article-id"
@@ -52,7 +52,7 @@ public static class DataGenerator
             Email: "admin@example.ru",
             Password: "admin"
         );
-        
+
         public static RefreshUserTokensRequest GetRefreshTokenRequest() => new
         (
             RefreshToken: "refresh-token",

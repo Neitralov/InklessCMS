@@ -12,32 +12,32 @@ public sealed class IncreaseViewsCounterTests(CustomWebApplicationFactory factor
         var customClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient();
         const string articleId = "article-id";
         const int totalViews = 2;
-        
+
         await customClient.PostAsJsonAsync(
-            requestUri: "/api/articles", 
+            requestUri: "/api/articles",
             value: DataGenerator.Article.GetCreateRequest() with { ArticleId = articleId });
-       
+
         // Act
         var increaseViewsResponse1 = await customClient.PatchAsync($"/api/articles/{articleId}/increase-views", null);
         var increaseViewsResponse2 = await customClient.PatchAsync($"/api/articles/{articleId}/increase-views", null);
         var getArticleResponse = await customClient.GetAsync($"/api/articles/{articleId}");
-       
+
         // Assert
         increaseViewsResponse1.StatusCode.Should().Be(HttpStatusCode.NoContent);
         increaseViewsResponse2.StatusCode.Should().Be(HttpStatusCode.NoContent);
         (await getArticleResponse.Content.ReadFromJsonAsync<ArticleResponse>())?.Views.Should().Be(totalViews);
     }
-    
+
     [Fact]
     public async Task ViewsCounterCannotBeIncreasedIfArticleDoesNotExist()
     {
         // Arrange
         var client = _factory.CreateClient();
         const string articleId = "article-id";
-       
+
         // Act
         var response = await client.PatchAsync($"/api/articles/{articleId}/increase-views", null);
-       
+
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }

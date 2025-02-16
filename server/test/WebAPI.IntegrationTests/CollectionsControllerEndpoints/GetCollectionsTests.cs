@@ -4,21 +4,21 @@ namespace WebAPI.IntegrationTests.CollectionsControllerEndpoints;
 public sealed class GetCollectionsTests(CustomWebApplicationFactory factory) : BaseIntegrationTest(factory)
 {
     private readonly CustomWebApplicationFactory _factory = factory;
-    
+
     [Fact]
     public async Task EmptyListWillBeReturnedIfNoCollectionsExist()
     {
         // Arrange
         var client = _factory.CreateClient();
-        
+
         // Act
         var response = await client.GetAsync("/api/collections");
-        
+
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         (await response.Content.ReadFromJsonAsync<List<CollectionPreviewResponse>>()).Should().BeEmpty();
     }
-    
+
     [Fact]
     public async Task CollectionsWillBeReturnedIfCollectionsExist()
     {
@@ -33,7 +33,7 @@ public sealed class GetCollectionsTests(CustomWebApplicationFactory factory) : B
                 {
                     CollectionId = $"collection-{index}"
                 });
-        
+
         var client = _factory.CreateClient();
 
         // Act
