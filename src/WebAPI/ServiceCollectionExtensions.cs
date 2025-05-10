@@ -31,13 +31,6 @@ public static class ServiceCollectionExtensions
                     throw new NullReferenceException("config variable \"ClientUrl\" is not defined"))
                 .AllowAnyHeader()
                 .AllowAnyMethod()
-                .WithExposedHeaders("X-Total-Count")))
-        .AddCors(options => options.AddPolicy("AllowInkless",
-            policy => policy
-                .WithOrigins(configuration["DashboardUrl"] ??
-                    throw new NullReferenceException("config variable \"DashboardUrl\" is not defined"))
-                .AllowAnyHeader()
-                .AllowAnyMethod()
                 .WithExposedHeaders("X-Total-Count")));
 
     public static void AddSwagger(this IServiceCollection services) =>
