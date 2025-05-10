@@ -35,14 +35,11 @@ else
     app.UseExceptionHandler("/error");
 }
 
-app.UseCors("AllowInkless");
 app.UseCors("AllowClient");
-app.UsePathBase("/inkless");
 app.UseFileServer();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
-app.MapFallbackToFile("index.html");
 app.MapHealthChecks("/healthz");
 await app.RunAsync();
 
