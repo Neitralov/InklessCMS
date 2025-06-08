@@ -27,11 +27,11 @@ public sealed class GetArticleTests(CustomWebApplicationFactory factory) : BaseI
         var response2 = await client.GetAsync($"/api/articles/{secondArticleId}");
 
         // Assert
-        response1.StatusCode.Should().Be(HttpStatusCode.OK);
-        (await response1.Content.ReadFromJsonAsync<ArticleResponse>())?.ArticleId.Should().Be(firstArticleId);
+        response1.StatusCode.ShouldBe(HttpStatusCode.OK);
+        (await response1.Content.ReadFromJsonAsync<ArticleResponse>())?.ArticleId.ShouldBe(firstArticleId);
 
-        response2.StatusCode.Should().Be(HttpStatusCode.OK);
-        (await response2.Content.ReadFromJsonAsync<ArticleResponse>())?.ArticleId.Should().Be(secondArticleId);
+        response2.StatusCode.ShouldBe(HttpStatusCode.OK);
+        (await response2.Content.ReadFromJsonAsync<ArticleResponse>())?.ArticleId.ShouldBe(secondArticleId);
     }
 
     [Fact]
@@ -45,7 +45,7 @@ public sealed class GetArticleTests(CustomWebApplicationFactory factory) : BaseI
         var response = await client.GetAsync($"/api/articles/{articleId}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     [Fact]
@@ -64,6 +64,6 @@ public sealed class GetArticleTests(CustomWebApplicationFactory factory) : BaseI
         var response = await client.GetAsync($"/api/articles/{articleId}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 }

@@ -18,8 +18,8 @@ public sealed class CreateArticleTests(CustomWebApplicationFactory factory) : Ba
             value: DataGenerator.Article.GetCreateRequest() with { ArticleId = articleId });
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Created);
-        (await response.Content.ReadFromJsonAsync<ArticleResponse>())?.ArticleId.Should().Be(articleId);
+        response.StatusCode.ShouldBe(HttpStatusCode.Created);
+        (await response.Content.ReadFromJsonAsync<ArticleResponse>())?.ArticleId.ShouldBe(articleId);
     }
 
     [Fact]
@@ -35,7 +35,7 @@ public sealed class CreateArticleTests(CustomWebApplicationFactory factory) : Ba
             value: DataGenerator.Article.GetCreateRequest() with { ArticleId = invalidArticleId });
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
 
     [Fact]
@@ -50,7 +50,7 @@ public sealed class CreateArticleTests(CustomWebApplicationFactory factory) : Ba
             value: DataGenerator.Article.GetCreateRequest());
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -65,6 +65,6 @@ public sealed class CreateArticleTests(CustomWebApplicationFactory factory) : Ba
             value: DataGenerator.Article.GetCreateRequest());
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
 }

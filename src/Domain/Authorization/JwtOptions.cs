@@ -1,6 +1,6 @@
 namespace Domain.Authorization;
 
-public sealed class JwtOptions
+public sealed record JwtOptions
 {
     public const string Section = "Jwt";
 

@@ -36,10 +36,10 @@ public sealed class UpdateCollectionTests(CustomWebApplicationFactory factory) :
         var getCollectionAfterUpdateResponse = await customClient.GetAsync($"/api/collections/{collectionId}");
 
         // Assert
-        updateCollectionResponse.StatusCode.Should().Be(HttpStatusCode.NoContent);
+        updateCollectionResponse.StatusCode.ShouldBe(HttpStatusCode.NoContent);
         var firstContent = await getCollectionBeforeUpdateResponse.Content.ReadFromJsonAsync<ArticleResponse>();
         var secondContent = await getCollectionAfterUpdateResponse.Content.ReadFromJsonAsync<ArticleResponse>();
-        firstContent?.Title.Should().NotBeSameAs(secondContent?.Title);
+        firstContent?.Title.ShouldNotBeSameAs(secondContent?.Title);
     }
 
     [Fact]
@@ -55,7 +55,7 @@ public sealed class UpdateCollectionTests(CustomWebApplicationFactory factory) :
             value: DataGenerator.Collection.GetUpdateCollectionRequest() with { CollectionId = collectionId });
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     [Fact]
@@ -85,7 +85,7 @@ public sealed class UpdateCollectionTests(CustomWebApplicationFactory factory) :
             });
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
 
     [Fact]
@@ -101,7 +101,7 @@ public sealed class UpdateCollectionTests(CustomWebApplicationFactory factory) :
             value: DataGenerator.Collection.GetUpdateCollectionRequest() with { CollectionId = collectionId });
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -117,6 +117,6 @@ public sealed class UpdateCollectionTests(CustomWebApplicationFactory factory) :
             value: DataGenerator.Collection.GetUpdateCollectionRequest() with { CollectionId = collectionId });
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
 }

@@ -1,6 +1,6 @@
 namespace Domain.Users;
 
-public sealed partial class User
+public sealed partial record User
 {
     public Guid UserId { get; private set; }
     public string Email { get; private set; } = string.Empty;

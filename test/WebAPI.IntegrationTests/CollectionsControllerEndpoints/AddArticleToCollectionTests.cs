@@ -29,9 +29,9 @@ public sealed class AddArticleToCollectionTests(CustomWebApplicationFactory fact
         var getArticlesFromCollectionResponse = await customClient.GetAsync($"api/collections/{collectionId}");
 
         // Assert
-        addArticleToCollectionResponse.StatusCode.Should().Be(HttpStatusCode.NoContent);
+        addArticleToCollectionResponse.StatusCode.ShouldBe(HttpStatusCode.NoContent);
         (await getArticlesFromCollectionResponse.Content.ReadFromJsonAsync<CollectionResponse>())
-            ?.Articles.Should().HaveCount(1);
+            ?.Articles.Count().ShouldBe(1);
     }
 
     [Fact]
@@ -59,7 +59,7 @@ public sealed class AddArticleToCollectionTests(CustomWebApplicationFactory fact
             value: DataGenerator.Collection.GetAddArticleToCollectionRequest() with { ArticleId = articleId });
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
 
     [Fact]
@@ -92,7 +92,7 @@ public sealed class AddArticleToCollectionTests(CustomWebApplicationFactory fact
             value: DataGenerator.Collection.GetAddArticleToCollectionRequest() with { ArticleId = articleId });
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+        response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
     }
 
     [Fact]
@@ -112,7 +112,7 @@ public sealed class AddArticleToCollectionTests(CustomWebApplicationFactory fact
             value: DataGenerator.Collection.GetAddArticleToCollectionRequest());
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     [Fact]
@@ -133,7 +133,7 @@ public sealed class AddArticleToCollectionTests(CustomWebApplicationFactory fact
             value: DataGenerator.Collection.GetAddArticleToCollectionRequest() with { ArticleId = articleId });
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     [Fact]
@@ -149,7 +149,7 @@ public sealed class AddArticleToCollectionTests(CustomWebApplicationFactory fact
             value: DataGenerator.Collection.GetAddArticleToCollectionRequest());
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -165,6 +165,6 @@ public sealed class AddArticleToCollectionTests(CustomWebApplicationFactory fact
             value: DataGenerator.Collection.GetAddArticleToCollectionRequest());
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
 }

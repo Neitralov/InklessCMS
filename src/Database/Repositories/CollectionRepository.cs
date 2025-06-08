@@ -2,50 +2,54 @@ namespace Database.Repositories;
 
 public sealed class CollectionRepository(DatabaseContext database) : BaseRepository(database), ICollectionRepository
 {
-    private readonly DatabaseContext _database = database;
+    private readonly DbSet<Collection> _collections = database.Set<Collection>();
 
-    public async Task AddCollection(Collection newCollection) => await _database.Collections.AddAsync(newCollection);
+    public async Task AddCollectionAsync(Collection newCollection) => await _collections.AddAsync(newCollection);
 
-    public async Task<ErrorOr<Collection>> FindCollectionById(string collectionId) =>
-        await _database.Collections
+    public async Task<ErrorOr<Collection>> FindCollectionByIdAsync(string collectionId)
+    {
+        return await _collections
             .Include(collection => collection.Articles)
             .SingleOrDefaultAsync(collection => collection.CollectionId == collectionId) ??
-        Collection.Errors.NotFound.ToErrorOr<Collection>();
+            Collection.Errors.NotFound.ToErrorOr<Collection>();
+    }
 
-    public async Task<List<Collection>> GetCollections() => await _database.Collections.AsNoTracking().ToListAsync();
+    public async Task<List<Collection>> GetCollectionsAsync() => await _collections.AsNoTracking().ToListAsync();
 
-    public async Task<ErrorOr<PagedList<Article>>> GetPublishedArticlesFromColelction(
+    public async Task<ErrorOr<PagedList<Article>>> GetPublishedArticlesFromColelctionAsync(
         string collectionId,
         PageOptions pageOptions,
         CancellationToken cancellationToken)
     {
-        var foundCollection = await FindCollectionById(collectionId);
+        var foundCollection = await FindCollectionByIdAsync(collectionId);
 
         if (foundCollection.IsError)
             return foundCollection.Errors;
 
-        return await _database.Collections
+        return await _collections
             .AsNoTracking()
             .Include(collection => collection.Articles)
             .Where(collection => collection.CollectionId == collectionId)
             .SelectMany(collection => collection.Articles)
             .Where(article => article.IsPublished)
             .OrderByDescending(article => article.IsPinned)
-            .ThenByDescending(article => article.PublishDate)
+            .ThenByDescending(article => article.PublishDate!.Value)
             .ToPagedList(pageOptions, cancellationToken);
     }
 
-    public async Task<bool> IsCollectionExists(string collectionId) =>
-        await _database.Collections.AnyAsync(collection => collection.CollectionId == collectionId);
-
-    public async Task<ErrorOr<Deleted>> DeleteCollection(string collectionId)
+    public async Task<bool> IsCollectionExistsAsync(string collectionId)
     {
-        var collection = await FindCollectionById(collectionId);
+        return await _collections.AnyAsync(collection => collection.CollectionId == collectionId);
+    }
+
+    public async Task<ErrorOr<Deleted>> DeleteCollectionAsync(string collectionId)
+    {
+        var collection = await FindCollectionByIdAsync(collectionId);
 
         if (collection.IsError)
             return collection.Errors;
 
-        _database.Collections.Remove(collection.Value);
+        _collections.Remove(collection.Value);
 
         return Result.Deleted;
     }

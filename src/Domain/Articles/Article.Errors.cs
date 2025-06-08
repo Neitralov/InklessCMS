@@ -1,6 +1,6 @@
 namespace Domain.Articles;
 
-public sealed partial class Article
+public sealed partial record Article
 {
     public static class Errors
     {
@@ -19,12 +19,12 @@ public sealed partial class Article
         public static Error InvalidIdLength => Error.Validation(
             code: $"{nameof(Article)}.{nameof(InvalidIdLength)}",
             description: $"Id статьи не может быть короче {MinIdLength} символов " +
-                         $"и длиннее {MaxIdLength} символов.");
+                $"и длиннее {MaxIdLength} символов.");
 
         public static Error InvalidTitleLength => Error.Validation(
             code: $"{nameof(Article)}.{nameof(InvalidTitleLength)}",
             description: $"Заголовок статьи не может быть короче {MinTitleLength} символов " +
-                         $"и длиннее {MaxTitleLength} символов..");
+                $"и длиннее {MaxTitleLength} символов.");
 
         public static Error InvalidDescriptionLength => Error.Validation(
             code: $"{nameof(Article)}.{nameof(InvalidDescriptionLength)}",

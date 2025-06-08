@@ -11,7 +11,7 @@ global using Microsoft.Extensions.Options;
 
 global using Xunit;
 global using Respawn;
-global using FluentAssertions;
+global using Shouldly;
 
 global using Database;
 global using Domain.Users;

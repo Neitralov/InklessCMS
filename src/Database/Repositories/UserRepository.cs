@@ -3,44 +3,52 @@ namespace Database.Repositories;
 public sealed class UserRepository(DatabaseContext database) : BaseRepository(database), IUserRepository
 {
     private readonly DatabaseContext _database = database;
+    private readonly DbSet<User> _users = database.Set<User>();
+    private readonly DbSet<UserSession> _userSessions = database.Set<UserSession>();
 
-    public async Task AddUserSession(UserSession newUserSession) => await _database.AddAsync(newUserSession);
+    public async Task AddUserSessionAsync(UserSession newUserSession) => await _userSessions.AddAsync(newUserSession);
 
-    public async Task<ErrorOr<User>> FindUserByEmail(string email) =>
-        await _database.Users.SingleOrDefaultAsync(user => user.Email == email) ??
-        User.Errors.NotFound.ToErrorOr<User>();
+    public async Task<ErrorOr<User>> FindUserByEmailAsync(string email)
+    {
+        return await _users.SingleOrDefaultAsync(user => user.Email == email) ??
+            User.Errors.NotFound.ToErrorOr<User>();
+    }
 
-    public async Task<int> GetNumberOfUserSessionsForUser(Guid userId) =>
-        await _database.UserSessions.CountAsync(userSession => userSession.UserId == userId);
+    public async Task<int> GetNumberOfUserSessionsForUserAsync(Guid userId)
+    {
+        return await _userSessions.CountAsync(userSession => userSession.UserId == userId);
+    }
 
-    public async Task<ErrorOr<UserSession>> GetUserSession(Guid userId, RefreshToken refreshToken) =>
-        await _database.UserSessions.SingleOrDefaultAsync(userSession =>
+    public async Task<ErrorOr<UserSession>> GetUserSessionAsync(Guid userId, RefreshToken refreshToken)
+    {
+        return await _userSessions.SingleOrDefaultAsync(userSession =>
             userSession.UserId == userId &&
             userSession.RefreshToken == refreshToken &&
             userSession.ExpirationDate >= DateTime.UtcNow) ??
-        RefreshToken.Errors.NotFound.ToErrorOr<UserSession>();
+            RefreshToken.Errors.NotFound.ToErrorOr<UserSession>();
+    }
 
-    public async Task DeleteAllUserSessionsForUser(Guid userId)
+    public async Task DeleteAllUserSessionsForUserAsync(Guid userId)
     {
-        var usersSessions = await _database.UserSessions
+        var usersSessions = await _userSessions
             .Where(userSession => userSession.UserId == userId)
             .ToListAsync();
 
-        _database.UserSessions.RemoveRange(usersSessions);
+        _userSessions.RemoveRange(usersSessions);
     }
 
-    public override async Task SaveChanges()
+    public override async Task SaveChangesAsync()
     {
-        await DeleteAllInvalidUserSessions();
+        await DeleteAllInvalidUserSessionsAsync();
         await _database.SaveChangesAsync();
     }
 
-    private async Task DeleteAllInvalidUserSessions()
+    private async Task DeleteAllInvalidUserSessionsAsync()
     {
-        var invalidUserSessions = await _database.UserSessions
+        var invalidUserSessions = await _userSessions
             .Where(userSession => userSession.ExpirationDate < DateTime.UtcNow)
             .ToListAsync();
 
-        _database.RemoveRange(invalidUserSessions);
+        _userSessions.RemoveRange(invalidUserSessions);
     }
 }

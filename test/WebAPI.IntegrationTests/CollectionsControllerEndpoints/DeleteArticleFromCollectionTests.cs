@@ -36,10 +36,10 @@ public sealed class DeleteArticleFromCollectionTests(CustomWebApplicationFactory
 
         // Assert
         (await getCollectionBeforeArticleDeletionResponse.Content.ReadFromJsonAsync<CollectionResponse>())?
-            .Articles.Should().NotBeEmpty();
-        deleteArticleFromCollectionResponse.StatusCode.Should().Be(HttpStatusCode.NoContent);
+            .Articles.ShouldNotBeEmpty();
+        deleteArticleFromCollectionResponse.StatusCode.ShouldBe(HttpStatusCode.NoContent);
         (await getCollectionAfterArticleDeletionResponse.Content.ReadFromJsonAsync<CollectionResponse>())?
-            .Articles.Should().BeEmpty();
+            .Articles.ShouldBeEmpty();
     }
 
     [Fact]
@@ -58,7 +58,7 @@ public sealed class DeleteArticleFromCollectionTests(CustomWebApplicationFactory
         var response = await customClient.DeleteAsync($"/api/collections/{collectionId}/articles/{articleId}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     [Fact]
@@ -77,7 +77,7 @@ public sealed class DeleteArticleFromCollectionTests(CustomWebApplicationFactory
         var response = await customClient.DeleteAsync($"/api/collections/{collectionId}/articles/{articleId}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     [Fact]
@@ -92,7 +92,7 @@ public sealed class DeleteArticleFromCollectionTests(CustomWebApplicationFactory
         var response = await client.DeleteAsync($"/api/collections/{collectionId}/articles/{articleId}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -107,6 +107,6 @@ public sealed class DeleteArticleFromCollectionTests(CustomWebApplicationFactory
         var response = await customClient.DeleteAsync($"/api/collections/{collectionId}/articles/{articleId}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
 }

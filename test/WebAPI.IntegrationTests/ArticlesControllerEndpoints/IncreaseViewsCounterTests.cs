@@ -23,9 +23,9 @@ public sealed class IncreaseViewsCounterTests(CustomWebApplicationFactory factor
         var getArticleResponse = await customClient.GetAsync($"/api/articles/{articleId}");
 
         // Assert
-        increaseViewsResponse1.StatusCode.Should().Be(HttpStatusCode.NoContent);
-        increaseViewsResponse2.StatusCode.Should().Be(HttpStatusCode.NoContent);
-        (await getArticleResponse.Content.ReadFromJsonAsync<ArticleResponse>())?.Views.Should().Be(totalViews);
+        increaseViewsResponse1.StatusCode.ShouldBe(HttpStatusCode.NoContent);
+        increaseViewsResponse2.StatusCode.ShouldBe(HttpStatusCode.NoContent);
+        (await getArticleResponse.Content.ReadFromJsonAsync<ArticleResponse>())?.Views.ShouldBe(totalViews);
     }
 
     [Fact]
@@ -39,6 +39,6 @@ public sealed class IncreaseViewsCounterTests(CustomWebApplicationFactory factor
         var response = await client.PatchAsync($"/api/articles/{articleId}/increase-views", null);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 }

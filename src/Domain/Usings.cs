@@ -13,6 +13,3 @@ global using Domain.Articles;
 global using Domain.Authorization;
 global using Domain.PagedList;
 global using Domain.Users;
-
-global using TokensPair =
-    (Domain.Authorization.AccessToken AccessToken, Domain.Authorization.RefreshToken RefreshToken);

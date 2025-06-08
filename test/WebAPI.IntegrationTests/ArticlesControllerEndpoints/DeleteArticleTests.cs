@@ -21,8 +21,8 @@ public sealed class DeleteArticleTests(CustomWebApplicationFactory factory) : Ba
         var getArticleResponse = await customClient.GetAsync($"/api/articles/{articleId}");
 
         // Assert
-        deleteArticleResponse.StatusCode.Should().Be(HttpStatusCode.NoContent);
-        getArticleResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        deleteArticleResponse.StatusCode.ShouldBe(HttpStatusCode.NoContent);
+        getArticleResponse.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     [Fact]
@@ -36,7 +36,7 @@ public sealed class DeleteArticleTests(CustomWebApplicationFactory factory) : Ba
         var response = await customClient.DeleteAsync($"/api/articles/{articleId}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     [Fact]
@@ -50,7 +50,7 @@ public sealed class DeleteArticleTests(CustomWebApplicationFactory factory) : Ba
         var response = await client.DeleteAsync($"/api/articles/{articleId}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -64,6 +64,6 @@ public sealed class DeleteArticleTests(CustomWebApplicationFactory factory) : Ba
         var response = await customClient.DeleteAsync($"/api/articles/{articleId}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
 }

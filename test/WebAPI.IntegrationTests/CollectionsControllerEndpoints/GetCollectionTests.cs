@@ -20,8 +20,8 @@ public sealed class GetCollectionTests(CustomWebApplicationFactory factory) : Ba
         var response = await customClient.GetAsync($"/api/collections/{collectionId}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
-        (await response.Content.ReadFromJsonAsync<CollectionResponse>())?.Articles.Should().BeEmpty();
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        (await response.Content.ReadFromJsonAsync<CollectionResponse>())?.Articles.ShouldBeEmpty();
     }
 
     [Fact]
@@ -56,8 +56,8 @@ public sealed class GetCollectionTests(CustomWebApplicationFactory factory) : Ba
         var response = await customClient.GetAsync($"/api/collections/{collectionId}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
-        (await response.Content.ReadFromJsonAsync<CollectionResponse>())?.Articles.Should().HaveCount(numberOfArticles);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        (await response.Content.ReadFromJsonAsync<CollectionResponse>())?.Articles.Count().ShouldBe(numberOfArticles);
     }
 
     [Fact]
@@ -71,7 +71,7 @@ public sealed class GetCollectionTests(CustomWebApplicationFactory factory) : Ba
         var response = await customClient.GetAsync($"/api/collections/{collectionId}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     [Fact]
@@ -85,7 +85,7 @@ public sealed class GetCollectionTests(CustomWebApplicationFactory factory) : Ba
         var response = await client.GetAsync($"/api/collections/{collectionId}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -99,6 +99,6 @@ public sealed class GetCollectionTests(CustomWebApplicationFactory factory) : Ba
         var response = await customClient.GetAsync($"/api/collections/{collectionId}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
 }

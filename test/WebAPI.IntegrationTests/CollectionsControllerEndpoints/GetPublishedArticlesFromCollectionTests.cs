@@ -23,8 +23,8 @@ public sealed class GetPublishedArticlesFromCollectionTests(CustomWebApplication
         var response = await client.GetAsync($"/api/collections/{collectionId}/published");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
-        (await response.Content.ReadFromJsonAsync<List<ArticlePreviewResponse>>()).Should().BeEmpty();
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        (await response.Content.ReadFromJsonAsync<List<ArticlePreviewResponse>>()).ShouldBeEmpty();
     }
 
     [Fact]
@@ -61,9 +61,9 @@ public sealed class GetPublishedArticlesFromCollectionTests(CustomWebApplication
         var response = await client.GetAsync($"/api/collections/{collectionId}/published");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         (await response.Content.ReadFromJsonAsync<List<ArticlePreviewResponse>>())
-            .Should().HaveCount(numberOfPublishedArticles);
+            !.Count().ShouldBe(numberOfPublishedArticles);
     }
 
     [Fact]
@@ -77,7 +77,7 @@ public sealed class GetPublishedArticlesFromCollectionTests(CustomWebApplication
         var response = await client.GetAsync($"/api/collections/{collectionId}/published");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     [Fact]
@@ -128,13 +128,13 @@ public sealed class GetPublishedArticlesFromCollectionTests(CustomWebApplication
         List<HttpResponseMessage> responses = [response1, response2, response3, response4];
 
         // Assert
-        responses.ForEach(response => response.StatusCode.Should().Be(HttpStatusCode.OK));
+        responses.ForEach(response => response.StatusCode.ShouldBe(HttpStatusCode.OK));
         responses.ForEach(response =>
-            response.Headers.GetValues("X-Total-Count").Single().Should().Be($"{numberOfPublishedArticles}"));
+            response.Headers.GetValues("X-Total-Count").Single().ShouldBe($"{numberOfPublishedArticles}"));
 
-        (await response1.Content.ReadFromJsonAsync<List<ArticlePreviewResponse>>()).Should().HaveCount(10);
-        (await response2.Content.ReadFromJsonAsync<List<ArticlePreviewResponse>>()).Should().HaveCount(5);
-        (await response3.Content.ReadFromJsonAsync<List<ArticlePreviewResponse>>()).Should().HaveCount(5);
-        (await response4.Content.ReadFromJsonAsync<List<ArticlePreviewResponse>>()).Should().HaveCount(0);
+        (await response1.Content.ReadFromJsonAsync<List<ArticlePreviewResponse>>())!.Count().ShouldBe(10);
+        (await response2.Content.ReadFromJsonAsync<List<ArticlePreviewResponse>>())!.Count().ShouldBe(5);
+        (await response3.Content.ReadFromJsonAsync<List<ArticlePreviewResponse>>())!.Count().ShouldBe(5);
+        (await response4.Content.ReadFromJsonAsync<List<ArticlePreviewResponse>>())!.Count().ShouldBe(0);
     }
 }

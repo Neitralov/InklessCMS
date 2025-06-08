@@ -1,6 +1,6 @@
 namespace Domain.Authorization;
 
-public sealed class UserSession
+public sealed record UserSession
 {
     public long UserSessionId { get; private set; }
     public Guid UserId { get; private set; }
@@ -24,10 +24,5 @@ public sealed class UserSession
         };
     }
 
-    public Task Update()
-    {
-        RefreshToken = new RefreshToken(Guid.NewGuid().ToString());
-
-        return Task.CompletedTask;
-    }
+    public void UpdateRefreshToken() => RefreshToken = new RefreshToken(Guid.NewGuid().ToString());
 }

@@ -21,8 +21,8 @@ public sealed class DeleteCollectionTests(CustomWebApplicationFactory factory) :
         var getCollectionResponse = await customClient.GetAsync($"/api/collections/{collectionId}");
 
         // Assert
-        deleteCollectionResponse.StatusCode.Should().Be(HttpStatusCode.NoContent);
-        getCollectionResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        deleteCollectionResponse.StatusCode.ShouldBe(HttpStatusCode.NoContent);
+        getCollectionResponse.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     [Fact]
@@ -36,7 +36,7 @@ public sealed class DeleteCollectionTests(CustomWebApplicationFactory factory) :
         var response = await customClient.DeleteAsync($"/api/collections/{collectionId}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     [Fact]
@@ -64,9 +64,9 @@ public sealed class DeleteCollectionTests(CustomWebApplicationFactory factory) :
         var getArticleResponse = await customClient.GetAsync($"/api/articles/{articleId}");
 
         // Assert
-        deleteCollectionResponse.StatusCode.Should().Be(HttpStatusCode.NoContent);
-        getCollectionResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
-        getArticleResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        deleteCollectionResponse.StatusCode.ShouldBe(HttpStatusCode.NoContent);
+        getCollectionResponse.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+        getArticleResponse.StatusCode.ShouldBe(HttpStatusCode.OK);
     }
 
     [Fact]
@@ -80,7 +80,7 @@ public sealed class DeleteCollectionTests(CustomWebApplicationFactory factory) :
         var response = await client.DeleteAsync($"/api/collections/{collectionId}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -94,6 +94,6 @@ public sealed class DeleteCollectionTests(CustomWebApplicationFactory factory) :
         var response = await customClient.DeleteAsync($"/api/collections/{collectionId}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
 }

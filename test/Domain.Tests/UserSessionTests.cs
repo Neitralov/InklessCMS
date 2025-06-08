@@ -16,7 +16,7 @@ public sealed class UserSessionTests
         var result = Math.Round((sut.ExpirationDate - DateTime.UtcNow).TotalDays);
 
         // Assert
-        result.Should().Be(UserSession.ExpiresInDays);
+        result.ShouldBe(UserSession.ExpiresInDays);
     }
 
     [Fact]
@@ -31,10 +31,10 @@ public sealed class UserSessionTests
 
         // Act
         var oldRefreshTokenResult = sut.RefreshToken;
-        sut.Update();
+        sut.UpdateRefreshToken();
         var newRefreshTokenResult = sut.RefreshToken;
 
         // Assert
-        oldRefreshTokenResult.Should().NotBeEquivalentTo(newRefreshTokenResult);
+        oldRefreshTokenResult.ShouldNotBe(newRefreshTokenResult);
     }
 }

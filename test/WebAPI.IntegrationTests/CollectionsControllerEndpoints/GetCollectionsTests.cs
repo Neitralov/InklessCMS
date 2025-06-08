@@ -15,8 +15,8 @@ public sealed class GetCollectionsTests(CustomWebApplicationFactory factory) : B
         var response = await client.GetAsync("/api/collections");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
-        (await response.Content.ReadFromJsonAsync<List<CollectionPreviewResponse>>()).Should().BeEmpty();
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        (await response.Content.ReadFromJsonAsync<List<CollectionPreviewResponse>>()).ShouldBeEmpty();
     }
 
     [Fact]
@@ -40,8 +40,8 @@ public sealed class GetCollectionsTests(CustomWebApplicationFactory factory) : B
         var response = await client.GetAsync("/api/collections");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         (await response.Content.ReadFromJsonAsync<List<CollectionPreviewResponse>>())
-            .Should().HaveCount(numberOfCollections);
+            !.Count().ShouldBe(numberOfCollections);
     }
 }

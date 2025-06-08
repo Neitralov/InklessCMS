@@ -1,6 +1,6 @@
 namespace Domain.Articles;
 
-public sealed partial class Article
+public sealed partial record Article
 {
     public string ArticleId { get; private set; } = string.Empty;
     public string Title { get; private set; } = string.Empty;
@@ -57,7 +57,7 @@ public sealed partial class Article
         };
     }
 
-    public ErrorOr<Updated> Update(Article updatedArticle)
+    public void Update(Article updatedArticle)
     {
         Title = updatedArticle.Title;
         Description = updatedArticle.Description;
@@ -69,21 +69,9 @@ public sealed partial class Article
             IsPublished = updatedArticle.IsPublished;
             PublishDate = updatedArticle.PublishDate;
         }
-
-        return Result.Updated;
     }
 
-    public ErrorOr<Updated> IncreaseViewsCounter()
-    {
-        Views++;
+    public void IncreaseViewsCounter() => Views++;
 
-        return Result.Updated;
-    }
-
-    public ErrorOr<Updated> ChangePinState()
-    {
-        IsPinned = !IsPinned;
-
-        return Result.Updated;
-    }
+    public void ChangePinState() => IsPinned = !IsPinned;
 }

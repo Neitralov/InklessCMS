@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Database.Migrator.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class Initital : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -16,9 +16,9 @@ namespace Database.Migrator.Migrations
                 name: "Articles",
                 columns: table => new
                 {
-                    ArticleId = table.Column<string>(type: "text", nullable: false),
-                    Title = table.Column<string>(type: "text", nullable: false),
-                    Description = table.Column<string>(type: "text", nullable: false),
+                    ArticleId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
+                    Title = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
+                    Description = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
                     Text = table.Column<string>(type: "text", nullable: false),
                     IsPublished = table.Column<bool>(type: "boolean", nullable: false),
                     PublishDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
@@ -35,8 +35,8 @@ namespace Database.Migrator.Migrations
                 name: "Collections",
                 columns: table => new
                 {
-                    CollectionId = table.Column<string>(type: "text", nullable: false),
-                    Title = table.Column<string>(type: "text", nullable: false)
+                    CollectionId = table.Column<string>(type: "character varying(32)", maxLength: 32, nullable: false),
+                    Title = table.Column<string>(type: "character varying(32)", maxLength: 32, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -77,8 +77,8 @@ namespace Database.Migrator.Migrations
                 name: "ArticleCollection",
                 columns: table => new
                 {
-                    ArticlesArticleId = table.Column<string>(type: "text", nullable: false),
-                    CollectionId = table.Column<string>(type: "text", nullable: false)
+                    ArticlesArticleId = table.Column<string>(type: "character varying(64)", nullable: false),
+                    CollectionId = table.Column<string>(type: "character varying(32)", nullable: false)
                 },
                 constraints: table =>
                 {

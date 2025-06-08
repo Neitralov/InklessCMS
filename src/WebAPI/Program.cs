@@ -6,7 +6,6 @@ builder.Services.AddRouting(options => options.LowercaseUrls = true);
 builder.Services.AddCors(builder.Configuration);
 builder.Services.AddOptions(builder.Configuration);
 builder.Services.AddRepositories();
-builder.Services.AddServices();
 
 builder.Services.AddDbContext<DatabaseContext>(options =>
     options.UseNpgsql(

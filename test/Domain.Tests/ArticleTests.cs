@@ -28,7 +28,7 @@ public sealed class ArticleTests
         var result = sut.IsError;
 
         // Assert
-        result.Should().BeFalse();
+        result.ShouldBeFalse();
     }
 
     [Theory]
@@ -50,7 +50,7 @@ public sealed class ArticleTests
         var result = sut.IsError;
 
         // Assert
-        result.Should().BeFalse();
+        result.ShouldBeFalse();
     }
 
     [Theory]
@@ -72,7 +72,7 @@ public sealed class ArticleTests
         var result = sut.IsError;
 
         // Assert
-        result.Should().BeFalse();
+        result.ShouldBeFalse();
     }
 
     [Theory]
@@ -97,7 +97,7 @@ public sealed class ArticleTests
         var result = sut.FirstError;
 
         // Assert
-        result.Should().Be(Article.Errors.InvalidId);
+        result.ShouldBe(Article.Errors.InvalidId);
     }
 
     [Theory]
@@ -120,7 +120,7 @@ public sealed class ArticleTests
         var result = sut.FirstError;
 
         // Assert
-        result.Should().Be(Article.Errors.InvalidIdLength);
+        result.ShouldBe(Article.Errors.InvalidIdLength);
     }
 
     [Theory]
@@ -143,7 +143,7 @@ public sealed class ArticleTests
         var result = sut.FirstError;
 
         // Assert
-        result.Should().Be(Article.Errors.InvalidTitleLength);
+        result.ShouldBe(Article.Errors.InvalidTitleLength);
     }
 
     [Theory]
@@ -162,6 +162,6 @@ public sealed class ArticleTests
         var result = sut.FirstError;
 
         // Assert
-        result.Should().Be(Article.Errors.InvalidDescriptionLength);
+        result.ShouldBe(Article.Errors.InvalidDescriptionLength);
     }
 }

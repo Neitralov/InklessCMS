@@ -1,7 +1,8 @@
 namespace WebAPI.Controllers;
 
 [Route("/api/articles")]
-public sealed class ArticlesController(ArticleService articleService, IAuthorizationService authService) : ApiController
+public sealed class ArticlesController(IArticleRepository articleRepository, IAuthorizationService authService)
+    : ApiController
 {
     /// <summary>Создать статью</summary>
     /// <response code="201">Статья создана</response>
@@ -12,7 +13,7 @@ public sealed class ArticlesController(ArticleService articleService, IAuthoriza
     /// </response>
     [HttpPost, Authorize(Policy = "CanManageArticles")]
     [ProducesResponseType(typeof(ArticleResponse), 201)]
-    public async Task<IActionResult> CreateArticle([Required] CreateArticleRequest request)
+    public async Task<IActionResult> CreateArticleAsync([Required] CreateArticleRequest request)
     {
         var requestToArticleResult = CreateArticleFrom(request);
 
@@ -20,37 +21,42 @@ public sealed class ArticlesController(ArticleService articleService, IAuthoriza
             return Problem(requestToArticleResult.Errors);
 
         var article = requestToArticleResult.Value;
-        var createArticleResult = await articleService.AddArticle(article);
 
-        return createArticleResult.Match(_ => CreatedAtGetArticle(article), Problem);
+        if (await articleRepository.IsArticleExistsAsync(article.ArticleId))
+            return Problem([ Article.Errors.NonUniqueId ]);
+
+        await articleRepository.AddArticleAsync(article);
+        await articleRepository.SaveChangesAsync();
+
+        return CreatedAtGetArticleAsync(article);
     }
 
     /// <summary>Получить список статей</summary>
     /// <response code="200">Список статей</response>
     [HttpGet, Authorize(Policy = "CanManageArticles")]
     [ProducesResponseType(typeof(List<ArticlePreviewResponse>), 200)]
-    public async Task<IActionResult> GetArticles(
+    public async Task<IActionResult> GetArticlesAsync(
         [FromQuery] PageOptions pageOptions,
         CancellationToken cancellationToken)
     {
-        var articles = await articleService.GetArticles(pageOptions, cancellationToken);
+        var articles = await articleRepository.GetArticlesAsync(pageOptions, cancellationToken);
 
         Response.Headers.Append("X-Total-Count", articles.TotalCount.ToString());
-        return Ok(articles.Adapt<List<ArticlePreviewResponse>>());
+        return Ok(articles.MapToArticlePreviewResponseList());
     }
 
     /// <summary>Получить список опубликованных статей</summary>
     /// <response code="200">Список опубликованных статей</response>
     [HttpGet("published")]
     [ProducesResponseType(typeof(List<ArticlePreviewResponse>), 200)]
-    public async Task<IActionResult> GetPublishedArticles(
+    public async Task<IActionResult> GetPublishedArticlesAsync(
         [FromQuery] PageOptions pageOptions,
         CancellationToken cancellationToken)
     {
-        var publishedArticles = await articleService.GetPublishedArticles(pageOptions, cancellationToken);
+        var publishedArticles = await articleRepository.GetPublishedArticlesAsync(pageOptions, cancellationToken);
 
         Response.Headers.Append("X-Total-Count", publishedArticles.TotalCount.ToString());
-        return Ok(publishedArticles.Adapt<List<ArticlePreviewResponse>>());
+        return Ok(publishedArticles.MapToArticlePreviewResponseList());
     }
 
     /// <summary>Получить статью</summary>
@@ -58,19 +64,22 @@ public sealed class ArticlesController(ArticleService articleService, IAuthoriza
     /// <response code="200">Статья получена</response>
     /// <response code="404">Статья не найдена</response>
     [HttpGet("{articleId}")]
+    [ActionName(nameof(GetArticleAsync))]
     [ProducesResponseType(typeof(ArticleResponse), 200)]
-    public async Task<IActionResult> GetArticle([Required] string articleId)
+    public async Task<IActionResult> GetArticleAsync([Required] string articleId)
     {
-        var getArticleResult = await articleService.GetArticle(articleId);
+        var getArticleResult = await articleRepository.FindArticleByIdAsync(articleId);
 
         if (getArticleResult.IsError)
             return Problem(getArticleResult.Errors);
 
         var authResult = await authService.AuthorizeAsync(User, "CanManageArticles");
         if (getArticleResult.Value.IsPublished == false && !authResult.Succeeded)
-            getArticleResult = Article.Errors.NotFound;
+            return Problem([ Article.Errors.NotFound ]);
 
-        return getArticleResult.Match(article => Ok(article.Adapt<ArticleResponse>()), Problem);
+        var articles = getArticleResult.Value;
+
+        return Ok(articles.MapToArticleResponse());
     }
 
     /// <summary>Обновить статью</summary>
@@ -83,17 +92,24 @@ public sealed class ArticlesController(ArticleService articleService, IAuthoriza
     /// <response code="404">Статья не найдена</response>
     [HttpPut, Authorize(Policy = "CanManageArticles")]
     [ProducesResponseType(204)]
-    public async Task<IActionResult> UpdateArticle([Required] UpdateArticleRequest request)
+    public async Task<IActionResult> UpdateArticleAsync([Required] UpdateArticleRequest request)
     {
         var requestToArticleResult = CreateArticleFrom(request);
 
         if (requestToArticleResult.IsError)
             return Problem(requestToArticleResult.Errors);
 
-        var article = requestToArticleResult.Value;
-        var updateArticleResult = await articleService.UpdateArticle(article);
+        var updatedArticle = requestToArticleResult.Value;
 
-        return updateArticleResult.Match(_ => NoContent(), Problem);
+        var article = await articleRepository.FindArticleByIdAsync(updatedArticle.ArticleId);
+
+        if (article.IsError)
+            return Problem(article.Errors);
+
+        article.Value.Update(updatedArticle);
+        await articleRepository.SaveChangesAsync();
+
+        return NoContent();
     }
 
     /// <summary>Закрепить/открепить статью</summary>
@@ -102,11 +118,17 @@ public sealed class ArticlesController(ArticleService articleService, IAuthoriza
     /// <response code="404">Статья не найдена</response>
     [HttpPatch("{articleId}/pin"), Authorize(Policy = "CanManageArticles")]
     [ProducesResponseType(204)]
-    public async Task<IActionResult> ChangePinState([Required] string articleId)
+    public async Task<IActionResult> ChangePinStateAsync([Required] string articleId)
     {
-        var changePinStateResult = await articleService.ChangePinState(articleId);
+        var article = await articleRepository.FindArticleByIdAsync(articleId);
 
-        return changePinStateResult.Match(_ => NoContent(), Problem);
+        if (article.IsError)
+            return Problem(article.Errors);
+
+        article.Value.ChangePinState();
+        await articleRepository.SaveChangesAsync();
+
+        return NoContent();
     }
 
     /// <summary>Увеличить счетчик просмотров статьи на единицу</summary>
@@ -115,11 +137,17 @@ public sealed class ArticlesController(ArticleService articleService, IAuthoriza
     /// <response code="404">Статья не найдена</response>
     [HttpPatch("{articleId}/increase-views")]
     [ProducesResponseType(204)]
-    public async Task<IActionResult> IncreaseViewsCounter([Required] string articleId)
+    public async Task<IActionResult> IncreaseViewsCounterAsync([Required] string articleId)
     {
-        var increaseViewsCounterResult = await articleService.IncreaseViewsCounter(articleId);
+        var article = await articleRepository.FindArticleByIdAsync(articleId);
 
-        return increaseViewsCounterResult.Match(_ => NoContent(), Problem);
+        if (article.IsError)
+            return Problem(article.Errors);
+
+        article.Value.IncreaseViewsCounter();
+        await articleRepository.SaveChangesAsync();
+
+        return NoContent();
     }
 
     /// <summary>Удалить статью</summary>
@@ -128,34 +156,45 @@ public sealed class ArticlesController(ArticleService articleService, IAuthoriza
     /// <response code="404">Статья не найдена</response>
     [HttpDelete("{articleId}"), Authorize(Policy = "CanManageArticles")]
     [ProducesResponseType(204)]
-    public async Task<IActionResult> DeleteArticle([Required] string articleId)
+    public async Task<IActionResult> DeleteArticleAsync([Required] string articleId)
     {
-        var deleteArticleResult = await articleService.DeleteArticle(articleId);
+        var result = await articleRepository.DeleteArticleAsync(articleId);
 
-        return deleteArticleResult.Match(_ => NoContent(), Problem);
+        if (result.IsError)
+            return Problem(result.Errors);
+
+        await articleRepository.SaveChangesAsync();
+
+        return NoContent();
     }
 
-    private static ErrorOr<Article> CreateArticleFrom(CreateArticleRequest request) =>
-        Article.Create(
+    private static ErrorOr<Article> CreateArticleFrom(CreateArticleRequest request)
+    {
+        return Article.Create(
             request.ArticleId,
             request.Title,
             request.Description,
             request.Text,
             request.IsPublished,
             request.IsPinned);
+    }
 
-    private static ErrorOr<Article> CreateArticleFrom(UpdateArticleRequest request) =>
-        Article.Create(
+    private static ErrorOr<Article> CreateArticleFrom(UpdateArticleRequest request)
+    {
+        return Article.Create(
             request.ArticleId,
             request.Title,
             request.Description,
             request.Text,
             request.IsPublished,
             request.IsPinned);
+    }
 
-    private CreatedAtActionResult CreatedAtGetArticle(Article article) =>
-        CreatedAtAction(
-            actionName: nameof(GetArticle),
+    private CreatedAtActionResult CreatedAtGetArticleAsync(Article article)
+    {
+        return CreatedAtAction(
+            actionName: nameof(GetArticleAsync),
             routeValues: new { articleId = article.ArticleId },
-            value: article.Adapt<ArticleResponse>());
+            value: article.MapToArticleResponse());
+    }
 }

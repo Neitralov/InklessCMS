@@ -1,6 +1,6 @@
 namespace Domain.Collections;
 
-public sealed partial class Collection
+public sealed partial record Collection
 {
     public string CollectionId { get; private set; } = string.Empty;
     public string Title { get; private set; } = string.Empty;
@@ -35,19 +35,9 @@ public sealed partial class Collection
         };
     }
 
-    public ErrorOr<Updated> Update(Collection updatedCollection)
-    {
-        Title = updatedCollection.Title;
+    public void Update(Collection updatedCollection) => Title = updatedCollection.Title;
 
-        return Result.Updated;
-    }
-
-    public ErrorOr<Success> AddArticle(Article articleToAdd)
-    {
-        _articles.Add(articleToAdd);
-
-        return Result.Success;
-    }
+    public void AddArticle(Article articleToAdd) => _articles.Add(articleToAdd);
 
     public ErrorOr<Deleted> DeleteArticle(string idOfArticleToDelete)
     {

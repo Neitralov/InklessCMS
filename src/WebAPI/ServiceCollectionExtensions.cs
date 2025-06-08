@@ -2,18 +2,13 @@ namespace WebAPI;
 
 public static class ServiceCollectionExtensions
 {
-    public static void AddRepositories(this IServiceCollection services) =>
+    public static void AddRepositories(this IServiceCollection services)
+    {
         services
             .AddTransient<IUserRepository, UserRepository>()
             .AddTransient<IArticleRepository, ArticleRepository>()
             .AddTransient<ICollectionRepository, CollectionRepository>();
-
-    public static void AddServices(this IServiceCollection services) =>
-        services
-            .AddTransient<IAuthService, AuthService>()
-            .AddTransient<UserService>()
-            .AddTransient<ArticleService>()
-            .AddTransient<CollectionService>();
+    }
 
     public static void AddOptions(this IServiceCollection services, IConfiguration configuration)
     {
@@ -24,16 +19,19 @@ public static class ServiceCollectionExtensions
             .ValidateOnStart();
     }
 
-    public static void AddCors(this IServiceCollection services, IConfiguration configuration) => services
-        .AddCors(options => options.AddPolicy("AllowClient",
+    public static void AddCors(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddCors(options => options.AddPolicy("AllowClient",
             policy => policy
                 .WithOrigins(configuration["ClientUrl"] ??
                     throw new NullReferenceException("config variable \"ClientUrl\" is not defined"))
                 .AllowAnyHeader()
                 .AllowAnyMethod()
                 .WithExposedHeaders("X-Total-Count")));
+    }
 
-    public static void AddSwagger(this IServiceCollection services) =>
+    public static void AddSwagger(this IServiceCollection services)
+    {
         services.AddSwaggerGen(options =>
         {
             options.SwaggerDoc("v1", new OpenApiInfo { Title = "Inkless API", Version = "0.3" });
@@ -56,8 +54,10 @@ public static class ServiceCollectionExtensions
             options.OperationFilter<AppendAuthorizeToSummaryOperationFilter>();
             options.OperationFilter<SecurityRequirementsOperationFilter>(true, JwtBearerDefaults.AuthenticationScheme);
         });
+    }
 
-    public static void AddJwtBearerAuthentication(this IServiceCollection services, IConfiguration configuration) =>
+    public static void AddJwtBearerAuthentication(this IServiceCollection services, IConfiguration configuration)
+    {
         services
             .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>
@@ -74,4 +74,5 @@ public static class ServiceCollectionExtensions
                     ClockSkew = TimeSpan.Zero
                 };
             });
+    }
 }
