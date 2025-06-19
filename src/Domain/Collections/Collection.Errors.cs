@@ -1,6 +1,6 @@
 namespace Domain.Collections;
 
-public sealed partial class Collection
+public sealed partial record Collection
 {
     public static class Errors
     {
@@ -19,7 +19,7 @@ public sealed partial class Collection
         public static Error InvalidId => Error.Validation(
             code: $"{nameof(Collection)}.{nameof(InvalidId)}",
             description: $"Id коллекции должен соответствовать выражению " +
-                         $"{CollectionIdPattern}.");
+                $"{CollectionIdPattern}.");
 
         public static Error InvalidIdLength => Error.Validation(
             code: $"{nameof(Collection)}.{nameof(InvalidIdLength)}",
@@ -28,7 +28,7 @@ public sealed partial class Collection
         public static Error InvalidTitleLength => Error.Validation(
             code: $"{nameof(Collection)}.{nameof(InvalidTitleLength)}",
             description: $"Название коллекции не может быть короче {MinTitleLength} символов " +
-                         $"и длиннее {MaxTitleLength} символов.");
+                $"и длиннее {MaxTitleLength} символов.");
 
         public static Error ArticleAlreadyAdded => Error.Validation(
             code: $"{nameof(Collection)}.{nameof(ArticleAlreadyAdded)}",

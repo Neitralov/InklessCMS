@@ -25,7 +25,7 @@ public sealed class CollectionTests
         var result = sut.IsError;
 
         // Assert
-        result.Should().BeFalse();
+        result.ShouldBeFalse();
     }
 
     [Theory]
@@ -44,7 +44,7 @@ public sealed class CollectionTests
         var result = sut.IsError;
 
         // Assert
-        result.Should().BeFalse();
+        result.ShouldBeFalse();
     }
 
     [Theory]
@@ -66,7 +66,7 @@ public sealed class CollectionTests
         var result = sut.FirstError;
 
         // Assert
-        result.Should().Be(Collection.Errors.InvalidId);
+        result.ShouldBe(Collection.Errors.InvalidId);
     }
 
     [Theory]
@@ -86,7 +86,7 @@ public sealed class CollectionTests
         var result = sut.FirstError;
 
         // Assert
-        result.Should().Be(Collection.Errors.InvalidIdLength);
+        result.ShouldBe(Collection.Errors.InvalidIdLength);
     }
 
     [Theory]
@@ -106,6 +106,6 @@ public sealed class CollectionTests
         var result = sut.FirstError;
 
         // Assert
-        result.Should().Be(Collection.Errors.InvalidTitleLength);
+        result.ShouldBe(Collection.Errors.InvalidTitleLength);
     }
 }

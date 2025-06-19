@@ -18,7 +18,7 @@ namespace Database.Migrator.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.10")
+                .HasAnnotation("ProductVersion", "8.0.11")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -26,29 +26,31 @@ namespace Database.Migrator.Migrations
             modelBuilder.Entity("ArticleCollection", b =>
                 {
                     b.Property<string>("ArticlesArticleId")
-                        .HasColumnType("text");
+                        .HasColumnType("character varying(64)");
 
                     b.Property<string>("CollectionId")
-                        .HasColumnType("text");
+                        .HasColumnType("character varying(32)");
 
                     b.HasKey("ArticlesArticleId", "CollectionId");
 
                     b.HasIndex("CollectionId");
 
-                    b.ToTable("ArticleCollection", (string)null);
+                    b.ToTable("ArticleCollection");
                 });
 
             modelBuilder.Entity("Domain.Articles.Article", b =>
                 {
                     b.Property<string>("ArticleId")
-                        .HasColumnType("text");
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
 
                     b.Property<DateTime>("CreationDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
 
                     b.Property<bool>("IsPinned")
                         .HasColumnType("boolean");
@@ -65,7 +67,8 @@ namespace Database.Migrator.Migrations
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
 
                     b.Property<int>("Views")
                         .HasColumnType("integer");
@@ -106,11 +109,13 @@ namespace Database.Migrator.Migrations
             modelBuilder.Entity("Domain.Collections.Collection", b =>
                 {
                     b.Property<string>("CollectionId")
-                        .HasColumnType("text");
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)");
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)");
 
                     b.HasKey("CollectionId");
 

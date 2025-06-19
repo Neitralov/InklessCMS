@@ -54,14 +54,14 @@ return 0;
 
 async Task SeedAdminAccount(DatabaseContext dbContext, AdminAccountOptions adminAccountOptions)
 {
-    if (!await dbContext.Users.AnyAsync())
+    if (!await dbContext.Set<User>().AnyAsync())
     {
         var admin = User.Create(
             email: adminAccountOptions.Email,
             password: adminAccountOptions.Password,
             canManageArticles: true);
 
-        await dbContext.Users.AddAsync(admin.Value);
+        await dbContext.Set<User>().AddAsync(admin.Value);
         await dbContext.SaveChangesAsync();
     }
 }

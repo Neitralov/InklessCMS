@@ -27,10 +27,10 @@ public sealed class RefreshTokensTests(CustomWebApplicationFactory factory) : Ba
             });
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var loginResponse = await response.Content.ReadFromJsonAsync<LoginUserResponse>();
-        loginResponse?.RefreshToken.Should().NotBeEmpty();
-        loginResponse?.AccessToken.Should().NotBeEmpty();
+        loginResponse?.RefreshToken.ShouldNotBeEmpty();
+        loginResponse?.AccessToken.ShouldNotBeEmpty();
     }
 
     [Fact]
@@ -55,7 +55,7 @@ public sealed class RefreshTokensTests(CustomWebApplicationFactory factory) : Ba
             });
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
 
     [Fact]

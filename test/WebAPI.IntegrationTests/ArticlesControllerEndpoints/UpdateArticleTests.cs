@@ -28,10 +28,10 @@ public sealed class UpdateArticleTests(CustomWebApplicationFactory factory) : Ba
         var getArticleResponse2 = await customClient.GetAsync($"/api/articles/{articleId}");
 
         // Assert
-        updateArticleResponse.StatusCode.Should().Be(HttpStatusCode.NoContent);
+        updateArticleResponse.StatusCode.ShouldBe(HttpStatusCode.NoContent);
         var firstContent = await getArticleResponse1.Content.ReadFromJsonAsync<ArticleResponse>();
         var secondContent = await getArticleResponse2.Content.ReadFromJsonAsync<ArticleResponse>();
-        firstContent?.Title.Should().NotBeSameAs(secondContent?.Title);
+        firstContent?.Title.ShouldNotBe(secondContent?.Title);
     }
 
     [Fact]
@@ -47,7 +47,7 @@ public sealed class UpdateArticleTests(CustomWebApplicationFactory factory) : Ba
             value: DataGenerator.Article.GetUpdateRequest() with { ArticleId = articleId });
 
         // Assert
-        updateArticleResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        updateArticleResponse.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     [Fact]
@@ -68,7 +68,7 @@ public sealed class UpdateArticleTests(CustomWebApplicationFactory factory) : Ba
             value: DataGenerator.Article.GetUpdateRequest() with { ArticleId = articleId, Title = tooShortTitle });
 
         // Assert
-        updateArticleResponse.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        updateArticleResponse.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
 
     [Fact]
@@ -84,7 +84,7 @@ public sealed class UpdateArticleTests(CustomWebApplicationFactory factory) : Ba
             value: DataGenerator.Article.GetUpdateRequest() with { ArticleId = articleId });
 
         // Assert
-        updateArticleResponse.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        updateArticleResponse.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -100,6 +100,6 @@ public sealed class UpdateArticleTests(CustomWebApplicationFactory factory) : Ba
             value: DataGenerator.Article.GetUpdateRequest() with { ArticleId = articleId });
 
         // Assert
-        updateArticleResponse.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        updateArticleResponse.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
 }

@@ -12,7 +12,7 @@ run-db:
     -e POSTGRES_USER=postgres \
     -e POSTGRES_PASSWORD=1234 \
     --name inkless-postgres \
-    postgres:16.3
+    postgres:16.9
 
 run-migrator:
 	dotnet run --project src/Database.Migrator

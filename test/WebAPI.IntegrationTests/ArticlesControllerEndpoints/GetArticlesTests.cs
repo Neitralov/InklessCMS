@@ -16,9 +16,9 @@ public sealed class GetArticlesTests(CustomWebApplicationFactory factory) : Base
         var response = await customClient.GetAsync("/api/articles");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
-        response.Headers.GetValues("X-Total-Count").Single().Should().Be($"{numberOfArticles}");
-        (await response.Content.ReadFromJsonAsync<List<ArticlePreviewResponse>>()).Should().BeEmpty();
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        response.Headers.GetValues("X-Total-Count").Single().ShouldBe($"{numberOfArticles}");
+        (await response.Content.ReadFromJsonAsync<List<ArticlePreviewResponse>>()).ShouldBeEmpty();
     }
 
     [Fact]
@@ -37,9 +37,9 @@ public sealed class GetArticlesTests(CustomWebApplicationFactory factory) : Base
         var response = await customClient.GetAsync("/api/articles");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
-        response.Headers.GetValues("X-Total-Count").Single().Should().Be($"{numberOfArticles}");
-        (await response.Content.ReadFromJsonAsync<List<ArticlePreviewResponse>>()).Should().HaveCount(numberOfArticles);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        response.Headers.GetValues("X-Total-Count").Single().ShouldBe($"{numberOfArticles}");
+        (await response.Content.ReadFromJsonAsync<List<ArticlePreviewResponse>>())!.Count().ShouldBe(numberOfArticles);
     }
 
     [Fact]
@@ -52,7 +52,7 @@ public sealed class GetArticlesTests(CustomWebApplicationFactory factory) : Base
         var response = await client.GetAsync("/api/articles");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -65,7 +65,7 @@ public sealed class GetArticlesTests(CustomWebApplicationFactory factory) : Base
         var response = await customClient.GetAsync("/api/articles");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
 
     [Fact]
@@ -102,14 +102,14 @@ public sealed class GetArticlesTests(CustomWebApplicationFactory factory) : Base
         List<HttpResponseMessage> responses = [response1, response2, response3, response4];
 
         // Assert
-        responses.ForEach(response => response.StatusCode.Should().Be(HttpStatusCode.OK));
+        responses.ForEach(response => response.StatusCode.ShouldBe(HttpStatusCode.OK));
         responses.ForEach(response =>
             response.Headers.GetValues("X-Total-Count")
-                .Single().Should().Be($"{numberOfDrafts + numberOfPublishedArticles}"));
+                .Single().ShouldBe($"{numberOfDrafts + numberOfPublishedArticles}"));
 
-        (await response1.Content.ReadFromJsonAsync<List<ArticlePreviewResponse>>()).Should().HaveCount(10);
-        (await response2.Content.ReadFromJsonAsync<List<ArticlePreviewResponse>>()).Should().HaveCount(5);
-        (await response3.Content.ReadFromJsonAsync<List<ArticlePreviewResponse>>()).Should().HaveCount(6);
-        (await response4.Content.ReadFromJsonAsync<List<ArticlePreviewResponse>>()).Should().HaveCount(0);
+        (await response1.Content.ReadFromJsonAsync<List<ArticlePreviewResponse>>())!.Count().ShouldBe(10);
+        (await response2.Content.ReadFromJsonAsync<List<ArticlePreviewResponse>>())!.Count().ShouldBe(5);
+        (await response3.Content.ReadFromJsonAsync<List<ArticlePreviewResponse>>())!.Count().ShouldBe(6);
+        (await response4.Content.ReadFromJsonAsync<List<ArticlePreviewResponse>>())!.Count().ShouldBe(0);
     }
 }

@@ -29,11 +29,11 @@ public sealed class ChangePinStateTests(CustomWebApplicationFactory factory) : B
         var getArticleResponse2 = await customClient.GetAsync($"/api/articles/{secondArticleId}");
 
         // Assert
-        changePinStateResponse1.StatusCode.Should().Be(HttpStatusCode.NoContent);
-        (await getArticleResponse1.Content.ReadFromJsonAsync<ArticleResponse>())?.IsPinned.Should().BeTrue();
+        changePinStateResponse1.StatusCode.ShouldBe(HttpStatusCode.NoContent);
+        (await getArticleResponse1.Content.ReadFromJsonAsync<ArticleResponse>())?.IsPinned.ShouldBeTrue();
 
-        changePinStateResponse2.StatusCode.Should().Be(HttpStatusCode.NoContent);
-        (await getArticleResponse2.Content.ReadFromJsonAsync<ArticleResponse>())?.IsPinned.Should().BeFalse();
+        changePinStateResponse2.StatusCode.ShouldBe(HttpStatusCode.NoContent);
+        (await getArticleResponse2.Content.ReadFromJsonAsync<ArticleResponse>())?.IsPinned.ShouldBeFalse();
     }
 
     [Fact]
@@ -47,7 +47,7 @@ public sealed class ChangePinStateTests(CustomWebApplicationFactory factory) : B
         var response = await customClient.PatchAsync($"/api/articles/{articleId}/pin", null);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     [Fact]
@@ -61,7 +61,7 @@ public sealed class ChangePinStateTests(CustomWebApplicationFactory factory) : B
         var response = await client.PatchAsync($"/api/articles/{articleId}/pin", null);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -75,6 +75,6 @@ public sealed class ChangePinStateTests(CustomWebApplicationFactory factory) : B
         var response = await customClient.PatchAsync($"/api/articles/{articleId}/pin", null);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
 }

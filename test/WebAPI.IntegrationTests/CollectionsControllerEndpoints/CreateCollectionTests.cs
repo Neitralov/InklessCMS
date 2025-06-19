@@ -18,8 +18,8 @@ public sealed class CreateCollectionTests(CustomWebApplicationFactory factory) :
             value: DataGenerator.Collection.GetCreateCollectionRequest() with { CollectionId = collectionId });
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Created);
-        (await response.Content.ReadFromJsonAsync<CollectionPreviewResponse>())?.CollectionId.Should().Be(collectionId);
+        response.StatusCode.ShouldBe(HttpStatusCode.Created);
+        (await response.Content.ReadFromJsonAsync<CollectionPreviewResponse>())?.CollectionId.ShouldBe(collectionId);
     }
 
     [Fact]
@@ -35,7 +35,7 @@ public sealed class CreateCollectionTests(CustomWebApplicationFactory factory) :
             value: DataGenerator.Collection.GetCreateCollectionRequest() with { CollectionId = collectionId });
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
 
     [Fact]
@@ -50,7 +50,7 @@ public sealed class CreateCollectionTests(CustomWebApplicationFactory factory) :
             value: DataGenerator.Collection.GetCreateCollectionRequest());
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -65,6 +65,6 @@ public sealed class CreateCollectionTests(CustomWebApplicationFactory factory) :
             value: DataGenerator.Collection.GetCreateCollectionRequest());
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
 }
