@@ -77,5 +77,3 @@ SUM:                            33            392            265           1601
 
 # 📃 Лицензия
 Программа распространяется под лицензией [Apache License 2.0](https://github.com/Neitralov/InklessCMS/blob/master/LICENSE).
-
-За исключением шрифта приложения Ubuntu [UBUNTU FONT LICENCE Version 1.0](https://github.com/Neitralov/GameReviewLib/blob/master/client/src/assets/UFL.txt).
