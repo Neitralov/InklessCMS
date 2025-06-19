@@ -1,3 +1,3 @@
-FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine
+FROM mcr.microsoft.com/dotnet/aspnet:9.0-alpine
 WORKDIR /app
-COPY bin/Release/net8.0 .
+COPY bin/Release/net9.0 .
