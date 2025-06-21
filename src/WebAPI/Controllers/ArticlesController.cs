@@ -77,9 +77,9 @@ public sealed class ArticlesController(IArticleRepository articleRepository, IAu
         if (getArticleResult.Value.IsPublished == false && !authResult.Succeeded)
             return Problem([ Article.Errors.NotFound ]);
 
-        var articles = getArticleResult.Value;
+        var article = getArticleResult.Value;
 
-        return Ok(articles.MapToArticleResponse());
+        return Ok(article.MapToArticleResponse());
     }
 
     /// <summary>Обновить статью</summary>

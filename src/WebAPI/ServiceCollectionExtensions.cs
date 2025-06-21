@@ -75,4 +75,13 @@ public static class ServiceCollectionExtensions
                 };
             });
     }
+
+    public static void AddGraphQL(this IServiceCollection services, WebApplicationBuilder builder)
+    {
+        services
+            .AddGraphQLServer()
+            .AddQueryType<RootQuery>()
+            .AddErrorFilter(error => error.WithMessage(error.Exception!.Message))
+            .ModifyRequestOptions(o => o.IncludeExceptionDetails = builder.Environment.IsDevelopment());
+    }
 }
