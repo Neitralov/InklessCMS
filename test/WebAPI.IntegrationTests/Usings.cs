@@ -12,6 +12,7 @@ global using Microsoft.Extensions.Options;
 global using Xunit;
 global using Respawn;
 global using Shouldly;
+global using Testcontainers.PostgreSql;
 
 global using Database;
 global using Domain.Users;
