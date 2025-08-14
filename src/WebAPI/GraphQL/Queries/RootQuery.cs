@@ -10,6 +10,8 @@ public sealed class RootQuery
     {
         var publishedArticles = await articleRepository.GetPublishedArticlesAsync(pageOptions, cancellationToken);
 
+        // Через IHttpContextAccessor установить хедер с числом элементов как в контроллере
+
         return new GqlArticleList(
             Articles: publishedArticles.Select(article => new GqlArticle(article)),
             TotalCount: publishedArticles.TotalCount

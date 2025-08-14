@@ -27,6 +27,7 @@ global using WebAPI.Contracts.Collection;
 global using WebAPI.Contracts.User;
 
 global using WebAPI.GraphQL.Queries;
+global using WebAPI.GraphQL.Mutations;
 global using WebAPI.GraphQL.OutputTypes;
 
 global using Error = ErrorOr.Error;

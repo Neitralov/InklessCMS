@@ -80,7 +80,9 @@ public static class ServiceCollectionExtensions
     {
         services
             .AddGraphQLServer()
+            .AddAuthorization()
             .AddQueryType<RootQuery>()
+            .AddMutationType<RootMutation>()
             .AddErrorFilter(error => error.WithMessage(error.Exception!.Message))
             .ModifyRequestOptions(o => o.IncludeExceptionDetails = builder.Environment.IsDevelopment());
     }
