@@ -83,7 +83,7 @@ public static class ServiceCollectionExtensions
             .AddAuthorization()
             .AddQueryType<RootQuery>()
             .AddMutationType<RootMutation>()
-            .AddErrorFilter(error => error.WithMessage(error.Exception!.Message))
+            .AddErrorFilter(error => error.WithMessage(error.Exception?.Message ?? error.Message))
             .ModifyRequestOptions(o => o.IncludeExceptionDetails = builder.Environment.IsDevelopment());
     }
 }

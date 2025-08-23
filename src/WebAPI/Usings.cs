@@ -13,6 +13,7 @@ global using Microsoft.Extensions.Options;
 global using ErrorOr;
 global using Swashbuckle.AspNetCore.Filters;
 global using Scalar.AspNetCore;
+global using HotChocolate;
 
 global using Database;
 global using Database.Repositories;
@@ -25,9 +26,9 @@ global using WebAPI;
 global using WebAPI.Contracts.Article;
 global using WebAPI.Contracts.Collection;
 global using WebAPI.Contracts.User;
-
 global using WebAPI.GraphQL.Queries;
 global using WebAPI.GraphQL.Mutations;
 global using WebAPI.GraphQL.OutputTypes;
 
 global using Error = ErrorOr.Error;
+global using GqlAuthorize = HotChocolate.Authorization.AuthorizeAttribute;
