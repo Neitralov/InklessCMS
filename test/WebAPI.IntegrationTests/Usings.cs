@@ -13,9 +13,18 @@ global using Xunit;
 global using Respawn;
 global using Shouldly;
 global using Testcontainers.PostgreSql;
+global using GraphQL;
+global using GraphQL.Client.Http;
+global using GraphQL.Client.Serializer.SystemTextJson;
+global using GraphQL.Client.Abstractions;
 
 global using Database;
 global using Domain.Users;
+global using Domain.PagedList;
+global using WebAPI.GraphQL.InputTypes;
+global using WebAPI.GraphQL.OutputTypes;
 global using WebAPI.Contracts.Article;
 global using WebAPI.Contracts.Collection;
 global using WebAPI.Contracts.User;
+global using WebAPI.IntegrationTests.GraphQL.Mutations;
+global using WebAPI.IntegrationTests.GraphQL.Queries;

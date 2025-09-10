@@ -14,7 +14,7 @@ public sealed class GetCollectionTests(CustomWebApplicationFactory factory) : Ba
 
         await customClient.PostAsJsonAsync(
             requestUri: "/api/collections",
-            value: DataGenerator.Collection.GetCreateCollectionRequest() with { CollectionId = collectionId });
+            value: Requests.Collection.GetCreateCollectionRequest() with { CollectionId = collectionId });
 
         // Act
         var response = await customClient.GetAsync($"/api/collections/{collectionId}");
@@ -34,23 +34,23 @@ public sealed class GetCollectionTests(CustomWebApplicationFactory factory) : Ba
 
         await customClient.PostAsJsonAsync(
             requestUri: "/api/collections",
-            value: DataGenerator.Collection.GetCreateCollectionRequest() with { CollectionId = collectionId });
+            value: Requests.Collection.GetCreateCollectionRequest() with { CollectionId = collectionId });
 
         const string firstArticleId = "article-1";
         await customClient.PostAsJsonAsync(
             requestUri: "/api/articles",
-            value: DataGenerator.Article.GetCreateRequest() with { ArticleId = firstArticleId, IsPublished = true });
+            value: Requests.Article.ArticleInput with { ArticleId = firstArticleId, IsPublished = true });
         await customClient.PostAsJsonAsync(
             requestUri: $"/api/collections/{collectionId}",
-            value: DataGenerator.Collection.GetAddArticleToCollectionRequest() with { ArticleId = firstArticleId });
+            value: Requests.Collection.GetAddArticleToCollectionRequest() with { ArticleId = firstArticleId });
 
         const string secondArticleId = "article-2";
         await customClient.PostAsJsonAsync(
             requestUri: "/api/articles",
-            value: DataGenerator.Article.GetCreateRequest() with { ArticleId = secondArticleId, IsPublished = false });
+            value: Requests.Article.ArticleInput with { ArticleId = secondArticleId, IsPublished = false });
         await customClient.PostAsJsonAsync(
             requestUri: $"/api/collections/{collectionId}",
-            value: DataGenerator.Collection.GetAddArticleToCollectionRequest() with { ArticleId = secondArticleId });
+            value: Requests.Collection.GetAddArticleToCollectionRequest() with { ArticleId = secondArticleId });
 
         // Act
         var response = await customClient.GetAsync($"/api/collections/{collectionId}");

@@ -77,3 +77,12 @@ public static class CustomWebApplicationFactoryExtensions
             _ => throw new ArgumentOutOfRangeException(nameof(userType), userType, null)
         };
 }
+
+public static class HttpClientExtensions
+{
+    public static GraphQLHttpClient ToGqlClient(this HttpClient httpClient) =>
+        new GraphQLHttpClient(
+            new Uri(httpClient.BaseAddress!, "/graphql"),
+            new SystemTextJsonSerializer(),
+            httpClient);
+}

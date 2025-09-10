@@ -13,9 +13,9 @@ public sealed class ArticlesController(IArticleRepository articleRepository, IAu
     /// </response>
     [HttpPost, Authorize(Policy = "CanManageArticles")]
     [ProducesResponseType(typeof(ArticleResponse), 201)]
-    public async Task<IActionResult> CreateArticleAsync([Required] CreateArticleRequest request)
+    public async Task<IActionResult> CreateArticleAsync([Required] CreateArticleInput input)
     {
-        var requestToArticleResult = CreateArticleFrom(request);
+        var requestToArticleResult = CreateArticleFrom(input);
 
         if (requestToArticleResult.IsError)
             return Problem(requestToArticleResult.Errors);
@@ -168,15 +168,15 @@ public sealed class ArticlesController(IArticleRepository articleRepository, IAu
         return NoContent();
     }
 
-    private static ErrorOr<Article> CreateArticleFrom(CreateArticleRequest request)
+    private static ErrorOr<Article> CreateArticleFrom(CreateArticleInput input)
     {
         return Article.Create(
-            request.ArticleId,
-            request.Title,
-            request.Description,
-            request.Text,
-            request.IsPublished,
-            request.IsPinned);
+            input.ArticleId,
+            input.Title,
+            input.Description,
+            input.Text,
+            input.IsPublished,
+            input.IsPinned);
     }
 
     private static ErrorOr<Article> CreateArticleFrom(UpdateArticleRequest request)

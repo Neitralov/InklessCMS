@@ -1,3 +1,5 @@
+using Domain.Articles;
+
 namespace WebAPI.IntegrationTests.ArticlesControllerEndpoints;
 
 [Collection("Tests")]
@@ -9,97 +11,101 @@ public sealed class UpdateArticleTests(CustomWebApplicationFactory factory) : Ba
     public async Task ArticleCanBeUpdated()
     {
         // Arrange
-        var customClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient();
+        var gqlClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient().ToGqlClient();
         const string articleId = "article-id";
         const string defaultTitle = "Default title";
         const string updatedTitle = "Updated title";
 
-        await customClient.PostAsJsonAsync(
-            requestUri: "/api/articles",
-            value: DataGenerator.Article.GetCreateRequest() with { ArticleId = articleId, Title = defaultTitle });
-
         // Act
-        var getArticleResponse1 = await customClient.GetAsync($"/api/articles/{articleId}");
-
-        var updateArticleResponse = await customClient.PutAsJsonAsync(
-            requestUri: "api/articles",
-            value: DataGenerator.Article.GetUpdateRequest() with { ArticleId = articleId, Title = updatedTitle });
-
-        var getArticleResponse2 = await customClient.GetAsync($"/api/articles/{articleId}");
+        var createGqlResponse = await gqlClient.CreateArticle(Requests.Article.ArticleInput with
+        {
+            ArticleId = articleId, 
+            Title = defaultTitle
+        });
+        
+        var updateGqlResponse = await gqlClient.UpdateArticle(Requests.Article.ArticleInput with
+        {
+            ArticleId = articleId, 
+            Title = updatedTitle
+        });
 
         // Assert
-        updateArticleResponse.StatusCode.ShouldBe(HttpStatusCode.NoContent);
-        var firstContent = await getArticleResponse1.Content.ReadFromJsonAsync<ArticleResponse>();
-        var secondContent = await getArticleResponse2.Content.ReadFromJsonAsync<ArticleResponse>();
-        firstContent?.Title.ShouldNotBe(secondContent?.Title);
+        createGqlResponse.Title.ShouldBe(defaultTitle);
+        updateGqlResponse.Title.ShouldBe(updatedTitle);
     }
 
     [Fact]
     public async Task ArticleCannotBeUpdatedIfItDoesNotExist()
     {
         // Arrange
-        var customClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient();
+        var gqlClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient().ToGqlClient();
         const string articleId = "article-id";
 
         // Act
-        var updateArticleResponse = await customClient.PutAsJsonAsync(
-            requestUri: "api/articles",
-            value: DataGenerator.Article.GetUpdateRequest() with { ArticleId = articleId });
+        var exception = await Should.ThrowAsync<GraphQLHttpRequestException>(async () =>
+        {
+            await gqlClient.UpdateArticle(Requests.Article.ArticleInput with { ArticleId = articleId });
+        });
 
         // Assert
-        updateArticleResponse.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+        exception.Content!.ShouldContain(Article.Errors.NotFound.Code);
     }
 
     [Fact]
     public async Task ArticleCannotBeUpdatedWithInvalidData()
     {
         // Arrange
-        var customClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient();
+        var gqlClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient().ToGqlClient();
         const string articleId = "article-id";
         const string tooShortTitle = "Aa";
 
-        await customClient.PostAsJsonAsync(
-            requestUri: "/api/articles",
-            value: DataGenerator.Article.GetCreateRequest() with { ArticleId = articleId });
+        await gqlClient.CreateArticle(Requests.Article.ArticleInput with { ArticleId = articleId });
 
         // Act
-        var updateArticleResponse = await customClient.PutAsJsonAsync(
-            requestUri: "api/articles",
-            value: DataGenerator.Article.GetUpdateRequest() with { ArticleId = articleId, Title = tooShortTitle });
+        var exception = await Should.ThrowAsync<GraphQLHttpRequestException>(async () =>
+        {
+            await gqlClient.UpdateArticle(Requests.Article.ArticleInput with
+            {
+                ArticleId = articleId,
+                Title = tooShortTitle
+            });
+        });
 
         // Assert
-        updateArticleResponse.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+        exception.Content!.ShouldContain(Article.Errors.InvalidTitleLength.Code);
     }
 
     [Fact]
     public async Task OnlyAuthorizedUserCanUpdateArticle()
     {
         // Arrange
-        var client = _factory.CreateClient();
+        var gqlClient = _factory.CreateClient().ToGqlClient();
         const string articleId = "article-id";
 
         // Act
-        var updateArticleResponse = await client.PutAsJsonAsync(
-            requestUri: "api/articles",
-            value: DataGenerator.Article.GetUpdateRequest() with { ArticleId = articleId });
-
+        var exception = await Should.ThrowAsync<GraphQLHttpRequestException>(async () =>
+        {
+            await gqlClient.UpdateArticle(Requests.Article.ArticleInput with { ArticleId = articleId });
+        });
+        
         // Assert
-        updateArticleResponse.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
+        exception.Content!.ShouldContain("AUTH_NOT_AUTHORIZED");
     }
 
     [Fact]
     public async Task OnlyUserWithCanManageArticlesClaimCanUpdateArticle()
     {
         // Arrange
-        var customClient = _factory.AuthorizeAs(UserTypes.User).CreateClient();
+        var gqlClient = _factory.CreateClient().ToGqlClient();
         const string articleId = "article-id";
 
         // Act
-        var updateArticleResponse = await customClient.PutAsJsonAsync(
-            requestUri: "api/articles",
-            value: DataGenerator.Article.GetUpdateRequest() with { ArticleId = articleId });
-
+        var exception = await Should.ThrowAsync<GraphQLHttpRequestException>(async () =>
+        {
+            await gqlClient.UpdateArticle(Requests.Article.ArticleInput with { ArticleId = articleId });
+        });
+        
         // Assert
-        updateArticleResponse.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
+        exception.Content!.ShouldContain("AUTH_NOT_AUTHORIZED");
     }
 }

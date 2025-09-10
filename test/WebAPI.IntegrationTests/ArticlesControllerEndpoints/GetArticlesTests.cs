@@ -9,107 +9,100 @@ public sealed class GetArticlesTests(CustomWebApplicationFactory factory) : Base
     public async Task EmptyListWillBeReturnedIfNoArticlesExist()
     {
         // Arrange
-        var customClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient();
-        const int numberOfArticles = 0;
+        var gqlClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient().ToGqlClient();
 
         // Act
-        var response = await customClient.GetAsync("/api/articles");
+        var gqlResponse = await gqlClient.GetArticles(new PageOptions { Page = 1, Size = 10 });
 
         // Assert
-        response.StatusCode.ShouldBe(HttpStatusCode.OK);
-        response.Headers.GetValues("X-Total-Count").Single().ShouldBe($"{numberOfArticles}");
-        (await response.Content.ReadFromJsonAsync<List<ArticlePreviewResponse>>()).ShouldBeEmpty();
+        gqlResponse.ShouldBeEmpty();
     }
 
     [Fact]
     public async Task ArticlesWillBeReturnedIfArticlesExist()
     {
         // Arrange
-        var customClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient();
+        var gqlClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient().ToGqlClient();
         const int numberOfArticles = 2;
 
         for (var index = 1; index <= numberOfArticles; index++)
-            await customClient.PostAsJsonAsync(
-                requestUri: "/api/articles",
-                value: DataGenerator.Article.GetCreateRequest() with { ArticleId = $"article-{index}" });
-
+        {
+            await gqlClient.CreateArticle(Requests.Article.ArticleInput with { ArticleId = $"article-{index}" });
+        }
+        
         // Act
-        var response = await customClient.GetAsync("/api/articles");
+        var gqlResponse = await gqlClient.GetArticles(new PageOptions { Page = 1, Size = 10 });
 
         // Assert
-        response.StatusCode.ShouldBe(HttpStatusCode.OK);
-        response.Headers.GetValues("X-Total-Count").Single().ShouldBe($"{numberOfArticles}");
-        (await response.Content.ReadFromJsonAsync<List<ArticlePreviewResponse>>())!.Count().ShouldBe(numberOfArticles);
+        gqlResponse.Count.ShouldBe(numberOfArticles);
     }
 
     [Fact]
     public async Task OnlyAuthorizedUserCanReadArticles()
     {
         // Arrange
-        var client = _factory.CreateClient();
-
+        var gqlClient = _factory.CreateClient().ToGqlClient();
+        
         // Act
-        var response = await client.GetAsync("/api/articles");
-
+        var exception = await Should.ThrowAsync<GraphQLHttpRequestException>(async () =>
+        {
+            await gqlClient.GetArticles(new PageOptions { Page = 1, Size = 10 });
+        });
+        
         // Assert
-        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
+        exception.Content!.ShouldContain("AUTH_NOT_AUTHORIZED");
     }
 
     [Fact]
     public async Task OnlyUserWithCanManageArticlesClaimCanReadArticles()
     {
         // Arrange
-        var customClient = _factory.AuthorizeAs(UserTypes.User).CreateClient();
-
+        var gqlClient = _factory.AuthorizeAs(UserTypes.User).CreateClient().ToGqlClient();
+        
         // Act
-        var response = await customClient.GetAsync("/api/articles");
-
+        var exception = await Should.ThrowAsync<GraphQLHttpRequestException>(async () =>
+        {
+            await gqlClient.GetArticles(new PageOptions { Page = 1, Size = 10 });
+        });
+        
         // Assert
-        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
+        exception.Content!.ShouldContain("AUTH_NOT_AUTHORIZED");
     }
 
     [Fact]
     public async Task PaginationShouldWork()
     {
         // Arrange
-        var customClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient();
+        var gqlClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient().ToGqlClient();
         const int numberOfDrafts = 15;
         const int numberOfPublishedArticles = 1;
         var publishedArticleId = $"article-{numberOfDrafts + numberOfPublishedArticles}";
 
         for (var index = 1; index <= numberOfDrafts; index++)
-            await customClient.PostAsJsonAsync(
-                requestUri: "/api/articles",
-                value: DataGenerator.Article.GetCreateRequest() with
-                {
-                    ArticleId = $"article-{index}",
-                    IsPublished = false
-                });
-
-        await customClient.PostAsJsonAsync(
-            requestUri: "/api/articles",
-            value: DataGenerator.Article.GetCreateRequest() with
+        {
+            await gqlClient.CreateArticle(Requests.Article.ArticleInput with
             {
-                ArticleId = publishedArticleId,
-                IsPublished = true
+                ArticleId = $"article-{index}",
+                IsPublished = false
             });
+        }
+        
+        await gqlClient.CreateArticle(Requests.Article.ArticleInput with
+        {
+            ArticleId = publishedArticleId,
+            IsPublished = true
+        });
 
         // Act
-        var response1 = await customClient.GetAsync("/api/articles");
-        var response2 = await customClient.GetAsync("/api/articles?page=1&size=5");
-        var response3 = await customClient.GetAsync("/api/articles?page=2&size=10");
-        var response4 = await customClient.GetAsync("/api/articles?page=3&size=10");
-        List<HttpResponseMessage> responses = [response1, response2, response3, response4];
-
+        var gqlResponse1 = await gqlClient.GetArticles(new PageOptions { Page = 1, Size = 10 });
+        var gqlResponse2 = await gqlClient.GetArticles(new PageOptions { Page = 1, Size = 5 });
+        var gqlResponse3 = await gqlClient.GetArticles(new PageOptions { Page = 2, Size = 10 });
+        var gqlResponse4 = await gqlClient.GetArticles(new PageOptions { Page = 3, Size = 10 });
+       
         // Assert
-        responses.ForEach(response => response.StatusCode.ShouldBe(HttpStatusCode.OK));
-        responses.ForEach(response =>
-            response.Headers.GetValues("X-Total-Count")
-                .Single().ShouldBe($"{numberOfDrafts + numberOfPublishedArticles}"));
-
-        (await response1.Content.ReadFromJsonAsync<List<ArticlePreviewResponse>>())!.Count().ShouldBe(10);
-        (await response2.Content.ReadFromJsonAsync<List<ArticlePreviewResponse>>())!.Count().ShouldBe(5);
-        (await response3.Content.ReadFromJsonAsync<List<ArticlePreviewResponse>>())!.Count().ShouldBe(6);
-        (await response4.Content.ReadFromJsonAsync<List<ArticlePreviewResponse>>())!.Count().ShouldBe(0);
+        gqlResponse1.Count.ShouldBe(10);
+        gqlResponse2.Count.ShouldBe(5);
+        gqlResponse3.Count.ShouldBe(6);
+        gqlResponse4.Count.ShouldBe(0);
     }
 }

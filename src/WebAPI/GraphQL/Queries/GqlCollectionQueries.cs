@@ -53,6 +53,6 @@ public sealed class GqlCollectionQueries
             httpContextAccessor.HttpContext.Response.Headers
                 .Append("X-Total-Count", publishedArticlesFromCollection.TotalCount.ToString());
 
-        return publishedArticlesFromCollection.Select(article => new GqlArticle(article)).ToArray();
+        return publishedArticlesFromCollection.Select(article => article.ToGqlArticle()).ToArray();
     }
 }

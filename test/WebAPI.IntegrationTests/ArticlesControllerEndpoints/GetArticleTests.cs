@@ -1,3 +1,5 @@
+using Domain.Articles;
+
 namespace WebAPI.IntegrationTests.ArticlesControllerEndpoints;
 
 [Collection("Tests")]
@@ -9,61 +11,70 @@ public sealed class GetArticleTests(CustomWebApplicationFactory factory) : BaseI
     public async Task ArticleWillBeReturnedIfItExists()
     {
         // Arrange
-        var client = _factory.CreateClient();
-        var customClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient();
+        var gqlClient = _factory.CreateClient().ToGqlClient();
+        var adminGqlClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient().ToGqlClient();
 
         const string firstArticleId = "article-1";
-        await customClient.PostAsJsonAsync(
-            requestUri: "/api/articles",
-            value: DataGenerator.Article.GetCreateRequest() with { ArticleId = firstArticleId, IsPublished = false });
+        await adminGqlClient.CreateArticle(Requests.Article.ArticleInput with
+        {
+            ArticleId = firstArticleId,
+            IsPublished = false
+        });
 
         const string secondArticleId = "article-2";
-        await customClient.PostAsJsonAsync(
-            requestUri: "/api/articles",
-            value: DataGenerator.Article.GetCreateRequest() with { ArticleId = secondArticleId, IsPublished = true });
+        await adminGqlClient.CreateArticle(Requests.Article.ArticleInput with
+        {
+            ArticleId = secondArticleId,
+            IsPublished = true
+        });
 
         // Act
-        var response1 = await customClient.GetAsync($"/api/articles/{firstArticleId}");
-        var response2 = await client.GetAsync($"/api/articles/{secondArticleId}");
+        var gqlResponse1 = await adminGqlClient.GetArticle(firstArticleId);
+        var gqlResponse2 = await gqlClient.GetArticle(secondArticleId);
 
         // Assert
-        response1.StatusCode.ShouldBe(HttpStatusCode.OK);
-        (await response1.Content.ReadFromJsonAsync<ArticleResponse>())?.ArticleId.ShouldBe(firstArticleId);
-
-        response2.StatusCode.ShouldBe(HttpStatusCode.OK);
-        (await response2.Content.ReadFromJsonAsync<ArticleResponse>())?.ArticleId.ShouldBe(secondArticleId);
+        gqlResponse1.ArticleId.ShouldBe(firstArticleId);
+        gqlResponse2.ArticleId.ShouldBe(secondArticleId);
     }
 
     [Fact]
     public async Task ArticleWontBeReturnedIfItDoesNotExist()
     {
         // Arrange
-        var client = _factory.CreateClient();
+        var gqlClient = _factory.CreateClient().ToGqlClient();
         const string articleId = "article-id";
 
         // Act
-        var response = await client.GetAsync($"/api/articles/{articleId}");
-
+        var exception = await Should.ThrowAsync<GraphQLHttpRequestException>(async () =>
+        {
+            await gqlClient.GetArticle(articleId);
+        });
+        
         // Assert
-        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+        exception.Content!.ShouldContain(Article.Errors.NotFound.Code);
     }
 
     [Fact]
     public async Task DraftWontBeReturnedIfYouHaveNoCanManageArticlesClaim()
     {
         // Arrange
-        var client = _factory.CreateClient();
-        var customClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient();
+        var gqlClient = _factory.CreateClient().ToGqlClient();
+        var adminGqlClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient().ToGqlClient();
+        
         const string articleId = "article-id";
-
-        await customClient.PostAsJsonAsync(
-            requestUri: "/api/articles",
-            value: DataGenerator.Article.GetCreateRequest() with { ArticleId = articleId, IsPublished = false });
+        await adminGqlClient.CreateArticle(Requests.Article.ArticleInput with
+        {
+            ArticleId = articleId,
+            IsPublished = false
+        });
 
         // Act
-        var response = await client.GetAsync($"/api/articles/{articleId}");
-
+        var exception = await Should.ThrowAsync<GraphQLHttpRequestException>(async () =>
+        {
+            await gqlClient.GetArticle(articleId);
+        });
+        
         // Assert
-        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+        exception.Content!.ShouldContain(Article.Errors.NotFound.Code);
     }
 }

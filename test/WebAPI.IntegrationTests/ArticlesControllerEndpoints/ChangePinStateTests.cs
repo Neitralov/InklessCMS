@@ -1,3 +1,5 @@
+using Domain.Articles;
+
 namespace WebAPI.IntegrationTests.ArticlesControllerEndpoints;
 
 [Collection("Tests")]
@@ -9,72 +11,79 @@ public sealed class ChangePinStateTests(CustomWebApplicationFactory factory) : B
     public async Task PinStateCanBeChanged()
     {
         // Arrange
-        var customClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient();
+        var gqlClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient().ToGqlClient();
 
         const string firstArticleId = "article-1";
-        await customClient.PostAsJsonAsync(
-            requestUri: "/api/articles",
-            value: DataGenerator.Article.GetCreateRequest() with { ArticleId = firstArticleId, IsPinned = false });
+        await gqlClient.CreateArticle(Requests.Article.ArticleInput with
+        {
+            ArticleId = firstArticleId,
+            IsPinned = false
+        });
 
         const string secondArticleId = "article-2";
-        await customClient.PostAsJsonAsync(
-            requestUri: "/api/articles",
-            value: DataGenerator.Article.GetCreateRequest() with { ArticleId = secondArticleId, IsPinned = true });
+        await gqlClient.CreateArticle(Requests.Article.ArticleInput with
+        {
+            ArticleId = secondArticleId,
+            IsPinned = true
+        });
 
         // Act
-        var changePinStateResponse1 = await customClient.PatchAsync($"/api/articles/{firstArticleId}/pin", null);
-        var getArticleResponse1 = await customClient.GetAsync($"/api/articles/{firstArticleId}");
-
-        var changePinStateResponse2 = await customClient.PatchAsync($"/api/articles/{secondArticleId}/pin", null);
-        var getArticleResponse2 = await customClient.GetAsync($"/api/articles/{secondArticleId}");
+        var gqlResponse1 = await gqlClient.ChangePinState(firstArticleId);
+        var gqlResponse2 = await gqlClient.ChangePinState(secondArticleId);
 
         // Assert
-        changePinStateResponse1.StatusCode.ShouldBe(HttpStatusCode.NoContent);
-        (await getArticleResponse1.Content.ReadFromJsonAsync<ArticleResponse>())?.IsPinned.ShouldBeTrue();
-
-        changePinStateResponse2.StatusCode.ShouldBe(HttpStatusCode.NoContent);
-        (await getArticleResponse2.Content.ReadFromJsonAsync<ArticleResponse>())?.IsPinned.ShouldBeFalse();
+        gqlResponse1.IsPinned.ShouldBeTrue();
+        gqlResponse2.IsPinned.ShouldBeFalse();
     }
 
     [Fact]
     public async Task PinStateCannotBeChangedIfArticleDoesNotExist()
     {
         // Arrange
-        var customClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient();
+        var gqlClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient().ToGqlClient();
         const string articleId = "article-id";
 
         // Act
-        var response = await customClient.PatchAsync($"/api/articles/{articleId}/pin", null);
-
+        var exception = await Should.ThrowAsync<GraphQLHttpRequestException>(async () =>
+        {
+            await gqlClient.ChangePinState(articleId);
+        });
+        
         // Assert
-        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+        exception.Content!.ShouldContain(Article.Errors.NotFound.Code);
     }
 
     [Fact]
     public async Task OnlyAuthorizedUserCanChangePinState()
     {
         // Arrange
-        var client = _factory.CreateClient();
+        var gqlClient = _factory.CreateClient().ToGqlClient();
         const string articleId = "article-id";
 
         // Act
-        var response = await client.PatchAsync($"/api/articles/{articleId}/pin", null);
-
+        var exception = await Should.ThrowAsync<GraphQLHttpRequestException>(async () =>
+        {
+            await gqlClient.ChangePinState(articleId);
+        });
+        
         // Assert
-        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
+        exception.Content!.ShouldContain("AUTH_NOT_AUTHORIZED");
     }
 
     [Fact]
     public async Task OnlyUserWithCanManageArticlesClaimCanChangePinState()
     {
         // Arrange
-        var customClient = _factory.AuthorizeAs(UserTypes.User).CreateClient();
+        var gqlClient = _factory.AuthorizeAs(UserTypes.User).CreateClient().ToGqlClient();
         const string articleId = "article-id";
 
         // Act
-        var response = await customClient.PatchAsync($"/api/articles/{articleId}/pin", null);
-
+        var exception = await Should.ThrowAsync<GraphQLHttpRequestException>(async () =>
+        {
+            await gqlClient.ChangePinState(articleId);
+        });
+        
         // Assert
-        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
+        exception.Content!.ShouldContain("AUTH_NOT_AUTHORIZED");
     }
 }

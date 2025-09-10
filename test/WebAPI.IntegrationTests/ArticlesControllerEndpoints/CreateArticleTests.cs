@@ -1,3 +1,5 @@
+using Domain.Articles;
+
 namespace WebAPI.IntegrationTests.ArticlesControllerEndpoints;
 
 [Collection("Tests")]
@@ -9,62 +11,62 @@ public sealed class CreateArticleTests(CustomWebApplicationFactory factory) : Ba
     public async Task ArticleCanBeCreated()
     {
         // Arrange
-        var customClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient();
+        var gqlClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient().ToGqlClient();
         const string articleId = "article-id";
 
         // Act
-        var response = await customClient.PostAsJsonAsync(
-            requestUri: "/api/articles",
-            value: DataGenerator.Article.GetCreateRequest() with { ArticleId = articleId });
+        var gqlResponse = await gqlClient.CreateArticle(Requests.Article.ArticleInput with { ArticleId = articleId });
 
         // Assert
-        response.StatusCode.ShouldBe(HttpStatusCode.Created);
-        (await response.Content.ReadFromJsonAsync<ArticleResponse>())?.ArticleId.ShouldBe(articleId);
+        gqlResponse.ArticleId.ShouldBe(articleId);
     }
 
     [Fact]
     public async Task InvalidArticleCannotBeCreated()
     {
         // Arrange
-        var customClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient();
+        var gqlClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient().ToGqlClient();
         const string invalidArticleId = "Inv@lid-Id";
 
         // Act
-        var response = await customClient.PostAsJsonAsync(
-            requestUri: "/api/articles",
-            value: DataGenerator.Article.GetCreateRequest() with { ArticleId = invalidArticleId });
-
+        var exception = await Should.ThrowAsync<GraphQLHttpRequestException>(async () =>
+        {
+            await gqlClient.CreateArticle(Requests.Article.ArticleInput with { ArticleId = invalidArticleId });
+        });
+        
         // Assert
-        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+        exception.Content!.ShouldContain(Article.Errors.InvalidId.Code);
     }
 
     [Fact]
     public async Task OnlyAuthorizedUserCanCreateArticle()
     {
         // Arrange
-        var client = _factory.CreateClient();
-
+        var gqlClient = _factory.CreateClient().ToGqlClient();
+        
         // Act
-        var response = await client.PostAsJsonAsync(
-            requestUri: "/api/articles",
-            value: DataGenerator.Article.GetCreateRequest());
-
+        var exception = await Should.ThrowAsync<GraphQLHttpRequestException>(async () =>
+        {
+            await gqlClient.CreateArticle(Requests.Article.ArticleInput);
+        });
+        
         // Assert
-        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
+        exception.Content!.ShouldContain("AUTH_NOT_AUTHORIZED");
     }
 
     [Fact]
     public async Task OnlyUserWithCanManageArticlesClaimCanCreateArticle()
     {
         // Arrange
-        var customClient = _factory.AuthorizeAs(UserTypes.User).CreateClient();
+        var gqlClient = _factory.AuthorizeAs(UserTypes.User).CreateClient().ToGqlClient();
 
         // Act
-        var response = await customClient.PostAsJsonAsync(
-            requestUri: "/api/articles",
-            value: DataGenerator.Article.GetCreateRequest());
-
+        var exception = await Should.ThrowAsync<GraphQLHttpRequestException>(async () =>
+        {
+            await gqlClient.CreateArticle(Requests.Article.ArticleInput);
+        });
+        
         // Assert
-        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
+        exception.Content!.ShouldContain("AUTH_NOT_AUTHORIZED");
     }
 }

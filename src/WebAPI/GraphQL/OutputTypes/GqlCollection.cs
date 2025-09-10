@@ -14,5 +14,5 @@ public sealed class GqlCollection(Collection collection)
     [GraphQLName("articles")]
     [GraphQLDescription("Статьи коллекции")]
     public IEnumerable<GqlArticle>? Articles { get; init; } = collection.Articles.Select(article =>
-        new GqlArticle(article));
+        article.ToGqlArticle());
 }

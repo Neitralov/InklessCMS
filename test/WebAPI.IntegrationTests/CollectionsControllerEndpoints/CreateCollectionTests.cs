@@ -15,7 +15,7 @@ public sealed class CreateCollectionTests(CustomWebApplicationFactory factory) :
         // Act
         var response = await customClient.PostAsJsonAsync(
             requestUri: "/api/collections",
-            value: DataGenerator.Collection.GetCreateCollectionRequest() with { CollectionId = collectionId });
+            value: Requests.Collection.GetCreateCollectionRequest() with { CollectionId = collectionId });
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.Created);
@@ -32,7 +32,7 @@ public sealed class CreateCollectionTests(CustomWebApplicationFactory factory) :
         // Act
         var response = await customClient.PostAsJsonAsync(
             requestUri: "/api/collections",
-            value: DataGenerator.Collection.GetCreateCollectionRequest() with { CollectionId = collectionId });
+            value: Requests.Collection.GetCreateCollectionRequest() with { CollectionId = collectionId });
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
@@ -47,7 +47,7 @@ public sealed class CreateCollectionTests(CustomWebApplicationFactory factory) :
         // Act
         var response = await client.PostAsJsonAsync(
             requestUri: "/api/collections",
-            value: DataGenerator.Collection.GetCreateCollectionRequest());
+            value: Requests.Collection.GetCreateCollectionRequest());
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
@@ -62,7 +62,7 @@ public sealed class CreateCollectionTests(CustomWebApplicationFactory factory) :
         // Act
         var response = await customClient.PostAsJsonAsync(
             requestUri: "/api/collections",
-            value: DataGenerator.Collection.GetCreateCollectionRequest());
+            value: Requests.Collection.GetCreateCollectionRequest());
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);

@@ -14,15 +14,15 @@ public sealed class DeleteArticleFromCollectionTests(CustomWebApplicationFactory
         const string collectionId = "collection-id";
         await customClient.PostAsJsonAsync(
             requestUri: "/api/collections",
-            value: DataGenerator.Collection.GetCreateCollectionRequest() with { CollectionId = collectionId });
+            value: Requests.Collection.GetCreateCollectionRequest() with { CollectionId = collectionId });
 
         const string articleId = "article-id";
         await customClient.PostAsJsonAsync(
             requestUri: "/api/articles",
-            value: DataGenerator.Article.GetCreateRequest() with { ArticleId = articleId });
+            value: Requests.Article.ArticleInput with { ArticleId = articleId });
         await customClient.PostAsJsonAsync(
             requestUri: $"/api/collections/{collectionId}",
-            value: DataGenerator.Collection.GetAddArticleToCollectionRequest() with { ArticleId = articleId });
+            value: Requests.Collection.GetAddArticleToCollectionRequest() with { ArticleId = articleId });
 
         // Act
         var getCollectionBeforeArticleDeletionResponse =
@@ -52,7 +52,7 @@ public sealed class DeleteArticleFromCollectionTests(CustomWebApplicationFactory
         const string collectionId = "collection-id";
         await customClient.PostAsJsonAsync(
             requestUri: "/api/collections",
-            value: DataGenerator.Collection.GetCreateCollectionRequest() with { CollectionId = collectionId });
+            value: Requests.Collection.GetCreateCollectionRequest() with { CollectionId = collectionId });
 
         // Act
         var response = await customClient.DeleteAsync($"/api/collections/{collectionId}/articles/{articleId}");
@@ -71,7 +71,7 @@ public sealed class DeleteArticleFromCollectionTests(CustomWebApplicationFactory
         const string articleId = "article-id";
         await customClient.PostAsJsonAsync(
             requestUri: "/api/articles",
-            value: DataGenerator.Article.GetCreateRequest() with { ArticleId = articleId });
+            value: Requests.Article.ArticleInput with { ArticleId = articleId });
 
         // Act
         var response = await customClient.DeleteAsync($"/api/collections/{collectionId}/articles/{articleId}");

@@ -29,7 +29,7 @@ public sealed class GetCollectionsTests(CustomWebApplicationFactory factory) : B
         for (var index = 1; index <= numberOfCollections; index++)
             await customClient.PostAsJsonAsync(
                 requestUri: "/api/collections",
-                value: DataGenerator.Collection.GetCreateCollectionRequest() with
+                value: Requests.Collection.GetCreateCollectionRequest() with
                 {
                     CollectionId = $"collection-{index}"
                 });

@@ -14,17 +14,17 @@ public sealed class AddArticleToCollectionTests(CustomWebApplicationFactory fact
         const string collectionId = "collection-id";
         await customClient.PostAsJsonAsync(
             requestUri: "/api/collections",
-            value: DataGenerator.Collection.GetCreateCollectionRequest() with { CollectionId = collectionId });
+            value: Requests.Collection.GetCreateCollectionRequest() with { CollectionId = collectionId });
 
         const string articleId = "article-id";
         await customClient.PostAsJsonAsync(
             requestUri: "/api/articles",
-            value: DataGenerator.Article.GetCreateRequest() with { ArticleId = articleId });
+            value: Requests.Article.ArticleInput with { ArticleId = articleId });
 
         // Act
         var addArticleToCollectionResponse = await customClient.PostAsJsonAsync(
             requestUri: $"/api/collections/{collectionId}",
-            value: DataGenerator.Collection.GetAddArticleToCollectionRequest() with { ArticleId = articleId });
+            value: Requests.Collection.GetAddArticleToCollectionRequest() with { ArticleId = articleId });
 
         var getArticlesFromCollectionResponse = await customClient.GetAsync($"api/collections/{collectionId}");
 
@@ -43,20 +43,20 @@ public sealed class AddArticleToCollectionTests(CustomWebApplicationFactory fact
         const string collectionId = "collection-id";
         await customClient.PostAsJsonAsync(
             requestUri: "/api/collections",
-            value: DataGenerator.Collection.GetCreateCollectionRequest() with { CollectionId = collectionId });
+            value: Requests.Collection.GetCreateCollectionRequest() with { CollectionId = collectionId });
 
         const string articleId = "article-id";
         await customClient.PostAsJsonAsync(
             requestUri: "/api/articles",
-            value: DataGenerator.Article.GetCreateRequest() with { ArticleId = articleId });
+            value: Requests.Article.ArticleInput with { ArticleId = articleId });
         await customClient.PostAsJsonAsync(
             requestUri: $"/api/collections/{collectionId}",
-            value: DataGenerator.Collection.GetAddArticleToCollectionRequest() with { ArticleId = articleId });
+            value: Requests.Collection.GetAddArticleToCollectionRequest() with { ArticleId = articleId });
 
         // Act
         var response = await customClient.PostAsJsonAsync(
             requestUri: $"/api/collections/{collectionId}",
-            value: DataGenerator.Collection.GetAddArticleToCollectionRequest() with { ArticleId = articleId });
+            value: Requests.Collection.GetAddArticleToCollectionRequest() with { ArticleId = articleId });
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
@@ -71,25 +71,25 @@ public sealed class AddArticleToCollectionTests(CustomWebApplicationFactory fact
         const string firstCollectionId = "collection-1";
         await customClient.PostAsJsonAsync(
             requestUri: "/api/collections",
-            value: DataGenerator.Collection.GetCreateCollectionRequest() with { CollectionId = firstCollectionId });
+            value: Requests.Collection.GetCreateCollectionRequest() with { CollectionId = firstCollectionId });
 
         const string secondCollectionId = "collection-2";
         await customClient.PostAsJsonAsync(
             requestUri: "/api/collections",
-            value: DataGenerator.Collection.GetCreateCollectionRequest() with { CollectionId = secondCollectionId });
+            value: Requests.Collection.GetCreateCollectionRequest() with { CollectionId = secondCollectionId });
 
         const string articleId = "article-id";
         await customClient.PostAsJsonAsync(
             requestUri: "/api/articles",
-            value: DataGenerator.Article.GetCreateRequest() with { ArticleId = articleId });
+            value: Requests.Article.ArticleInput with { ArticleId = articleId });
         await customClient.PostAsJsonAsync(
             requestUri: $"/api/collections/{firstCollectionId}",
-            value: DataGenerator.Collection.GetAddArticleToCollectionRequest() with { ArticleId = articleId });
+            value: Requests.Collection.GetAddArticleToCollectionRequest() with { ArticleId = articleId });
 
         // Act
         var response = await customClient.PostAsJsonAsync(
             requestUri: $"/api/collections/{secondCollectionId}",
-            value: DataGenerator.Collection.GetAddArticleToCollectionRequest() with { ArticleId = articleId });
+            value: Requests.Collection.GetAddArticleToCollectionRequest() with { ArticleId = articleId });
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
@@ -104,12 +104,12 @@ public sealed class AddArticleToCollectionTests(CustomWebApplicationFactory fact
         const string collectionId = "collection-id";
         await customClient.PostAsJsonAsync(
             requestUri: "/api/collections",
-            value: DataGenerator.Collection.GetCreateCollectionRequest() with { CollectionId = collectionId });
+            value: Requests.Collection.GetCreateCollectionRequest() with { CollectionId = collectionId });
 
         // Act
         var response = await customClient.PostAsJsonAsync(
             requestUri: $"/api/collections/{collectionId}",
-            value: DataGenerator.Collection.GetAddArticleToCollectionRequest());
+            value: Requests.Collection.GetAddArticleToCollectionRequest());
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
@@ -125,12 +125,12 @@ public sealed class AddArticleToCollectionTests(CustomWebApplicationFactory fact
         const string articleId = "article-id";
         await customClient.PostAsJsonAsync(
             requestUri: "/api/articles",
-            value: DataGenerator.Article.GetCreateRequest() with { ArticleId = articleId });
+            value: Requests.Article.ArticleInput with { ArticleId = articleId });
 
         // Act
         var response = await customClient.PostAsJsonAsync(
             requestUri: $"/api/collections/{collectionId}",
-            value: DataGenerator.Collection.GetAddArticleToCollectionRequest() with { ArticleId = articleId });
+            value: Requests.Collection.GetAddArticleToCollectionRequest() with { ArticleId = articleId });
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
@@ -146,7 +146,7 @@ public sealed class AddArticleToCollectionTests(CustomWebApplicationFactory fact
         // Act
         var response = await client.PostAsJsonAsync(
             requestUri: $"/api/collections/{collectionId}",
-            value: DataGenerator.Collection.GetAddArticleToCollectionRequest());
+            value: Requests.Collection.GetAddArticleToCollectionRequest());
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
@@ -162,7 +162,7 @@ public sealed class AddArticleToCollectionTests(CustomWebApplicationFactory fact
         // Act
         var response = await customClient.PostAsJsonAsync(
             requestUri: $"/api/collections/{collectionId}",
-            value: DataGenerator.Collection.GetAddArticleToCollectionRequest());
+            value: Requests.Collection.GetAddArticleToCollectionRequest());
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);

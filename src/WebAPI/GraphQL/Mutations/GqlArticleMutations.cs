@@ -8,9 +8,9 @@ public sealed class GqlArticleMutations
     [GqlAuthorize(Policy = "CanManageArticles")]
     public async Task<GqlArticle> CreateArticleAsync(
         [Service] IArticleRepository articleRepository,
-        CreateArticleRequest request)
+        GqlArticleInput input)
     {
-        var requestToArticleResult = CreateArticleFrom(request);
+        var requestToArticleResult = CreateArticleFrom(input);
 
         if (requestToArticleResult.IsError)
             throw new Exception(requestToArticleResult.FirstError.Code);
@@ -23,7 +23,7 @@ public sealed class GqlArticleMutations
         await articleRepository.AddArticleAsync(article);
         await articleRepository.SaveChangesAsync();
 
-        return new GqlArticle(article);
+        return article.ToGqlArticle();
     }
 
     [GraphQLName("updateArticle")]
@@ -31,9 +31,9 @@ public sealed class GqlArticleMutations
     [GqlAuthorize(Policy = "CanManageArticles")]
     public async Task<GqlArticle> UpdateArticleAsync(
         [Service] IArticleRepository articleRepository,
-        UpdateArticleRequest request)
+        GqlArticleInput input)
     {
-        var requestToArticleResult = CreateArticleFrom(request);
+        var requestToArticleResult = CreateArticleFrom(input);
 
         if (requestToArticleResult.IsError)
             throw new Exception(requestToArticleResult.FirstError.Code);
@@ -48,7 +48,7 @@ public sealed class GqlArticleMutations
         article.Value.Update(updatedArticle);
         await articleRepository.SaveChangesAsync();
 
-        return new GqlArticle(article.Value);
+        return article.Value.ToGqlArticle();
     }
 
     [GraphQLName("changePinState")]
@@ -66,7 +66,7 @@ public sealed class GqlArticleMutations
         article.Value.ChangePinState();
         await articleRepository.SaveChangesAsync();
 
-        return new GqlArticle(article.Value);
+        return article.Value.ToGqlArticle();
     }
 
     [GraphQLName("increaseViewsCounter")]
@@ -83,7 +83,7 @@ public sealed class GqlArticleMutations
         article.Value.IncreaseViewsCounter();
         await articleRepository.SaveChangesAsync();
 
-        return new GqlArticle(article.Value);
+        return article.Value.ToGqlArticle();
     }
 
     [GraphQLName("deleteArticle")]
@@ -103,25 +103,14 @@ public sealed class GqlArticleMutations
         return articleId;
     }
 
-    private static ErrorOr<Article> CreateArticleFrom(CreateArticleRequest request)
+    private static ErrorOr<Article> CreateArticleFrom(GqlArticleInput input)
     {
         return Article.Create(
-            request.ArticleId,
-            request.Title,
-            request.Description,
-            request.Text,
-            request.IsPublished,
-            request.IsPinned);
-    }
-
-    private static ErrorOr<Article> CreateArticleFrom(UpdateArticleRequest request)
-    {
-        return Article.Create(
-            request.ArticleId,
-            request.Title,
-            request.Description,
-            request.Text,
-            request.IsPublished,
-            request.IsPinned);
+            input.ArticleId,
+            input.Title,
+            input.Description,
+            input.Text,
+            input.IsPublished,
+            input.IsPinned);
     }
 }

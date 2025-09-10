@@ -13,14 +13,14 @@ public sealed class RefreshTokensTests(CustomWebApplicationFactory factory) : Ba
 
         var getLoginUserResponse = await client.PostAsJsonAsync(
             requestUri: "/api/users/login",
-            value: DataGenerator.User.GetLoginUserRequest());
+            value: Requests.User.GetLoginUserRequest());
 
         var creditnails = (await getLoginUserResponse.Content.ReadFromJsonAsync<LoginUserResponse>())!;
 
         // Act
         var response = await client.PostAsJsonAsync(
             requestUri: "/api/users/refresh-tokens",
-            value: DataGenerator.User.GetRefreshTokenRequest() with
+            value: Requests.User.GetRefreshTokenRequest() with
             {
                 RefreshToken = creditnails.RefreshToken,
                 ExpiredAccessToken = creditnails.AccessToken
@@ -41,14 +41,14 @@ public sealed class RefreshTokensTests(CustomWebApplicationFactory factory) : Ba
 
         var getLoginUserResponse = await client.PostAsJsonAsync(
             requestUri: "/api/users/login",
-            value: DataGenerator.User.GetLoginUserRequest());
+            value: Requests.User.GetLoginUserRequest());
 
         var creditnails = (await getLoginUserResponse.Content.ReadFromJsonAsync<LoginUserResponse>())!;
 
         // Act
         var response = await client.PostAsJsonAsync(
             requestUri: "/api/users/refresh-tokens",
-            value: DataGenerator.User.GetRefreshTokenRequest() with
+            value: Requests.User.GetRefreshTokenRequest() with
             {
                 RefreshToken = creditnails.RefreshToken,
                 ExpiredAccessToken = "invalid-access-token"

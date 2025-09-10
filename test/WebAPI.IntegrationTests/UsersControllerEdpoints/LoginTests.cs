@@ -14,7 +14,7 @@ public sealed class LoginTests(CustomWebApplicationFactory factory) : BaseIntegr
         // Act
         var response = await client.PostAsJsonAsync(
             requestUri: "/api/users/login",
-            value: DataGenerator.User.GetLoginUserRequest());
+            value: Requests.User.GetLoginUserRequest());
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
@@ -32,7 +32,7 @@ public sealed class LoginTests(CustomWebApplicationFactory factory) : BaseIntegr
         // Act
         var response = await client.PostAsJsonAsync(
             requestUri: "/api/users/login",
-            value: DataGenerator.User.GetLoginUserRequest() with { Password = "invalid" });
+            value: Requests.User.GetLoginUserRequest() with { Password = "invalid" });
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);

@@ -1,28 +1,18 @@
 namespace WebAPI.IntegrationTests;
 
-public static class DataGenerator
+public static class Requests
 {
     public static class Article
     {
-        public static CreateArticleRequest GetCreateRequest() => new
-        (
-            ArticleId: "article-id",
-            Title: "Title",
-            Description: "Description",
-            Text: "Text",
-            IsPinned: false,
-            IsPublished: false
-        );
-
-        public static UpdateArticleRequest GetUpdateRequest() => new
-        (
-            ArticleId: "article-id",
-            Title: "Title",
-            Description: "Description",
-            Text: "Text",
-            IsPinned: false,
-            IsPublished: false
-        );
+        public static GqlArticleInput ArticleInput { get; } = new()
+        {
+            ArticleId =  "article-id",
+            Title = "Title",
+            Description = "Description",
+            Text = "Text",
+            IsPinned = false,
+            IsPublished = false,
+        };
     }
 
     public static class Collection

@@ -1,3 +1,5 @@
+using Domain.Articles;
+
 namespace WebAPI.IntegrationTests.ArticlesControllerEndpoints;
 
 [Collection("Tests")]
@@ -9,61 +11,72 @@ public sealed class DeleteArticleTests(CustomWebApplicationFactory factory) : Ba
     public async Task ArticleCanBeDeleted()
     {
         // Arrange
-        var customClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient();
+        var gqlClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient().ToGqlClient();
+        
         const string articleId = "article-id";
-
-        await customClient.PostAsJsonAsync(
-            requestUri: "/api/articles",
-            value: DataGenerator.Article.GetCreateRequest() with { ArticleId = articleId });
+        var input = Requests.Article.ArticleInput with { ArticleId = articleId };
+        await gqlClient.CreateArticle(input);
 
         // Act
-        var deleteArticleResponse = await customClient.DeleteAsync($"/api/articles/{articleId}");
-        var getArticleResponse = await customClient.GetAsync($"/api/articles/{articleId}");
+        var deleteArticleResponse = await gqlClient.DeleteArticle(articleId);
+        var exception = await Should.ThrowAsync<GraphQLHttpRequestException>(async () =>
+        {
+            await gqlClient.GetArticle(articleId);
+        });
 
         // Assert
-        deleteArticleResponse.StatusCode.ShouldBe(HttpStatusCode.NoContent);
-        getArticleResponse.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+        deleteArticleResponse.ShouldBe(articleId);
+        exception.Content!.ShouldContain(Article.Errors.NotFound.Code);
     }
 
     [Fact]
     public async Task ArticleCannotBeDeletedIfItDoesNotExist()
     {
         // Arrange
-        var customClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient();
+        var gqlClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient().ToGqlClient();
         const string articleId = "article-id";
 
         // Act
-        var response = await customClient.DeleteAsync($"/api/articles/{articleId}");
+        var exception = await Should.ThrowAsync<GraphQLHttpRequestException>(async () =>
+        {
+            await gqlClient.DeleteArticle(articleId);
+        });
 
         // Assert
-        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+        exception.Content!.ShouldContain(Article.Errors.NotFound.Code);
     }
 
     [Fact]
     public async Task OnlyAuthorizedUserCanDeleteArticle()
     {
         // Arrange
-        var client = _factory.CreateClient();
+        var gqlClient = _factory.CreateClient().ToGqlClient();
         const string articleId = "article-id";
 
         // Act
-        var response = await client.DeleteAsync($"/api/articles/{articleId}");
+        var exception = await Should.ThrowAsync<GraphQLHttpRequestException>(async () =>
+        {
+            await gqlClient.DeleteArticle(articleId);
+        });
 
         // Assert
-        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
+        exception.Content!.ShouldContain("AUTH_NOT_AUTHORIZED");
     }
 
     [Fact]
     public async Task OnlyUserWithCanManageArticlesClaimCanDeleteArticle()
     {
         // Arrange
-        var customClient = _factory.AuthorizeAs(UserTypes.User).CreateClient();
+        var gqlClient = _factory.AuthorizeAs(UserTypes.User).CreateClient().ToGqlClient();
         const string articleId = "article-id";
 
         // Act
-        var response = await customClient.DeleteAsync($"/api/articles/{articleId}");
+        var exception = await Should.ThrowAsync<GraphQLHttpRequestException>(async () =>
+        {
+            await gqlClient.DeleteArticle(articleId);
+        });
 
         // Assert
-        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
+        exception.Content!.ShouldContain("AUTH_NOT_AUTHORIZED");
     }
 }

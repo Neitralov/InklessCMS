@@ -16,7 +16,7 @@ public sealed class UpdateCollectionTests(CustomWebApplicationFactory factory) :
         const string collectionId = "collection-id";
         await customClient.PostAsJsonAsync(
             requestUri: "/api/collections",
-            value: DataGenerator.Collection.GetCreateCollectionRequest() with
+            value: Requests.Collection.GetCreateCollectionRequest() with
             {
                 CollectionId = collectionId,
                 Title = defaultTitle
@@ -27,7 +27,7 @@ public sealed class UpdateCollectionTests(CustomWebApplicationFactory factory) :
 
         var updateCollectionResponse = await customClient.PutAsJsonAsync(
             requestUri: "/api/collections",
-            value: DataGenerator.Collection.GetUpdateCollectionRequest() with
+            value: Requests.Collection.GetUpdateCollectionRequest() with
             {
                 CollectionId = collectionId,
                 Title = updatedTitle
@@ -52,7 +52,7 @@ public sealed class UpdateCollectionTests(CustomWebApplicationFactory factory) :
         // Act
         var response = await customClient.PutAsJsonAsync(
             requestUri: "/api/collections",
-            value: DataGenerator.Collection.GetUpdateCollectionRequest() with { CollectionId = collectionId });
+            value: Requests.Collection.GetUpdateCollectionRequest() with { CollectionId = collectionId });
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
@@ -69,7 +69,7 @@ public sealed class UpdateCollectionTests(CustomWebApplicationFactory factory) :
         const string collectionId = "collection-id";
         await customClient.PostAsJsonAsync(
             requestUri: "/api/collections",
-            value: DataGenerator.Collection.GetCreateCollectionRequest() with
+            value: Requests.Collection.GetCreateCollectionRequest() with
             {
                 CollectionId = collectionId,
                 Title = defaultTitle
@@ -78,7 +78,7 @@ public sealed class UpdateCollectionTests(CustomWebApplicationFactory factory) :
         // Act
         var response = await customClient.PutAsJsonAsync(
             requestUri: "/api/collections",
-            value: DataGenerator.Collection.GetUpdateCollectionRequest() with
+            value: Requests.Collection.GetUpdateCollectionRequest() with
             {
                 CollectionId = collectionId,
                 Title = tooShortTitle
@@ -98,7 +98,7 @@ public sealed class UpdateCollectionTests(CustomWebApplicationFactory factory) :
         // Act
         var response = await client.PutAsJsonAsync(
             requestUri: "/api/collections",
-            value: DataGenerator.Collection.GetUpdateCollectionRequest() with { CollectionId = collectionId });
+            value: Requests.Collection.GetUpdateCollectionRequest() with { CollectionId = collectionId });
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
@@ -114,7 +114,7 @@ public sealed class UpdateCollectionTests(CustomWebApplicationFactory factory) :
         // Act
         var response = await customClient.PutAsJsonAsync(
             requestUri: "/api/collections",
-            value: DataGenerator.Collection.GetUpdateCollectionRequest() with { CollectionId = collectionId });
+            value: Requests.Collection.GetUpdateCollectionRequest() with { CollectionId = collectionId });
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);

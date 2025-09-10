@@ -15,7 +15,7 @@ public sealed class GetPublishedArticlesFromCollectionTests(CustomWebApplication
 
         await customClient.PostAsJsonAsync(
             requestUri: "/api/collections",
-            value: DataGenerator.Collection.GetCreateCollectionRequest() with { CollectionId = collectionId });
+            value: Requests.Collection.GetCreateCollectionRequest() with { CollectionId = collectionId });
 
         var client = _factory.CreateClient();
 
@@ -37,23 +37,23 @@ public sealed class GetPublishedArticlesFromCollectionTests(CustomWebApplication
 
         await customClient.PostAsJsonAsync(
             requestUri: "/api/collections",
-            value: DataGenerator.Collection.GetCreateCollectionRequest() with { CollectionId = collectionId });
+            value: Requests.Collection.GetCreateCollectionRequest() with { CollectionId = collectionId });
 
         const string firstArticleId = "article-1";
         await customClient.PostAsJsonAsync(
             requestUri: "/api/articles",
-            value: DataGenerator.Article.GetCreateRequest() with { ArticleId = firstArticleId, IsPublished = true });
+            value: Requests.Article.ArticleInput with { ArticleId = firstArticleId, IsPublished = true });
         await customClient.PostAsJsonAsync(
             requestUri: $"/api/collections/{collectionId}",
-            value: DataGenerator.Collection.GetAddArticleToCollectionRequest() with { ArticleId = firstArticleId });
+            value: Requests.Collection.GetAddArticleToCollectionRequest() with { ArticleId = firstArticleId });
 
         const string secondArticleId = "article-2";
         await customClient.PostAsJsonAsync(
             requestUri: "/api/articles",
-            value: DataGenerator.Article.GetCreateRequest() with { ArticleId = secondArticleId, IsPublished = false });
+            value: Requests.Article.ArticleInput with { ArticleId = secondArticleId, IsPublished = false });
         await customClient.PostAsJsonAsync(
             requestUri: $"/api/collections/{collectionId}",
-            value: DataGenerator.Collection.GetAddArticleToCollectionRequest() with { ArticleId = secondArticleId });
+            value: Requests.Collection.GetAddArticleToCollectionRequest() with { ArticleId = secondArticleId });
 
         var client = _factory.CreateClient();
 
@@ -89,7 +89,7 @@ public sealed class GetPublishedArticlesFromCollectionTests(CustomWebApplication
 
         await customClient.PostAsJsonAsync(
             requestUri: "/api/collections",
-            value: DataGenerator.Collection.GetCreateCollectionRequest() with { CollectionId = collectionId });
+            value: Requests.Collection.GetCreateCollectionRequest() with { CollectionId = collectionId });
 
         const int numberOfPublishedArticles = 15;
         const int numberOfDrafts = 1;
@@ -98,7 +98,7 @@ public sealed class GetPublishedArticlesFromCollectionTests(CustomWebApplication
         for (var index = 1; index <= numberOfPublishedArticles; index++)
             await customClient.PostAsJsonAsync(
                 requestUri: "/api/articles",
-                value: DataGenerator.Article.GetCreateRequest() with
+                value: Requests.Article.ArticleInput with
                 {
                     ArticleId = $"article-{index}",
                     IsPublished = true
@@ -106,17 +106,17 @@ public sealed class GetPublishedArticlesFromCollectionTests(CustomWebApplication
         for (var index = 1; index <= numberOfPublishedArticles; index++)
             await customClient.PostAsJsonAsync(
                 requestUri: $"/api/collections/{collectionId}",
-                value: DataGenerator.Collection.GetAddArticleToCollectionRequest() with
+                value: Requests.Collection.GetAddArticleToCollectionRequest() with
                 {
                     ArticleId = $"article-{index}"
                 });
 
         await customClient.PostAsJsonAsync(
             requestUri: "/api/articles",
-            value: DataGenerator.Article.GetCreateRequest() with { ArticleId = draftArticleId, IsPublished = false });
+            value: Requests.Article.ArticleInput with { ArticleId = draftArticleId, IsPublished = false });
         await customClient.PostAsJsonAsync(
             requestUri: $"/api/collections/{collectionId}",
-            value: DataGenerator.Collection.GetAddArticleToCollectionRequest() with { ArticleId = draftArticleId });
+            value: Requests.Collection.GetAddArticleToCollectionRequest() with { ArticleId = draftArticleId });
 
         var client = _factory.CreateClient();
 

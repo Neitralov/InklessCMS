@@ -14,7 +14,7 @@ public sealed class DeleteCollectionTests(CustomWebApplicationFactory factory) :
         const string collectionId = "collection-id";
         await customClient.PostAsJsonAsync(
             requestUri: "/api/collections",
-            value: DataGenerator.Collection.GetCreateCollectionRequest() with { CollectionId = collectionId });
+            value: Requests.Collection.GetCreateCollectionRequest() with { CollectionId = collectionId });
 
         // Act
         var deleteCollectionResponse = await customClient.DeleteAsync($"/api/collections/{collectionId}");
@@ -48,15 +48,15 @@ public sealed class DeleteCollectionTests(CustomWebApplicationFactory factory) :
         const string collectionId = "collection-id";
         await customClient.PostAsJsonAsync(
             requestUri: "/api/collections",
-            value: DataGenerator.Collection.GetCreateCollectionRequest() with { CollectionId = collectionId });
+            value: Requests.Collection.GetCreateCollectionRequest() with { CollectionId = collectionId });
 
         const string articleId = "article-id";
         await customClient.PostAsJsonAsync(
             requestUri: "/api/articles",
-            value: DataGenerator.Article.GetCreateRequest() with { ArticleId = articleId });
+            value: Requests.Article.ArticleInput with { ArticleId = articleId });
         await customClient.PostAsJsonAsync(
             requestUri: $"/api/collections/{collectionId}",
-            value: DataGenerator.Collection.GetAddArticleToCollectionRequest() with { ArticleId = articleId });
+            value: Requests.Collection.GetAddArticleToCollectionRequest() with { ArticleId = articleId });
 
         // Act
         var deleteCollectionResponse = await customClient.DeleteAsync($"/api/collections/{collectionId}");
