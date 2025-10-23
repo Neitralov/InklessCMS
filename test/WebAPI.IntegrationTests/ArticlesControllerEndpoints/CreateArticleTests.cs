@@ -1,5 +1,3 @@
-using Domain.Articles;
-
 namespace WebAPI.IntegrationTests.ArticlesControllerEndpoints;
 
 [Collection("Tests")]

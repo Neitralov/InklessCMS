@@ -80,9 +80,8 @@ public static class CustomWebApplicationFactoryExtensions
 
 public static class HttpClientExtensions
 {
-    public static GraphQLHttpClient ToGqlClient(this HttpClient httpClient) =>
-        new GraphQLHttpClient(
-            new Uri(httpClient.BaseAddress!, "/graphql"),
-            new SystemTextJsonSerializer(),
-            httpClient);
+    public static GraphQLHttpClient ToGqlClient(this HttpClient httpClient) => new(
+        endPoint: new Uri(httpClient.BaseAddress!, "/graphql"),
+        serializer: new SystemTextJsonSerializer(),
+        httpClient: httpClient);
 }

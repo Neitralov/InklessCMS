@@ -9,96 +9,91 @@ public sealed class GetCollectionTests(CustomWebApplicationFactory factory) : Ba
     public async Task EmptyListWillBeReturnedIfCollectionIsEmpty()
     {
         // Arrange
-        var customClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient();
+        var gqlClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient().ToGqlClient();
         const string collectionId = "collection-id";
 
-        await customClient.PostAsJsonAsync(
-            requestUri: "/api/collections",
-            value: Requests.Collection.GetCreateCollectionRequest() with { CollectionId = collectionId });
+        await gqlClient.CreateCollection(Requests.Collection.CollectionInput with { CollectionId = collectionId });
 
         // Act
-        var response = await customClient.GetAsync($"/api/collections/{collectionId}");
+        var gqlResponse = await gqlClient.GetCollection(collectionId);
 
         // Assert
-        response.StatusCode.ShouldBe(HttpStatusCode.OK);
-        (await response.Content.ReadFromJsonAsync<CollectionResponse>())?.Articles.ShouldBeEmpty();
+        gqlResponse.Articles.ShouldBeEmpty();
     }
 
     [Fact]
     public async Task ArticlesWillBeReturnedIfCollectionContainsArticles()
     {
         // Arrange
-        var customClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient();
+        var gqlClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient().ToGqlClient();
         const string collectionId = "collection-id";
         const int numberOfArticles = 2;
 
-        await customClient.PostAsJsonAsync(
-            requestUri: "/api/collections",
-            value: Requests.Collection.GetCreateCollectionRequest() with { CollectionId = collectionId });
+        await gqlClient.CreateCollection(Requests.Collection.CollectionInput with { CollectionId = collectionId });
 
         const string firstArticleId = "article-1";
-        await customClient.PostAsJsonAsync(
-            requestUri: "/api/articles",
-            value: Requests.Article.ArticleInput with { ArticleId = firstArticleId, IsPublished = true });
-        await customClient.PostAsJsonAsync(
-            requestUri: $"/api/collections/{collectionId}",
-            value: Requests.Collection.GetAddArticleToCollectionRequest() with { ArticleId = firstArticleId });
+        await gqlClient.CreateArticle(Requests.Article.ArticleInput with { ArticleId = firstArticleId, IsPublished = true });
+        await gqlClient.AddArticleToCollection(collectionId, firstArticleId);
 
         const string secondArticleId = "article-2";
-        await customClient.PostAsJsonAsync(
-            requestUri: "/api/articles",
-            value: Requests.Article.ArticleInput with { ArticleId = secondArticleId, IsPublished = false });
-        await customClient.PostAsJsonAsync(
-            requestUri: $"/api/collections/{collectionId}",
-            value: Requests.Collection.GetAddArticleToCollectionRequest() with { ArticleId = secondArticleId });
+        await gqlClient.CreateArticle(Requests.Article.ArticleInput with { ArticleId = secondArticleId, IsPublished = false });
+        await gqlClient.AddArticleToCollection(collectionId, secondArticleId);
 
         // Act
-        var response = await customClient.GetAsync($"/api/collections/{collectionId}");
+        var gqlResponse = await gqlClient.GetCollection(collectionId);
 
         // Assert
-        response.StatusCode.ShouldBe(HttpStatusCode.OK);
-        (await response.Content.ReadFromJsonAsync<CollectionResponse>())?.Articles.Count().ShouldBe(numberOfArticles);
+        gqlResponse?.Articles?.Count().ShouldBe(numberOfArticles);
     }
 
     [Fact]
     public async Task ArticlesWontBeReturnedIfCollectionDoesNotExist()
     {
         // Arrange
-        var customClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient();
+        var gqlClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient().ToGqlClient();
         const string collectionId = "collection-id";
 
         // Act
-        var response = await customClient.GetAsync($"/api/collections/{collectionId}");
+        var exception = await Should.ThrowAsync<GraphQLHttpRequestException>(async () =>
+        {
+            await gqlClient.GetCollection(collectionId);
+        });
 
         // Assert
-        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+        exception.Content!.ShouldContain(Collection.Errors.NotFound.Code);
     }
 
     [Fact]
     public async Task OnlyAuthorizedUserCanGetCollection()
     {
         // Arrange
-        var client = _factory.CreateClient();
+        var gqlClient = _factory.CreateClient().ToGqlClient();
         const string collectionId = "collection-id";
 
         // Act
-        var response = await client.GetAsync($"/api/collections/{collectionId}");
+        var exception = await Should.ThrowAsync<GraphQLHttpRequestException>(async () =>
+        {
+            await gqlClient.GetCollection(collectionId);
+        });
 
         // Assert
-        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
+        exception.Content!.ShouldContain("AUTH_NOT_AUTHORIZED");
     }
 
     [Fact]
     public async Task OnlyUserWithCanManageArticlesClaimCanGetCollection()
     {
         // Arrange
-        var customClient = _factory.AuthorizeAs(UserTypes.User).CreateClient();
+        var gqlClient = _factory.AuthorizeAs(UserTypes.User).CreateClient().ToGqlClient();
         const string collectionId = "collection-id";
 
         // Act
-        var response = await customClient.GetAsync($"/api/collections/{collectionId}");
+        var exception = await Should.ThrowAsync<GraphQLHttpRequestException>(async () =>
+        {
+            await gqlClient.GetCollection(collectionId);
+        });
 
         // Assert
-        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
+        exception.Content!.ShouldContain("AUTH_NOT_AUTHORIZED");
     }
 }

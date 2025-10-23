@@ -14,7 +14,13 @@ public sealed class CollectionRepository(DatabaseContext database) : BaseReposit
             Collection.Errors.NotFound.ToErrorOr<Collection>();
     }
 
-    public async Task<List<Collection>> GetCollectionsAsync() => await _collections.AsNoTracking().ToListAsync();
+    public async Task<List<Collection>> GetCollectionsAsync()
+    {
+        return await _collections
+            .AsNoTracking()
+            .Include(collection => collection.Articles)
+            .ToListAsync();
+    }
 
     public async Task<ErrorOr<PagedList<Article>>> GetPublishedArticlesFromColelctionAsync(
         string collectionId,

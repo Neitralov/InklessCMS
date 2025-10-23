@@ -1,21 +1,21 @@
 using WebAPI.IntegrationTests.GraphQL.Fragments;
 
-namespace WebAPI.IntegrationTests.GraphQL.Queries;
+namespace WebAPI.IntegrationTests.GraphQL.Queries.ArticleQueries;
 
 public static partial class Queries
 {
-    public static async Task<IReadOnlyCollection<GqlArticle>> GetPublishedArticles(
+    public static async Task<IReadOnlyCollection<GqlArticle>> GetArticles(
         this GraphQLHttpClient gqlClient, 
         PageOptions pageOptions)
     {
         var gqlResponse = await gqlClient.SendQueryAsync(
-            request: GetPublishedArticles(pageOptions),
-            defineResponseType: () => new { articleQueries = new { publishedArticles = new List<GqlArticle>() }});
+            request: GetArticles(pageOptions),
+            defineResponseType: () => new { articleQueries = new { articles = new List<GqlArticle>() }});
         
-        return gqlResponse.Data.articleQueries.publishedArticles;
+        return gqlResponse.Data.articleQueries.articles;
     }
     
-    private static GraphQLHttpRequest GetPublishedArticles(PageOptions pageOptions) => new()
+    private static GraphQLHttpRequest GetArticles(PageOptions pageOptions) => new()
     {
         Query =
             $$"""
@@ -23,7 +23,7 @@ public static partial class Queries
 
               query GetArticles {
                 articleQueries {
-                  publishedArticles (pageOptions: {
+                  articles (pageOptions: {
                    page: {{pageOptions.Page}},
                    size: {{pageOptions.Size}}
                   }) {

@@ -9,62 +9,63 @@ public sealed class CreateCollectionTests(CustomWebApplicationFactory factory) :
     public async Task CollectionCanBeCreated()
     {
         // Arrange
-        var customClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient();
+        var gqlClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient().ToGqlClient();
         const string collectionId = "collection-id";
 
         // Act
-        var response = await customClient.PostAsJsonAsync(
-            requestUri: "/api/collections",
-            value: Requests.Collection.GetCreateCollectionRequest() with { CollectionId = collectionId });
+        var gqlResponse = await gqlClient.CreateCollection(
+            Requests.Collection.CollectionInput with { CollectionId = collectionId });
 
         // Assert
-        response.StatusCode.ShouldBe(HttpStatusCode.Created);
-        (await response.Content.ReadFromJsonAsync<CollectionPreviewResponse>())?.CollectionId.ShouldBe(collectionId);
+        gqlResponse.CollectionId.ShouldBe(collectionId);
     }
 
     [Fact]
     public async Task InvalidCollectionCannotBeCreated()
     {
         // Arrange
-        var customClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient();
+        var gqlClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient().ToGqlClient();
         const string collectionId = "inv@lid-id";
 
         // Act
-        var response = await customClient.PostAsJsonAsync(
-            requestUri: "/api/collections",
-            value: Requests.Collection.GetCreateCollectionRequest() with { CollectionId = collectionId });
-
+        var exception = await Should.ThrowAsync<GraphQLHttpRequestException>(async () =>
+        {
+            await gqlClient.CreateCollection(Requests.Collection.CollectionInput with { CollectionId = collectionId });
+        });
+        
         // Assert
-        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+        exception.Content!.ShouldContain(Collection.Errors.InvalidId.Code);
     }
 
     [Fact]
     public async Task OnlyAuthorizedUserCanCreateCollection()
     {
         // Arrange
-        var client = _factory.CreateClient();
+        var gqlClient = _factory.CreateClient().ToGqlClient();
 
         // Act
-        var response = await client.PostAsJsonAsync(
-            requestUri: "/api/collections",
-            value: Requests.Collection.GetCreateCollectionRequest());
+        var exception = await Should.ThrowAsync<GraphQLHttpRequestException>(async () =>
+        {
+            await gqlClient.CreateCollection(Requests.Collection.CollectionInput);
+        });
 
         // Assert
-        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
+        exception.Content!.ShouldContain("AUTH_NOT_AUTHORIZED");
     }
 
     [Fact]
     public async Task OnlyUserWithCanManageArticlesClaimCanCreateCollection()
     {
         // Arrange
-        var customClient = _factory.AuthorizeAs(UserTypes.User).CreateClient();
+        var gqlClient = _factory.AuthorizeAs(UserTypes.User).CreateClient().ToGqlClient();
 
         // Act
-        var response = await customClient.PostAsJsonAsync(
-            requestUri: "/api/collections",
-            value: Requests.Collection.GetCreateCollectionRequest());
+        var exception = await Should.ThrowAsync<GraphQLHttpRequestException>(async () =>
+        {
+            await gqlClient.CreateCollection(Requests.Collection.CollectionInput);
+        });
 
         // Assert
-        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
+        exception.Content!.ShouldContain("AUTH_NOT_AUTHORIZED");
     }
 }

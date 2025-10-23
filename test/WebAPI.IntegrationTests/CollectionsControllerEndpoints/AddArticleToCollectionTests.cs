@@ -9,162 +9,141 @@ public sealed class AddArticleToCollectionTests(CustomWebApplicationFactory fact
     public async Task ArticleCanBeAddedToCollection()
     {
         // Arrange
-        var customClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient();
+        var gqlClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient().ToGqlClient();
 
         const string collectionId = "collection-id";
-        await customClient.PostAsJsonAsync(
-            requestUri: "/api/collections",
-            value: Requests.Collection.GetCreateCollectionRequest() with { CollectionId = collectionId });
+        await gqlClient.CreateCollection(Requests.Collection.CollectionInput with { CollectionId = collectionId });
 
         const string articleId = "article-id";
-        await customClient.PostAsJsonAsync(
-            requestUri: "/api/articles",
-            value: Requests.Article.ArticleInput with { ArticleId = articleId });
+        await gqlClient.CreateArticle(Requests.Article.ArticleInput with { ArticleId = articleId });
 
         // Act
-        var addArticleToCollectionResponse = await customClient.PostAsJsonAsync(
-            requestUri: $"/api/collections/{collectionId}",
-            value: Requests.Collection.GetAddArticleToCollectionRequest() with { ArticleId = articleId });
-
-        var getArticlesFromCollectionResponse = await customClient.GetAsync($"api/collections/{collectionId}");
+        var gqlResponse = await gqlClient.AddArticleToCollection(collectionId, articleId);
 
         // Assert
-        addArticleToCollectionResponse.StatusCode.ShouldBe(HttpStatusCode.NoContent);
-        (await getArticlesFromCollectionResponse.Content.ReadFromJsonAsync<CollectionResponse>())
-            ?.Articles.Count().ShouldBe(1);
+        gqlResponse.Articles?.Count().ShouldBe(1);
     }
 
     [Fact]
     public async Task SameArticleCannotBeAddedToCollection()
     {
         // Arrange
-        var customClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient();
+        var gqlClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient().ToGqlClient();
 
         const string collectionId = "collection-id";
-        await customClient.PostAsJsonAsync(
-            requestUri: "/api/collections",
-            value: Requests.Collection.GetCreateCollectionRequest() with { CollectionId = collectionId });
+        await gqlClient.CreateCollection(Requests.Collection.CollectionInput with { CollectionId = collectionId });
 
         const string articleId = "article-id";
-        await customClient.PostAsJsonAsync(
-            requestUri: "/api/articles",
-            value: Requests.Article.ArticleInput with { ArticleId = articleId });
-        await customClient.PostAsJsonAsync(
-            requestUri: $"/api/collections/{collectionId}",
-            value: Requests.Collection.GetAddArticleToCollectionRequest() with { ArticleId = articleId });
+        await gqlClient.CreateArticle(Requests.Article.ArticleInput with { ArticleId = articleId });
+        await gqlClient.AddArticleToCollection(collectionId, articleId);
 
         // Act
-        var response = await customClient.PostAsJsonAsync(
-            requestUri: $"/api/collections/{collectionId}",
-            value: Requests.Collection.GetAddArticleToCollectionRequest() with { ArticleId = articleId });
+        var exception = await Should.ThrowAsync<GraphQLHttpRequestException>(async () =>
+        {
+            await gqlClient.AddArticleToCollection(collectionId, articleId);
+        });
 
         // Assert
-        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+        exception.Content!.ShouldContain(Collection.Errors.ArticleAlreadyAdded.Code);
     }
 
     [Fact]
     public async Task ArticleCanBeAddedInSeveralCollectionsAtOnce()
     {
         // Arrange
-        var customClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient();
+        var gqlClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient().ToGqlClient();
 
         const string firstCollectionId = "collection-1";
-        await customClient.PostAsJsonAsync(
-            requestUri: "/api/collections",
-            value: Requests.Collection.GetCreateCollectionRequest() with { CollectionId = firstCollectionId });
+        await gqlClient.CreateCollection(Requests.Collection.CollectionInput with { CollectionId = firstCollectionId });
 
         const string secondCollectionId = "collection-2";
-        await customClient.PostAsJsonAsync(
-            requestUri: "/api/collections",
-            value: Requests.Collection.GetCreateCollectionRequest() with { CollectionId = secondCollectionId });
+        await gqlClient.CreateCollection(Requests.Collection.CollectionInput with { CollectionId = secondCollectionId });
 
         const string articleId = "article-id";
-        await customClient.PostAsJsonAsync(
-            requestUri: "/api/articles",
-            value: Requests.Article.ArticleInput with { ArticleId = articleId });
-        await customClient.PostAsJsonAsync(
-            requestUri: $"/api/collections/{firstCollectionId}",
-            value: Requests.Collection.GetAddArticleToCollectionRequest() with { ArticleId = articleId });
+        await gqlClient.CreateArticle(Requests.Article.ArticleInput with { ArticleId = articleId });
+        await gqlClient.AddArticleToCollection(firstCollectionId, articleId);
 
-        // Act
-        var response = await customClient.PostAsJsonAsync(
-            requestUri: $"/api/collections/{secondCollectionId}",
-            value: Requests.Collection.GetAddArticleToCollectionRequest() with { ArticleId = articleId });
-
-        // Assert
-        response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
+        // Act & Assert
+        await Should.NotThrowAsync(async () =>
+        {
+            await gqlClient.AddArticleToCollection(secondCollectionId, articleId);
+        });
     }
 
     [Fact]
     public async Task ArticleThatDoesNotExistCannotBeAddedToCollection()
     {
         // Arrange
-        var customClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient();
+        var gqlClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient().ToGqlClient();
 
         const string collectionId = "collection-id";
-        await customClient.PostAsJsonAsync(
-            requestUri: "/api/collections",
-            value: Requests.Collection.GetCreateCollectionRequest() with { CollectionId = collectionId });
+        await gqlClient.CreateCollection(Requests.Collection.CollectionInput with { CollectionId = collectionId });
+
+        const string articleId = "article-id";
 
         // Act
-        var response = await customClient.PostAsJsonAsync(
-            requestUri: $"/api/collections/{collectionId}",
-            value: Requests.Collection.GetAddArticleToCollectionRequest());
+        var exception = await Should.ThrowAsync<GraphQLHttpRequestException>(async () =>
+        {
+            await gqlClient.AddArticleToCollection(collectionId, articleId);
+        });
 
         // Assert
-        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+        exception.Content!.ShouldContain(Article.Errors.NotFound.Code);
     }
 
     [Fact]
     public async Task ArticleCannotBeAddedToCollectionThatDoesNotExist()
     {
         // Arrange
-        var customClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient();
+        var gqlClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient().ToGqlClient();
         const string collectionId = "collection-id";
 
         const string articleId = "article-id";
-        await customClient.PostAsJsonAsync(
-            requestUri: "/api/articles",
-            value: Requests.Article.ArticleInput with { ArticleId = articleId });
+        await gqlClient.CreateArticle(Requests.Article.ArticleInput with { ArticleId = articleId });
 
         // Act
-        var response = await customClient.PostAsJsonAsync(
-            requestUri: $"/api/collections/{collectionId}",
-            value: Requests.Collection.GetAddArticleToCollectionRequest() with { ArticleId = articleId });
+        var exception = await Should.ThrowAsync<GraphQLHttpRequestException>(async () =>
+        {
+            await gqlClient.AddArticleToCollection(collectionId, articleId);
+        });
 
         // Assert
-        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+        exception.Content!.ShouldContain(Collection.Errors.NotFound.Code);
     }
 
     [Fact]
     public async Task OnlyAuthorizedUserCanAddArticleToCollection()
     {
         // Arrange
-        var client = _factory.CreateClient();
+        var gqlClient = _factory.CreateClient().ToGqlClient();
         const string collectionId = "collection-id";
+        const string articleId = "article-id";
 
         // Act
-        var response = await client.PostAsJsonAsync(
-            requestUri: $"/api/collections/{collectionId}",
-            value: Requests.Collection.GetAddArticleToCollectionRequest());
+        var exception = await Should.ThrowAsync<GraphQLHttpRequestException>(async () =>
+        {
+            await gqlClient.AddArticleToCollection(collectionId, articleId);
+        });
 
         // Assert
-        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
+        exception.Content!.ShouldContain("AUTH_NOT_AUTHORIZED");
     }
 
     [Fact]
     public async Task OnlyUserWithCanManageArticlesClaimCanAddArticleToCollection()
     {
         // Arrange
-        var customClient = _factory.AuthorizeAs(UserTypes.User).CreateClient();
+        var gqlClient = _factory.AuthorizeAs(UserTypes.User).CreateClient().ToGqlClient();
         const string collectionId = "collection-id";
+        const string articleId = "article-id";
 
         // Act
-        var response = await customClient.PostAsJsonAsync(
-            requestUri: $"/api/collections/{collectionId}",
-            value: Requests.Collection.GetAddArticleToCollectionRequest());
+        var exception = await Should.ThrowAsync<GraphQLHttpRequestException>(async () =>
+        {
+            await gqlClient.AddArticleToCollection(collectionId, articleId);
+        });
 
         // Assert
-        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
+        exception.Content!.ShouldContain("AUTH_NOT_AUTHORIZED");
     }
 }

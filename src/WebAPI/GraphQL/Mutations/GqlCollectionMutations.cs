@@ -8,9 +8,9 @@ public sealed class GqlCollectionMutations
     [GqlAuthorize(Policy = "CanManageArticles")]
     public async Task<GqlCollection> CreateCollectionAsync(
         [Service] ICollectionRepository collectionRepository,
-        CreateCollectionRequest request)
+        GqlCollectionInput input)
     {
-        var requestToCollectionResult = CreateCollectionFrom(request);
+        var requestToCollectionResult = CreateCollectionFrom(input);
 
         if (requestToCollectionResult.IsError)
             throw new Exception(requestToCollectionResult.FirstError.Code);
@@ -23,7 +23,7 @@ public sealed class GqlCollectionMutations
         await collectionRepository.AddCollectionAsync(collection);
         await collectionRepository.SaveChangesAsync();
 
-        return new GqlCollection(collection);
+        return collection.ToGqlCollection();
     }
 
     [GraphQLName("addArticleToCollection")]
@@ -33,26 +33,30 @@ public sealed class GqlCollectionMutations
         [Service] ICollectionRepository collectionRepository,
         [Service] IArticleRepository articleRepository,
         string collectionId,
-        AddArticleToCollectionRequest request
-    )
+        string articleId)
     {
         var collection = await collectionRepository.FindCollectionByIdAsync(collectionId);
 
         if (collection.IsError)
             throw new Exception(collection.FirstError.Code);
 
-        var article = await articleRepository.FindArticleByIdAsync(request.ArticleId);
+        var collectionArticle = collection.Value.FindArticleById(articleId);
+
+        if (!collectionArticle.IsError)
+            throw new Exception(Collection.Errors.ArticleAlreadyAdded.Code);
+
+        if (collectionArticle.IsError && collectionArticle.FirstError != Collection.Errors.ArticleNotFound)
+            throw new Exception(collectionArticle.FirstError.Code);
+
+        var article = await articleRepository.FindArticleByIdAsync(articleId);
 
         if (article.IsError)
             throw new Exception(article.FirstError.Code);
 
-        if (collection.Value.Articles.Contains(article.Value))
-            throw new Exception(Collection.Errors.ArticleAlreadyAdded.Code);
-
         collection.Value.AddArticle(article.Value);
         await collectionRepository.SaveChangesAsync();
 
-        return new GqlCollection(collection.Value);
+        return collection.Value.ToGqlCollection();
     }
 
     [GraphQLName("updateCollection")]
@@ -60,9 +64,9 @@ public sealed class GqlCollectionMutations
     [GqlAuthorize(Policy = "CanManageArticles")]
     public async Task<GqlCollection> UpdateCollectionAsync(
         [Service] ICollectionRepository collectionRepository,
-        UpdateCollectionRequest request)
+        GqlCollectionInput input)
     {
-        var requestToCollectionResult = CreateCollectionFrom(request);
+        var requestToCollectionResult = CreateCollectionFrom(input);
 
         if (requestToCollectionResult.IsError)
             throw new Exception(requestToCollectionResult.FirstError.Code);
@@ -77,7 +81,7 @@ public sealed class GqlCollectionMutations
         collection.Value.Update(updatedCollection);
         await collectionRepository.SaveChangesAsync();
 
-        return new GqlCollection(collection.Value);
+        return collection.Value.ToGqlCollection();
     }
 
     [GraphQLName("deleteCollection")]
@@ -121,17 +125,10 @@ public sealed class GqlCollectionMutations
     }
 
 
-    private static ErrorOr<Collection> CreateCollectionFrom(CreateCollectionRequest request)
+    private static ErrorOr<Collection> CreateCollectionFrom(GqlCollectionInput input)
     {
         return Collection.Create(
-            collectionId: request.CollectionId,
-            title: request.Title);
-    }
-
-    private static ErrorOr<Collection> CreateCollectionFrom(UpdateCollectionRequest request)
-    {
-        return Collection.Create(
-            collectionId: request.CollectionId,
-            title: request.Title);
+            collectionId: input.CollectionId,
+            title: input.Title);
     }
 }

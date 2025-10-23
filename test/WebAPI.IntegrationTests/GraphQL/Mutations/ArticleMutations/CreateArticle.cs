@@ -1,19 +1,19 @@
 using WebAPI.IntegrationTests.GraphQL.Fragments;
 
-namespace WebAPI.IntegrationTests.GraphQL.Mutations;
+namespace WebAPI.IntegrationTests.GraphQL.Mutations.ArticleMutations;
 
 public static partial class Mutations
 {
-    public static async Task<GqlArticle> UpdateArticle(this GraphQLHttpClient gqlClient, GqlArticleInput input)
+    public static async Task<GqlArticle> CreateArticle(this GraphQLHttpClient gqlClient, GqlArticleInput input)
     {
         var gqlResponse = await gqlClient.SendMutationAsync(
-            request: UpdateArticle(input),
-            defineResponseType: () => new { articleMutations = new { updateArticle = new GqlArticle() }});
+            request: CreateArticle(input),
+            defineResponseType: () => new { articleMutations = new { createArticle = new GqlArticle() }});
         
-        return gqlResponse.Data.articleMutations.updateArticle;
+        return gqlResponse.Data.articleMutations.createArticle;
     }
     
-    private static GraphQLHttpRequest UpdateArticle(GqlArticleInput input) => new()
+    private static GraphQLHttpRequest CreateArticle(GqlArticleInput input) => new()
     {
         Query =
             $$"""
@@ -21,7 +21,7 @@ public static partial class Mutations
 
               mutation CreateArticle($input: articleInput!) {
                 articleMutations {
-                  updateArticle(input: $input) {
+                  createArticle(input: $input) {
                     ...ArticleFields
                   }
                 }

@@ -17,6 +17,12 @@ public static class Requests
 
     public static class Collection
     {
+        public static GqlCollectionInput CollectionInput { get; } = new()
+        {
+            CollectionId = "collection-id",
+            Title = "Title"
+        };
+        
         public static CreateCollectionRequest GetCreateCollectionRequest() => new
         (
             CollectionId: "collection-id",

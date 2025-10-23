@@ -9,114 +9,105 @@ public sealed class UpdateCollectionTests(CustomWebApplicationFactory factory) :
     public async Task CollectionCanBeUpdated()
     {
         // Arrange
-        var customClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient();
+        var gqlClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient().ToGqlClient();
         const string defaultTitle = "Default title";
         const string updatedTitle = "Updated title";
 
         const string collectionId = "collection-id";
-        await customClient.PostAsJsonAsync(
-            requestUri: "/api/collections",
-            value: Requests.Collection.GetCreateCollectionRequest() with
-            {
-                CollectionId = collectionId,
-                Title = defaultTitle
-            });
-
+        
         // Act
-        var getCollectionBeforeUpdateResponse = await customClient.GetAsync($"/api/collections/{collectionId}");
+        var createCollectionResponse = await gqlClient.CreateCollection(Requests.Collection.CollectionInput with
+        {
+            CollectionId = collectionId,
+            Title = defaultTitle
+        });
 
-        var updateCollectionResponse = await customClient.PutAsJsonAsync(
-            requestUri: "/api/collections",
-            value: Requests.Collection.GetUpdateCollectionRequest() with
-            {
-                CollectionId = collectionId,
-                Title = updatedTitle
-            });
-
-        var getCollectionAfterUpdateResponse = await customClient.GetAsync($"/api/collections/{collectionId}");
+        var updateCollectionResponse = await gqlClient.UpdateCollection(Requests.Collection.CollectionInput with
+        {
+            CollectionId = collectionId,
+            Title = updatedTitle
+        });
 
         // Assert
-        updateCollectionResponse.StatusCode.ShouldBe(HttpStatusCode.NoContent);
-        var firstContent = await getCollectionBeforeUpdateResponse.Content.ReadFromJsonAsync<ArticleResponse>();
-        var secondContent = await getCollectionAfterUpdateResponse.Content.ReadFromJsonAsync<ArticleResponse>();
-        firstContent?.Title.ShouldNotBeSameAs(secondContent?.Title);
+        createCollectionResponse.Title.ShouldBe(defaultTitle);
+        updateCollectionResponse.Title.ShouldBe(updatedTitle);
     }
 
     [Fact]
     public async Task CollectionCannotBeUpdatedIfItDoesNotExist()
     {
         // Arrange
-        var customClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient();
+        var gqlClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient().ToGqlClient();
         const string collectionId = "collection-id";
 
         // Act
-        var response = await customClient.PutAsJsonAsync(
-            requestUri: "/api/collections",
-            value: Requests.Collection.GetUpdateCollectionRequest() with { CollectionId = collectionId });
+        var exception = await Should.ThrowAsync<GraphQLHttpRequestException>(async () =>
+        {
+            await gqlClient.UpdateCollection(Requests.Collection.CollectionInput with { CollectionId = collectionId });
+        });
 
         // Assert
-        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+        exception.Content!.ShouldContain(Collection.Errors.NotFound.Code);
     }
 
     [Fact]
     public async Task CollectionCannotBeUpdatedWithInvalidData()
     {
         // Arrange
-        var customClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient();
+        var gqlClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient().ToGqlClient();
         const string defaultTitle = "Default title";
         const string tooShortTitle = "Aa";
 
         const string collectionId = "collection-id";
-        await customClient.PostAsJsonAsync(
-            requestUri: "/api/collections",
-            value: Requests.Collection.GetCreateCollectionRequest() with
-            {
-                CollectionId = collectionId,
-                Title = defaultTitle
-            });
+        await gqlClient.CreateCollection(Requests.Collection.CollectionInput with
+        {
+            CollectionId = collectionId,
+            Title = defaultTitle
+        });
 
         // Act
-        var response = await customClient.PutAsJsonAsync(
-            requestUri: "/api/collections",
-            value: Requests.Collection.GetUpdateCollectionRequest() with
+        var exception = await Should.ThrowAsync<GraphQLHttpRequestException>(async () =>
+        {
+            await gqlClient.UpdateCollection(Requests.Collection.CollectionInput with
             {
                 CollectionId = collectionId,
                 Title = tooShortTitle
             });
+        });
 
         // Assert
-        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+        exception.Content!.ShouldContain(Collection.Errors.InvalidTitleLength.Code);
     }
 
     [Fact]
     public async Task OnlyAuthorizedUserCanUpdateCollection()
     {
         // Arrange
-        var client = _factory.CreateClient();
-        const string collectionId = "collection-id";
+        var gqlClient = _factory.CreateClient().ToGqlClient();
 
         // Act
-        var response = await client.PutAsJsonAsync(
-            requestUri: "/api/collections",
-            value: Requests.Collection.GetUpdateCollectionRequest() with { CollectionId = collectionId });
+        var exception = await Should.ThrowAsync<GraphQLHttpRequestException>(async () =>
+        {
+            await gqlClient.UpdateCollection(Requests.Collection.CollectionInput);
+        });
 
         // Assert
-        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
+        exception.Content!.ShouldContain("AUTH_NOT_AUTHORIZED");
     }
 
     [Fact]
     public async Task OnlyUserWithCanManageArticlesClaimCanUpdateCollection()
     {
         // Arrange
-        var customClient = _factory.AuthorizeAs(UserTypes.User).CreateClient();
-        const string collectionId = "collection-id";
+        var gqlClient = _factory.AuthorizeAs(UserTypes.User).CreateClient().ToGqlClient();
 
         // Act
-        var response = await customClient.PutAsJsonAsync(
-            requestUri: "/api/collections",
-            value: Requests.Collection.GetUpdateCollectionRequest() with { CollectionId = collectionId });
+        var exception = await Should.ThrowAsync<GraphQLHttpRequestException>(async () =>
+        {
+            await gqlClient.UpdateCollection(Requests.Collection.CollectionInput);
+        });
 
         // Assert
-        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
+        exception.Content!.ShouldContain("AUTH_NOT_AUTHORIZED");
     }
 }

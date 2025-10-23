@@ -9,7 +9,7 @@ public sealed class GqlCollectionQueries
     {
         var collections = await collectionRepository.GetCollectionsAsync();
 
-        return collections.Select(collection => new GqlCollection(collection)).ToArray();
+        return [.. collections.Select(collection => collection.ToGqlCollection())];
     }
 
     [GraphQLName("collection")]
@@ -26,7 +26,7 @@ public sealed class GqlCollectionQueries
 
         var collection = getCollectionResult.Value;
 
-        return new GqlCollection(collection);
+        return collection.ToGqlCollection();
     }
 
     [GraphQLName("publishedArticlesFromCollection")]
@@ -49,10 +49,9 @@ public sealed class GqlCollectionQueries
 
         var publishedArticlesFromCollection = getPublishedArticlesFromCollectionResult.Value;
 
-        if (httpContextAccessor.HttpContext is not null)
-            httpContextAccessor.HttpContext.Response.Headers
-                .Append("X-Total-Count", publishedArticlesFromCollection.TotalCount.ToString());
+        httpContextAccessor.HttpContext?.Response.Headers
+            .Append("X-Total-Count", publishedArticlesFromCollection.TotalCount.ToString());
 
-        return publishedArticlesFromCollection.Select(article => article.ToGqlArticle()).ToArray();
+        return [.. publishedArticlesFromCollection.Select(article => article.ToGqlArticle())];
     }
 }

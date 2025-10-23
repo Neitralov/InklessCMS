@@ -10,131 +10,111 @@ public sealed class GetPublishedArticlesFromCollectionTests(CustomWebApplication
     public async Task EmptyListWillBeReturnedIfCollectionDoesNotContainPublishedArticles()
     {
         // Arrange
-        var customClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient();
+        var gqlAdminClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient().ToGqlClient();
         const string collectionId = "collection-id";
 
-        await customClient.PostAsJsonAsync(
-            requestUri: "/api/collections",
-            value: Requests.Collection.GetCreateCollectionRequest() with { CollectionId = collectionId });
+        await gqlAdminClient.CreateCollection(Requests.Collection.CollectionInput with { CollectionId = collectionId });
 
-        var client = _factory.CreateClient();
+        var gqlClient = _factory.CreateClient().ToGqlClient();
 
         // Act
-        var response = await client.GetAsync($"/api/collections/{collectionId}/published");
+        var gqlResponse = await gqlClient.GetPublishedArticlesFromCollection(collectionId, new PageOptions { Page = 1, Size = 10 });
 
         // Assert
-        response.StatusCode.ShouldBe(HttpStatusCode.OK);
-        (await response.Content.ReadFromJsonAsync<List<ArticlePreviewResponse>>()).ShouldBeEmpty();
+        gqlResponse.ShouldBeEmpty();
     }
 
     [Fact]
     public async Task PublishedArticlesWillBeReturnedIfCollectionContainsPublishedArticles()
     {
         // Arrange
-        var customClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient();
+        var gqlAdminClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient().ToGqlClient();
         const string collectionId = "collection-id";
         const int numberOfPublishedArticles = 1;
 
-        await customClient.PostAsJsonAsync(
-            requestUri: "/api/collections",
-            value: Requests.Collection.GetCreateCollectionRequest() with { CollectionId = collectionId });
+        await gqlAdminClient.CreateCollection(Requests.Collection.CollectionInput with { CollectionId = collectionId });
 
         const string firstArticleId = "article-1";
-        await customClient.PostAsJsonAsync(
-            requestUri: "/api/articles",
-            value: Requests.Article.ArticleInput with { ArticleId = firstArticleId, IsPublished = true });
-        await customClient.PostAsJsonAsync(
-            requestUri: $"/api/collections/{collectionId}",
-            value: Requests.Collection.GetAddArticleToCollectionRequest() with { ArticleId = firstArticleId });
+        await gqlAdminClient.CreateArticle(Requests.Article.ArticleInput with { ArticleId = firstArticleId, IsPublished = true });
+        await gqlAdminClient.AddArticleToCollection(collectionId, firstArticleId);
 
         const string secondArticleId = "article-2";
-        await customClient.PostAsJsonAsync(
-            requestUri: "/api/articles",
-            value: Requests.Article.ArticleInput with { ArticleId = secondArticleId, IsPublished = false });
-        await customClient.PostAsJsonAsync(
-            requestUri: $"/api/collections/{collectionId}",
-            value: Requests.Collection.GetAddArticleToCollectionRequest() with { ArticleId = secondArticleId });
+        await gqlAdminClient.CreateArticle(Requests.Article.ArticleInput with { ArticleId = secondArticleId, IsPublished = false });
+        await gqlAdminClient.AddArticleToCollection(collectionId, secondArticleId);
 
-        var client = _factory.CreateClient();
+        var gqlClient = _factory.CreateClient().ToGqlClient();
 
         // Act
-        var response = await client.GetAsync($"/api/collections/{collectionId}/published");
+        var gqlResponse = await gqlClient.GetPublishedArticlesFromCollection(collectionId, new PageOptions { Page = 1, Size = 10 });
 
         // Assert
-        response.StatusCode.ShouldBe(HttpStatusCode.OK);
-        (await response.Content.ReadFromJsonAsync<List<ArticlePreviewResponse>>())
-            !.Count().ShouldBe(numberOfPublishedArticles);
+        gqlResponse.Count.ShouldBe(numberOfPublishedArticles);
     }
 
     [Fact]
     public async Task PublishedArticlesWontBeReturnedIfCollectionDoesNotExist()
     {
         // Arrange
-        var client = _factory.CreateClient();
+        var gqlClient = _factory.CreateClient().ToGqlClient();
         const string collectionId = "collection-id";
 
         // Act
-        var response = await client.GetAsync($"/api/collections/{collectionId}/published");
+        var exception = await Should.ThrowAsync<GraphQLHttpRequestException>(async () =>
+        {
+            await gqlClient.GetPublishedArticlesFromCollection(collectionId, new PageOptions { Page = 1, Size = 10 });
+        });
 
         // Assert
-        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+        exception.Content!.ShouldContain(Collection.Errors.NotFound.Code);
     }
 
     [Fact]
     public async Task PaginationShouldWork()
     {
         // Arrange
-        var customClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient();
+        var gqlAdminClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient().ToGqlClient();
         const string collectionId = "collection-id";
 
-        await customClient.PostAsJsonAsync(
-            requestUri: "/api/collections",
-            value: Requests.Collection.GetCreateCollectionRequest() with { CollectionId = collectionId });
+        await gqlAdminClient.CreateCollection(Requests.Collection.CollectionInput with { CollectionId = collectionId });
 
         const int numberOfPublishedArticles = 15;
         const int numberOfDrafts = 1;
         var draftArticleId = $"article-{numberOfPublishedArticles + numberOfDrafts}";
 
         for (var index = 1; index <= numberOfPublishedArticles; index++)
-            await customClient.PostAsJsonAsync(
-                requestUri: "/api/articles",
-                value: Requests.Article.ArticleInput with
-                {
-                    ArticleId = $"article-{index}",
-                    IsPublished = true
-                });
+            await gqlAdminClient.CreateArticle(Requests.Article.ArticleInput with
+            {
+                ArticleId = $"article-{index}",
+                IsPublished = true
+            });
+            
         for (var index = 1; index <= numberOfPublishedArticles; index++)
-            await customClient.PostAsJsonAsync(
-                requestUri: $"/api/collections/{collectionId}",
-                value: Requests.Collection.GetAddArticleToCollectionRequest() with
-                {
-                    ArticleId = $"article-{index}"
-                });
+            await gqlAdminClient.AddArticleToCollection(collectionId, $"article-{index}");
 
-        await customClient.PostAsJsonAsync(
-            requestUri: "/api/articles",
-            value: Requests.Article.ArticleInput with { ArticleId = draftArticleId, IsPublished = false });
-        await customClient.PostAsJsonAsync(
-            requestUri: $"/api/collections/{collectionId}",
-            value: Requests.Collection.GetAddArticleToCollectionRequest() with { ArticleId = draftArticleId });
+        await gqlAdminClient.CreateArticle(Requests.Article.ArticleInput with
+        {
+            ArticleId = draftArticleId,
+            IsPublished = false
+        });
+            
+        await gqlAdminClient.AddArticleToCollection(collectionId, draftArticleId);
 
-        var client = _factory.CreateClient();
+        var gqlClient = _factory.CreateClient().ToGqlClient();
 
         // Act
-        var response1 = await client.GetAsync($"/api/collections/{collectionId}/published");
-        var response2 = await client.GetAsync($"/api/collections/{collectionId}/published?page=1&size=5");
-        var response3 = await client.GetAsync($"/api/collections/{collectionId}/published?page=2&size=10");
-        var response4 = await client.GetAsync($"/api/collections/{collectionId}/published?page=3&size=10");
-        List<HttpResponseMessage> responses = [response1, response2, response3, response4];
+        var gqlResponse1 =
+            await gqlClient.GetPublishedArticlesFromCollection(collectionId, new PageOptions { Page = 1, Size = 10 });
+        var gqlResponse2 =
+            await gqlClient.GetPublishedArticlesFromCollection(collectionId, new PageOptions { Page = 1, Size = 5 });
+        var gqlResponse3 =
+            await gqlClient.GetPublishedArticlesFromCollection(collectionId, new PageOptions { Page = 2, Size = 10 });
+        var gqlResponse4 = 
+            await gqlClient.GetPublishedArticlesFromCollection(collectionId, new PageOptions { Page = 3, Size = 10 });
 
         // Assert
-        responses.ForEach(response => response.StatusCode.ShouldBe(HttpStatusCode.OK));
-        responses.ForEach(response =>
-            response.Headers.GetValues("X-Total-Count").Single().ShouldBe($"{numberOfPublishedArticles}"));
-
-        (await response1.Content.ReadFromJsonAsync<List<ArticlePreviewResponse>>())!.Count().ShouldBe(10);
-        (await response2.Content.ReadFromJsonAsync<List<ArticlePreviewResponse>>())!.Count().ShouldBe(5);
-        (await response3.Content.ReadFromJsonAsync<List<ArticlePreviewResponse>>())!.Count().ShouldBe(5);
-        (await response4.Content.ReadFromJsonAsync<List<ArticlePreviewResponse>>())!.Count().ShouldBe(0);
+        gqlResponse1.Count.ShouldBe(10);
+        gqlResponse2.Count.ShouldBe(5);
+        gqlResponse3.Count.ShouldBe(5);
+        gqlResponse4.Count.ShouldBe(0);
     }
 }
