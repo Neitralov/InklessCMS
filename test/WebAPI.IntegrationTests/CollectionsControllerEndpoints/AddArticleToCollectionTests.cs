@@ -12,10 +12,10 @@ public sealed class AddArticleToCollectionTests(CustomWebApplicationFactory fact
         var gqlClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient().ToGqlClient();
 
         const string collectionId = "collection-id";
-        await gqlClient.CreateCollection(Requests.Collection.CollectionInput with { CollectionId = collectionId });
+        await gqlClient.CreateCollection(Inputs.Collection.CollectionInput with { CollectionId = collectionId });
 
         const string articleId = "article-id";
-        await gqlClient.CreateArticle(Requests.Article.ArticleInput with { ArticleId = articleId });
+        await gqlClient.CreateArticle(Inputs.Article.ArticleInput with { ArticleId = articleId });
 
         // Act
         var gqlResponse = await gqlClient.AddArticleToCollection(collectionId, articleId);
@@ -31,10 +31,10 @@ public sealed class AddArticleToCollectionTests(CustomWebApplicationFactory fact
         var gqlClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient().ToGqlClient();
 
         const string collectionId = "collection-id";
-        await gqlClient.CreateCollection(Requests.Collection.CollectionInput with { CollectionId = collectionId });
+        await gqlClient.CreateCollection(Inputs.Collection.CollectionInput with { CollectionId = collectionId });
 
         const string articleId = "article-id";
-        await gqlClient.CreateArticle(Requests.Article.ArticleInput with { ArticleId = articleId });
+        await gqlClient.CreateArticle(Inputs.Article.ArticleInput with { ArticleId = articleId });
         await gqlClient.AddArticleToCollection(collectionId, articleId);
 
         // Act
@@ -54,13 +54,13 @@ public sealed class AddArticleToCollectionTests(CustomWebApplicationFactory fact
         var gqlClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient().ToGqlClient();
 
         const string firstCollectionId = "collection-1";
-        await gqlClient.CreateCollection(Requests.Collection.CollectionInput with { CollectionId = firstCollectionId });
+        await gqlClient.CreateCollection(Inputs.Collection.CollectionInput with { CollectionId = firstCollectionId });
 
         const string secondCollectionId = "collection-2";
-        await gqlClient.CreateCollection(Requests.Collection.CollectionInput with { CollectionId = secondCollectionId });
+        await gqlClient.CreateCollection(Inputs.Collection.CollectionInput with { CollectionId = secondCollectionId });
 
         const string articleId = "article-id";
-        await gqlClient.CreateArticle(Requests.Article.ArticleInput with { ArticleId = articleId });
+        await gqlClient.CreateArticle(Inputs.Article.ArticleInput with { ArticleId = articleId });
         await gqlClient.AddArticleToCollection(firstCollectionId, articleId);
 
         // Act & Assert
@@ -77,7 +77,7 @@ public sealed class AddArticleToCollectionTests(CustomWebApplicationFactory fact
         var gqlClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient().ToGqlClient();
 
         const string collectionId = "collection-id";
-        await gqlClient.CreateCollection(Requests.Collection.CollectionInput with { CollectionId = collectionId });
+        await gqlClient.CreateCollection(Inputs.Collection.CollectionInput with { CollectionId = collectionId });
 
         const string articleId = "article-id";
 
@@ -99,7 +99,7 @@ public sealed class AddArticleToCollectionTests(CustomWebApplicationFactory fact
         const string collectionId = "collection-id";
 
         const string articleId = "article-id";
-        await gqlClient.CreateArticle(Requests.Article.ArticleInput with { ArticleId = articleId });
+        await gqlClient.CreateArticle(Inputs.Article.ArticleInput with { ArticleId = articleId });
 
         // Act
         var exception = await Should.ThrowAsync<GraphQLException>(async () =>

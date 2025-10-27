@@ -1,6 +1,6 @@
 namespace WebAPI.IntegrationTests;
 
-public static class Requests
+public static class Inputs
 {
     public static class Article
     {

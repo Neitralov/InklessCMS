@@ -16,7 +16,7 @@ public sealed class IncreaseViewsCounterTests(CustomWebApplicationFactory factor
         const string articleId = "article-id";
         const int totalViews = 2;
 
-        await adminGqlClient.CreateArticle(Requests.Article.ArticleInput with { ArticleId = articleId });
+        await adminGqlClient.CreateArticle(Inputs.Article.ArticleInput with { ArticleId = articleId });
 
         // Act
         await gqlClient.IncreaseViews(articleId);

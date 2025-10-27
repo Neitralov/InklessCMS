@@ -16,13 +16,13 @@ public sealed class UpdateCollectionTests(CustomWebApplicationFactory factory) :
         const string collectionId = "collection-id";
         
         // Act
-        var createCollectionResponse = await gqlClient.CreateCollection(Requests.Collection.CollectionInput with
+        var createCollectionResponse = await gqlClient.CreateCollection(Inputs.Collection.CollectionInput with
         {
             CollectionId = collectionId,
             Title = defaultTitle
         });
 
-        var updateCollectionResponse = await gqlClient.UpdateCollection(Requests.Collection.CollectionInput with
+        var updateCollectionResponse = await gqlClient.UpdateCollection(Inputs.Collection.CollectionInput with
         {
             CollectionId = collectionId,
             Title = updatedTitle
@@ -43,7 +43,7 @@ public sealed class UpdateCollectionTests(CustomWebApplicationFactory factory) :
         // Act
         var exception = await Should.ThrowAsync<GraphQLException>(async () =>
         {
-            await gqlClient.UpdateCollection(Requests.Collection.CollectionInput with { CollectionId = collectionId });
+            await gqlClient.UpdateCollection(Inputs.Collection.CollectionInput with { CollectionId = collectionId });
         });
 
         // Assert
@@ -59,7 +59,7 @@ public sealed class UpdateCollectionTests(CustomWebApplicationFactory factory) :
         const string tooShortTitle = "Aa";
 
         const string collectionId = "collection-id";
-        await gqlClient.CreateCollection(Requests.Collection.CollectionInput with
+        await gqlClient.CreateCollection(Inputs.Collection.CollectionInput with
         {
             CollectionId = collectionId,
             Title = defaultTitle
@@ -68,7 +68,7 @@ public sealed class UpdateCollectionTests(CustomWebApplicationFactory factory) :
         // Act
         var exception = await Should.ThrowAsync<GraphQLException>(async () =>
         {
-            await gqlClient.UpdateCollection(Requests.Collection.CollectionInput with
+            await gqlClient.UpdateCollection(Inputs.Collection.CollectionInput with
             {
                 CollectionId = collectionId,
                 Title = tooShortTitle
@@ -88,7 +88,7 @@ public sealed class UpdateCollectionTests(CustomWebApplicationFactory factory) :
         // Act
         var exception = await Should.ThrowAsync<GraphQLException>(async () =>
         {
-            await gqlClient.UpdateCollection(Requests.Collection.CollectionInput);
+            await gqlClient.UpdateCollection(Inputs.Collection.CollectionInput);
         });
 
         // Assert
@@ -104,7 +104,7 @@ public sealed class UpdateCollectionTests(CustomWebApplicationFactory factory) :
         // Act
         var exception = await Should.ThrowAsync<GraphQLException>(async () =>
         {
-            await gqlClient.UpdateCollection(Requests.Collection.CollectionInput);
+            await gqlClient.UpdateCollection(Inputs.Collection.CollectionInput);
         });
 
         // Assert

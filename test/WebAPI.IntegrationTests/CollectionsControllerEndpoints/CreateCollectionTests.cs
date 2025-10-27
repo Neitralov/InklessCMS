@@ -14,7 +14,7 @@ public sealed class CreateCollectionTests(CustomWebApplicationFactory factory) :
 
         // Act
         var gqlResponse = await gqlClient.CreateCollection(
-            Requests.Collection.CollectionInput with { CollectionId = collectionId });
+            Inputs.Collection.CollectionInput with { CollectionId = collectionId });
 
         // Assert
         gqlResponse.CollectionId.ShouldBe(collectionId);
@@ -30,7 +30,7 @@ public sealed class CreateCollectionTests(CustomWebApplicationFactory factory) :
         // Act
         var exception = await Should.ThrowAsync<GraphQLException>(async () =>
         {
-            await gqlClient.CreateCollection(Requests.Collection.CollectionInput with { CollectionId = collectionId });
+            await gqlClient.CreateCollection(Inputs.Collection.CollectionInput with { CollectionId = collectionId });
         });
         
         // Assert
@@ -46,7 +46,7 @@ public sealed class CreateCollectionTests(CustomWebApplicationFactory factory) :
         // Act
         var exception = await Should.ThrowAsync<GraphQLException>(async () =>
         {
-            await gqlClient.CreateCollection(Requests.Collection.CollectionInput);
+            await gqlClient.CreateCollection(Inputs.Collection.CollectionInput);
         });
 
         // Assert
@@ -62,7 +62,7 @@ public sealed class CreateCollectionTests(CustomWebApplicationFactory factory) :
         // Act
         var exception = await Should.ThrowAsync<GraphQLException>(async () =>
         {
-            await gqlClient.CreateCollection(Requests.Collection.CollectionInput);
+            await gqlClient.CreateCollection(Inputs.Collection.CollectionInput);
         });
 
         // Assert

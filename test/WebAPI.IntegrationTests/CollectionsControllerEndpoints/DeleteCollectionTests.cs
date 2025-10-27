@@ -12,7 +12,7 @@ public sealed class DeleteCollectionTests(CustomWebApplicationFactory factory) :
         var gqlClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient().ToGqlClient();
 
         const string collectionId = "collection-id";
-        await gqlClient.CreateCollection(Requests.Collection.CollectionInput with { CollectionId = collectionId });
+        await gqlClient.CreateCollection(Inputs.Collection.CollectionInput with { CollectionId = collectionId });
 
         // Act
         await gqlClient.DeleteCollection(collectionId);
@@ -49,10 +49,10 @@ public sealed class DeleteCollectionTests(CustomWebApplicationFactory factory) :
         var gqlClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient().ToGqlClient();
 
         const string collectionId = "collection-id";
-        await gqlClient.CreateCollection(Requests.Collection.CollectionInput with { CollectionId = collectionId });
+        await gqlClient.CreateCollection(Inputs.Collection.CollectionInput with { CollectionId = collectionId });
 
         const string articleId = "article-id";
-        await gqlClient.CreateArticle(Requests.Article.ArticleInput with { ArticleId = articleId });
+        await gqlClient.CreateArticle(Inputs.Article.ArticleInput with { ArticleId = articleId });
         await gqlClient.AddArticleToCollection(collectionId, articleId);
 
         // Act

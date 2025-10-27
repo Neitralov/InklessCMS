@@ -14,14 +14,14 @@ public sealed class ChangePinStateTests(CustomWebApplicationFactory factory) : B
         var gqlClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient().ToGqlClient();
 
         const string firstArticleId = "article-1";
-        await gqlClient.CreateArticle(Requests.Article.ArticleInput with
+        await gqlClient.CreateArticle(Inputs.Article.ArticleInput with
         {
             ArticleId = firstArticleId,
             IsPinned = false
         });
 
         const string secondArticleId = "article-2";
-        await gqlClient.CreateArticle(Requests.Article.ArticleInput with
+        await gqlClient.CreateArticle(Inputs.Article.ArticleInput with
         {
             ArticleId = secondArticleId,
             IsPinned = true

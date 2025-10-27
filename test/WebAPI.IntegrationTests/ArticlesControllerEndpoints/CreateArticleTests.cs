@@ -13,7 +13,7 @@ public sealed class CreateArticleTests(CustomWebApplicationFactory factory) : Ba
         const string articleId = "article-id";
 
         // Act
-        var gqlResponse = await gqlClient.CreateArticle(Requests.Article.ArticleInput with { ArticleId = articleId });
+        var gqlResponse = await gqlClient.CreateArticle(Inputs.Article.ArticleInput with { ArticleId = articleId });
 
         // Assert
         gqlResponse.ArticleId.ShouldBe(articleId);
@@ -29,7 +29,7 @@ public sealed class CreateArticleTests(CustomWebApplicationFactory factory) : Ba
         // Act
         var exception = await Should.ThrowAsync<GraphQLException>(async () =>
         {
-            await gqlClient.CreateArticle(Requests.Article.ArticleInput with { ArticleId = invalidArticleId });
+            await gqlClient.CreateArticle(Inputs.Article.ArticleInput with { ArticleId = invalidArticleId });
         });
         
         // Assert
@@ -45,7 +45,7 @@ public sealed class CreateArticleTests(CustomWebApplicationFactory factory) : Ba
         // Act
         var exception = await Should.ThrowAsync<GraphQLException>(async () =>
         {
-            await gqlClient.CreateArticle(Requests.Article.ArticleInput);
+            await gqlClient.CreateArticle(Inputs.Article.ArticleInput);
         });
         
         // Assert
@@ -61,7 +61,7 @@ public sealed class CreateArticleTests(CustomWebApplicationFactory factory) : Ba
         // Act
         var exception = await Should.ThrowAsync<GraphQLException>(async () =>
         {
-            await gqlClient.CreateArticle(Requests.Article.ArticleInput);
+            await gqlClient.CreateArticle(Inputs.Article.ArticleInput);
         });
         
         // Assert

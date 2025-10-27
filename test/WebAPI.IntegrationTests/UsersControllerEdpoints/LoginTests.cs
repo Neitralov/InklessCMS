@@ -12,7 +12,7 @@ public sealed class LoginTests(CustomWebApplicationFactory factory) : BaseIntegr
         var gqlClient = _factory.CreateClient().ToGqlClient();
 
         // Act
-        var gqlResponse = await gqlClient.Login(Requests.User.LoginInput);
+        var gqlResponse = await gqlClient.Login(Inputs.User.LoginInput);
 
         // Assert
         gqlResponse.RefreshToken.ShouldNotBeEmpty();
@@ -28,7 +28,7 @@ public sealed class LoginTests(CustomWebApplicationFactory factory) : BaseIntegr
         // Act
         var exception = await Should.ThrowAsync<GraphQLException>(async () =>
         {
-            await gqlClient.Login(Requests.User.LoginInput with { Password = "Invalid" });
+            await gqlClient.Login(Inputs.User.LoginInput with { Password = "Invalid" });
         });
 
         // Assert

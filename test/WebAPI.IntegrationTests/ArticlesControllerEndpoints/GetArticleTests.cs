@@ -15,14 +15,14 @@ public sealed class GetArticleTests(CustomWebApplicationFactory factory) : BaseI
         var adminGqlClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient().ToGqlClient();
 
         const string firstArticleId = "article-1";
-        await adminGqlClient.CreateArticle(Requests.Article.ArticleInput with
+        await adminGqlClient.CreateArticle(Inputs.Article.ArticleInput with
         {
             ArticleId = firstArticleId,
             IsPublished = false
         });
 
         const string secondArticleId = "article-2";
-        await adminGqlClient.CreateArticle(Requests.Article.ArticleInput with
+        await adminGqlClient.CreateArticle(Inputs.Article.ArticleInput with
         {
             ArticleId = secondArticleId,
             IsPublished = true
@@ -62,7 +62,7 @@ public sealed class GetArticleTests(CustomWebApplicationFactory factory) : BaseI
         var adminGqlClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient().ToGqlClient();
         
         const string articleId = "article-id";
-        await adminGqlClient.CreateArticle(Requests.Article.ArticleInput with
+        await adminGqlClient.CreateArticle(Inputs.Article.ArticleInput with
         {
             ArticleId = articleId,
             IsPublished = false

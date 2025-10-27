@@ -26,7 +26,7 @@ public sealed class GetCollectionsTests(CustomWebApplicationFactory factory) : B
         const int numberOfCollections = 2;
 
         for (var index = 1; index <= numberOfCollections; index++)
-            await gqlAdminClient.CreateCollection(Requests.Collection.CollectionInput with
+            await gqlAdminClient.CreateCollection(Inputs.Collection.CollectionInput with
             {
                 CollectionId = $"collection-{index}"
             });

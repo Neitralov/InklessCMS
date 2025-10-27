@@ -27,7 +27,7 @@ public sealed class GetArticlesTests(CustomWebApplicationFactory factory) : Base
 
         for (var index = 1; index <= numberOfArticles; index++)
         {
-            await gqlClient.CreateArticle(Requests.Article.ArticleInput with { ArticleId = $"article-{index}" });
+            await gqlClient.CreateArticle(Inputs.Article.ArticleInput with { ArticleId = $"article-{index}" });
         }
         
         // Act
@@ -80,14 +80,14 @@ public sealed class GetArticlesTests(CustomWebApplicationFactory factory) : Base
 
         for (var index = 1; index <= numberOfDrafts; index++)
         {
-            await gqlClient.CreateArticle(Requests.Article.ArticleInput with
+            await gqlClient.CreateArticle(Inputs.Article.ArticleInput with
             {
                 ArticleId = $"article-{index}",
                 IsPublished = false
             });
         }
         
-        await gqlClient.CreateArticle(Requests.Article.ArticleInput with
+        await gqlClient.CreateArticle(Inputs.Article.ArticleInput with
         {
             ArticleId = publishedArticleId,
             IsPublished = true

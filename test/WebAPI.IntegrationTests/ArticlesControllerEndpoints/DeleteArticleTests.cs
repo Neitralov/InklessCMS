@@ -14,8 +14,7 @@ public sealed class DeleteArticleTests(CustomWebApplicationFactory factory) : Ba
         var gqlClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient().ToGqlClient();
         
         const string articleId = "article-id";
-        var input = Requests.Article.ArticleInput with { ArticleId = articleId };
-        await gqlClient.CreateArticle(input);
+        await gqlClient.CreateArticle(Inputs.Article.ArticleInput with { ArticleId = articleId });
 
         // Act
         var deleteArticleResponse = await gqlClient.DeleteArticle(articleId);

@@ -12,7 +12,7 @@ public sealed class GetPublishedArticlesTests(CustomWebApplicationFactory factor
         var gqlClient = _factory.CreateClient().ToGqlClient();
         var adminGqlClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient().ToGqlClient();
 
-        await adminGqlClient.CreateArticle(Requests.Article.ArticleInput with { IsPublished = false });
+        await adminGqlClient.CreateArticle(Inputs.Article.ArticleInput with { IsPublished = false });
 
         // Act
         var gqlResponse = await gqlClient.GetPublishedArticles(new PageOptions { Page = 1, Size = 10 });
@@ -30,14 +30,14 @@ public sealed class GetPublishedArticlesTests(CustomWebApplicationFactory factor
         const int numberOfPublishedArticles = 1;
 
         const string firstArticleId = "article-1";
-        await adminGqlClient.CreateArticle(Requests.Article.ArticleInput with
+        await adminGqlClient.CreateArticle(Inputs.Article.ArticleInput with
         {
             ArticleId = firstArticleId, 
             IsPublished = false
         });
 
         const string secondArticleId = "article-2";
-        await adminGqlClient.CreateArticle(Requests.Article.ArticleInput with
+        await adminGqlClient.CreateArticle(Inputs.Article.ArticleInput with
         {
             ArticleId = secondArticleId, 
             IsPublished = true
@@ -61,13 +61,13 @@ public sealed class GetPublishedArticlesTests(CustomWebApplicationFactory factor
         var draftArticleId = $"article-{numberOfPublishedArticles + numberOfDrafts}";
 
         for (var index = 1; index <= numberOfPublishedArticles; index++)
-            await adminGqlClient.CreateArticle(Requests.Article.ArticleInput with
+            await adminGqlClient.CreateArticle(Inputs.Article.ArticleInput with
             {
                 ArticleId = $"article-{index}",
                 IsPublished = true
             });
 
-        await adminGqlClient.CreateArticle(Requests.Article.ArticleInput with
+        await adminGqlClient.CreateArticle(Inputs.Article.ArticleInput with
         {
             ArticleId = draftArticleId, 
             IsPublished = false

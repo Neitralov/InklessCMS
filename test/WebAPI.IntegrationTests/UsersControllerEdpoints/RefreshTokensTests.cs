@@ -13,10 +13,10 @@ public sealed class RefreshTokensTests(CustomWebApplicationFactory factory) : Ba
         // Arrange
         var gqlClient = _factory.CreateClient().ToGqlClient();
 
-        var creditnails = await gqlClient.Login(Requests.User.LoginInput);
+        var creditnails = await gqlClient.Login(Inputs.User.LoginInput);
 
         // Act
-        var gqlResponse = await gqlClient.RefreshTokens(Requests.User.RefreshTokenInput with
+        var gqlResponse = await gqlClient.RefreshTokens(Inputs.User.RefreshTokenInput with
         {
             ExpiredAccessToken = creditnails.AccessToken,
             RefreshToken = creditnails.RefreshToken
@@ -33,12 +33,12 @@ public sealed class RefreshTokensTests(CustomWebApplicationFactory factory) : Ba
         // Arrange
         var gqlClient = _factory.CreateClient().ToGqlClient();
 
-        var creditnails = await gqlClient.Login(Requests.User.LoginInput);
+        var creditnails = await gqlClient.Login(Inputs.User.LoginInput);
 
         // Act
         var exception = await Should.ThrowAsync<GraphQLException>(async () =>
         {
-            await gqlClient.RefreshTokens(Requests.User.RefreshTokenInput with
+            await gqlClient.RefreshTokens(Inputs.User.RefreshTokenInput with
             {
                 ExpiredAccessToken = "invalid-access-token",
                 RefreshToken = creditnails.RefreshToken

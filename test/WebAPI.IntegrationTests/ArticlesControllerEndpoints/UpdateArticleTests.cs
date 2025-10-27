@@ -17,13 +17,13 @@ public sealed class UpdateArticleTests(CustomWebApplicationFactory factory) : Ba
         const string updatedTitle = "Updated title";
 
         // Act
-        var createGqlResponse = await gqlClient.CreateArticle(Requests.Article.ArticleInput with
+        var createGqlResponse = await gqlClient.CreateArticle(Inputs.Article.ArticleInput with
         {
             ArticleId = articleId, 
             Title = defaultTitle
         });
         
-        var updateGqlResponse = await gqlClient.UpdateArticle(Requests.Article.ArticleInput with
+        var updateGqlResponse = await gqlClient.UpdateArticle(Inputs.Article.ArticleInput with
         {
             ArticleId = articleId, 
             Title = updatedTitle
@@ -44,7 +44,7 @@ public sealed class UpdateArticleTests(CustomWebApplicationFactory factory) : Ba
         // Act
         var exception = await Should.ThrowAsync<GraphQLException>(async () =>
         {
-            await gqlClient.UpdateArticle(Requests.Article.ArticleInput with { ArticleId = articleId });
+            await gqlClient.UpdateArticle(Inputs.Article.ArticleInput with { ArticleId = articleId });
         });
 
         // Assert
@@ -59,12 +59,12 @@ public sealed class UpdateArticleTests(CustomWebApplicationFactory factory) : Ba
         const string articleId = "article-id";
         const string tooShortTitle = "Aa";
 
-        await gqlClient.CreateArticle(Requests.Article.ArticleInput with { ArticleId = articleId });
+        await gqlClient.CreateArticle(Inputs.Article.ArticleInput with { ArticleId = articleId });
 
         // Act
         var exception = await Should.ThrowAsync<GraphQLException>(async () =>
         {
-            await gqlClient.UpdateArticle(Requests.Article.ArticleInput with
+            await gqlClient.UpdateArticle(Inputs.Article.ArticleInput with
             {
                 ArticleId = articleId,
                 Title = tooShortTitle
@@ -85,7 +85,7 @@ public sealed class UpdateArticleTests(CustomWebApplicationFactory factory) : Ba
         // Act
         var exception = await Should.ThrowAsync<GraphQLException>(async () =>
         {
-            await gqlClient.UpdateArticle(Requests.Article.ArticleInput with { ArticleId = articleId });
+            await gqlClient.UpdateArticle(Inputs.Article.ArticleInput with { ArticleId = articleId });
         });
         
         // Assert
@@ -102,7 +102,7 @@ public sealed class UpdateArticleTests(CustomWebApplicationFactory factory) : Ba
         // Act
         var exception = await Should.ThrowAsync<GraphQLException>(async () =>
         {
-            await gqlClient.UpdateArticle(Requests.Article.ArticleInput with { ArticleId = articleId });
+            await gqlClient.UpdateArticle(Inputs.Article.ArticleInput with { ArticleId = articleId });
         });
         
         // Assert
