@@ -1,0 +1,32 @@
+namespace WebAPI.IntegrationTests.GraphQL.Mutations.ArticleMutations;
+
+public static partial class Mutations
+{
+    public static async Task<GqlArticle> IncreaseViews(this GraphQLHttpClient gqlClient, string articleId)
+    {
+        var gqlResponse = await gqlClient.SendMutationAsync(
+            request: IncreaseViews(articleId),
+            defineResponseType: () => new { articleMutations = new { increaseViewsCounter = new GqlArticle() } });
+            
+        if (gqlResponse.Errors is not null)
+            throw new GraphQLException(message: gqlResponse.Errors.First().Message);
+
+        return gqlResponse.Data.articleMutations.increaseViewsCounter;
+    }
+
+    private static GraphQLHttpRequest IncreaseViews(string articleId) => new()
+    {
+        Query =
+            $$"""
+              {{ArticleFragment.Fragment}}
+
+              mutation ChangePinState {
+                articleMutations {
+                  increaseViewsCounter (articleId: "{{articleId}}") {
+                    ...ArticleFields
+                  }
+                }
+              }
+              """
+    };
+}

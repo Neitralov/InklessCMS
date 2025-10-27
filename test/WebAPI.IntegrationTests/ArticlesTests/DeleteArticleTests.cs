@@ -1,0 +1,79 @@
+namespace WebAPI.IntegrationTests.ArticlesTests;
+
+[Collection("Tests")]
+public sealed class DeleteArticleTests(CustomWebApplicationFactory factory) : BaseIntegrationTest(factory)
+{
+    private readonly CustomWebApplicationFactory _factory = factory;
+
+    [Fact]
+    public async Task ArticleCanBeDeleted()
+    {
+        // Arrange
+        var gqlClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient().ToGqlClient();
+        
+        const string articleId = "article-id";
+        await gqlClient.CreateArticle(Inputs.Article.ArticleInput with { ArticleId = articleId });
+
+        // Act
+        var deleteArticleResponse = await gqlClient.DeleteArticle(articleId);
+        var exception = await Should.ThrowAsync<GraphQLException>(async () =>
+        {
+            await gqlClient.GetArticle(articleId);
+        });
+
+        // Assert
+        deleteArticleResponse.ShouldBe(articleId);
+        exception.Message!.ShouldContain(Article.Errors.NotFound.Code);
+    }
+
+    [Fact]
+    public async Task ArticleCannotBeDeletedIfItDoesNotExist()
+    {
+        // Arrange
+        var gqlClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient().ToGqlClient();
+        const string articleId = "article-id";
+
+        // Act
+        var exception = await Should.ThrowAsync<GraphQLException>(async () =>
+        {
+            await gqlClient.DeleteArticle(articleId);
+        });
+
+        // Assert
+        exception.Message!.ShouldContain(Article.Errors.NotFound.Code);
+    }
+
+    [Fact]
+    public async Task OnlyAuthorizedUserCanDeleteArticle()
+    {
+        // Arrange
+        var gqlClient = _factory.CreateClient().ToGqlClient();
+        const string articleId = "article-id";
+
+        // Act
+        var exception = await Should.ThrowAsync<GraphQLException>(async () =>
+        {
+            await gqlClient.DeleteArticle(articleId);
+        });
+
+        // Assert
+        exception.Message!.ShouldContain("The current user is not authorized to access this resource.");
+    }
+
+    [Fact]
+    public async Task OnlyUserWithCanManageArticlesClaimCanDeleteArticle()
+    {
+        // Arrange
+        var gqlClient = _factory.AuthorizeAs(UserTypes.User).CreateClient().ToGqlClient();
+        const string articleId = "article-id";
+
+        // Act
+        var exception = await Should.ThrowAsync<GraphQLException>(async () =>
+        {
+            await gqlClient.DeleteArticle(articleId);
+        });
+
+        // Assert
+        exception.Message!.ShouldContain("The current user is not authorized to access this resource.");
+    }
+}

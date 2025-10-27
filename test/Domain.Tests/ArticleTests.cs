@@ -1,4 +1,4 @@
-namespace Domain.Tests.Articles;
+namespace Domain.Tests;
 
 public sealed class ArticleTests
 {

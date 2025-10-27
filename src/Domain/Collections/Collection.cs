@@ -50,4 +50,8 @@ public sealed partial record Collection
 
         return Result.Deleted;
     }
+
+    public ErrorOr<Article> FindArticleById(string articleIdToFind) =>
+        _articles.SingleOrDefault(article => article.ArticleId == articleIdToFind)
+            ?? Errors.ArticleNotFound.ToErrorOr<Article>();
 }

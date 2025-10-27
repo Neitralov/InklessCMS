@@ -1,5 +1,4 @@
 global using System.Data.Common;
-global using System.Net;
 global using System.Security.Claims;
 global using System.Text.Encodings.Web;
 
@@ -13,9 +12,22 @@ global using Xunit;
 global using Respawn;
 global using Shouldly;
 global using Testcontainers.PostgreSql;
+global using HotChocolate;
+global using GraphQL.Client.Http;
+global using GraphQL.Client.Serializer.SystemTextJson;
+global using GraphQL.Client.Abstractions;
 
 global using Database;
+global using Domain.Articles;
+global using Domain.Collections;
 global using Domain.Users;
-global using WebAPI.Contracts.Article;
-global using WebAPI.Contracts.Collection;
-global using WebAPI.Contracts.User;
+global using Domain.PagedList;
+global using Domain.Authorization;
+global using WebAPI.GraphQL.InputTypes;
+global using WebAPI.GraphQL.OutputTypes;
+global using WebAPI.IntegrationTests.GraphQL.Fragments;
+global using WebAPI.IntegrationTests.GraphQL.Mutations.ArticleMutations;
+global using WebAPI.IntegrationTests.GraphQL.Mutations.CollectionMutations;
+global using WebAPI.IntegrationTests.GraphQL.Mutations.UserMutations;
+global using WebAPI.IntegrationTests.GraphQL.Queries.ArticleQueries;
+global using WebAPI.IntegrationTests.GraphQL.Queries.CollectionQueries;

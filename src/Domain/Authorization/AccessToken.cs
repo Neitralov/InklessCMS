@@ -53,7 +53,7 @@ public sealed partial record AccessToken
         }
         catch
         {
-            return AccessToken.Errors.InvalidToken;
+            return Errors.InvalidToken;
         }
     }
 }
