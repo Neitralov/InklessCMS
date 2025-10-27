@@ -1,8 +1,6 @@
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddHealthChecks();
-builder.Services.AddControllers();
-builder.Services.AddRouting(options => options.LowercaseUrls = true);
 builder.Services.AddCors(builder.Configuration);
 builder.Services.AddOptions(builder.Configuration);
 builder.Services.AddRepositories();
@@ -37,7 +35,6 @@ app.UseCors("AllowClient");
 app.UseFileServer();
 app.UseAuthentication();
 app.UseAuthorization();
-app.MapControllers();
 app.MapGraphQL();
 app.MapHealthChecks("/healthz");
 await app.RunAsync();
