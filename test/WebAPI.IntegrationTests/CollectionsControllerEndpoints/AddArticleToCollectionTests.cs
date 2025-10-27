@@ -38,13 +38,13 @@ public sealed class AddArticleToCollectionTests(CustomWebApplicationFactory fact
         await gqlClient.AddArticleToCollection(collectionId, articleId);
 
         // Act
-        var exception = await Should.ThrowAsync<GraphQLHttpRequestException>(async () =>
+        var exception = await Should.ThrowAsync<GraphQLException>(async () =>
         {
             await gqlClient.AddArticleToCollection(collectionId, articleId);
         });
 
         // Assert
-        exception.Content!.ShouldContain(Collection.Errors.ArticleAlreadyAdded.Code);
+        exception.Message!.ShouldContain(Collection.Errors.ArticleAlreadyAdded.Code);
     }
 
     [Fact]
@@ -82,13 +82,13 @@ public sealed class AddArticleToCollectionTests(CustomWebApplicationFactory fact
         const string articleId = "article-id";
 
         // Act
-        var exception = await Should.ThrowAsync<GraphQLHttpRequestException>(async () =>
+        var exception = await Should.ThrowAsync<GraphQLException>(async () =>
         {
             await gqlClient.AddArticleToCollection(collectionId, articleId);
         });
 
         // Assert
-        exception.Content!.ShouldContain(Article.Errors.NotFound.Code);
+        exception.Message!.ShouldContain(Article.Errors.NotFound.Code);
     }
 
     [Fact]
@@ -102,13 +102,13 @@ public sealed class AddArticleToCollectionTests(CustomWebApplicationFactory fact
         await gqlClient.CreateArticle(Requests.Article.ArticleInput with { ArticleId = articleId });
 
         // Act
-        var exception = await Should.ThrowAsync<GraphQLHttpRequestException>(async () =>
+        var exception = await Should.ThrowAsync<GraphQLException>(async () =>
         {
             await gqlClient.AddArticleToCollection(collectionId, articleId);
         });
 
         // Assert
-        exception.Content!.ShouldContain(Collection.Errors.NotFound.Code);
+        exception.Message!.ShouldContain(Collection.Errors.NotFound.Code);
     }
 
     [Fact]
@@ -120,13 +120,13 @@ public sealed class AddArticleToCollectionTests(CustomWebApplicationFactory fact
         const string articleId = "article-id";
 
         // Act
-        var exception = await Should.ThrowAsync<GraphQLHttpRequestException>(async () =>
+        var exception = await Should.ThrowAsync<GraphQLException>(async () =>
         {
             await gqlClient.AddArticleToCollection(collectionId, articleId);
         });
 
         // Assert
-        exception.Content!.ShouldContain("AUTH_NOT_AUTHORIZED");
+        exception.Message!.ShouldContain("The current user is not authorized to access this resource.");
     }
 
     [Fact]
@@ -138,12 +138,12 @@ public sealed class AddArticleToCollectionTests(CustomWebApplicationFactory fact
         const string articleId = "article-id";
 
         // Act
-        var exception = await Should.ThrowAsync<GraphQLHttpRequestException>(async () =>
+        var exception = await Should.ThrowAsync<GraphQLException>(async () =>
         {
             await gqlClient.AddArticleToCollection(collectionId, articleId);
         });
 
         // Assert
-        exception.Content!.ShouldContain("AUTH_NOT_AUTHORIZED");
+        exception.Message!.ShouldContain("The current user is not authorized to access this resource.");
     }
 }

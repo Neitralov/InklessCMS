@@ -13,6 +13,7 @@ global using Xunit;
 global using Respawn;
 global using Shouldly;
 global using Testcontainers.PostgreSql;
+global using HotChocolate;
 global using GraphQL.Client.Http;
 global using GraphQL.Client.Serializer.SystemTextJson;
 global using GraphQL.Client.Abstractions;

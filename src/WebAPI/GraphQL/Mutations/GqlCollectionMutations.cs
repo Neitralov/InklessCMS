@@ -7,7 +7,7 @@ public sealed class GqlCollectionMutations
     [GraphQLDescription("Создать коллекцию")]
     [GqlAuthorize(Policy = "CanManageArticles")]
     public async Task<GqlCollection> CreateCollectionAsync(
-        [Service] ICollectionRepository collectionRepository,
+        ICollectionRepository collectionRepository,
         GqlCollectionInput input)
     {
         var requestToCollectionResult = CreateCollectionFrom(input);
@@ -30,8 +30,8 @@ public sealed class GqlCollectionMutations
     [GraphQLDescription("Добавить статью в коллекцию")]
     [GqlAuthorize(Policy = "CanManageArticles")]
     public async Task<GqlCollection> AddArticleToCollectionAsync(
-        [Service] ICollectionRepository collectionRepository,
-        [Service] IArticleRepository articleRepository,
+        ICollectionRepository collectionRepository,
+        IArticleRepository articleRepository,
         string collectionId,
         string articleId)
     {
@@ -63,7 +63,7 @@ public sealed class GqlCollectionMutations
     [GraphQLDescription("Обновить коллекцию")]
     [GqlAuthorize(Policy = "CanManageArticles")]
     public async Task<GqlCollection> UpdateCollectionAsync(
-        [Service] ICollectionRepository collectionRepository,
+        ICollectionRepository collectionRepository,
         GqlCollectionInput input)
     {
         var requestToCollectionResult = CreateCollectionFrom(input);
@@ -87,9 +87,7 @@ public sealed class GqlCollectionMutations
     [GraphQLName("deleteCollection")]
     [GraphQLDescription("Удалить коллекцию")]
     [GqlAuthorize(Policy = "CanManageArticles")]
-    public async Task<string> DeleteCollectionAsync(
-        [Service] ICollectionRepository collectionRepository,
-        string collectionId)
+    public async Task<string> DeleteCollectionAsync(ICollectionRepository collectionRepository, string collectionId)
     {
         var deleteCollectionResult = await collectionRepository.DeleteCollectionAsync(collectionId);
 
@@ -105,7 +103,7 @@ public sealed class GqlCollectionMutations
     [GraphQLDescription("Удалить статью из коллекции")]
     [GqlAuthorize(Policy = "CanManageArticles")]
     public async Task<string> DeleteArticleFromCollectionAsync(
-        [Service] ICollectionRepository collectionRepository,
+        ICollectionRepository collectionRepository,
         string collectionId,
         string articleId)
     {

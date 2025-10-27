@@ -16,13 +16,13 @@ public sealed class DeleteCollectionTests(CustomWebApplicationFactory factory) :
 
         // Act
         await gqlClient.DeleteCollection(collectionId);
-        var exception = await Should.ThrowAsync<GraphQLHttpRequestException>(async () =>
+        var exception = await Should.ThrowAsync<GraphQLException>(async () =>
         {
             await gqlClient.GetCollection(collectionId);
         });
         
         // Assert
-        exception.Content!.ShouldContain(Collection.Errors.NotFound.Code);
+        exception.Message!.ShouldContain(Collection.Errors.NotFound.Code);
     }
 
     [Fact]
@@ -33,13 +33,13 @@ public sealed class DeleteCollectionTests(CustomWebApplicationFactory factory) :
         const string collectionId = "collection-id";
 
         // Act
-        var exception = await Should.ThrowAsync<GraphQLHttpRequestException>(async () =>
+        var exception = await Should.ThrowAsync<GraphQLException>(async () =>
         {
             await gqlClient.GetCollection(collectionId);
         });
         
         // Assert
-        exception.Content!.ShouldContain(Collection.Errors.NotFound.Code);
+        exception.Message!.ShouldContain(Collection.Errors.NotFound.Code);
     }
 
     [Fact]
@@ -57,14 +57,14 @@ public sealed class DeleteCollectionTests(CustomWebApplicationFactory factory) :
 
         // Act
         await gqlClient.DeleteCollection(collectionId);
-        var exception = await Should.ThrowAsync<GraphQLHttpRequestException>(async () =>
+        var exception = await Should.ThrowAsync<GraphQLException>(async () =>
         {
             await gqlClient.GetCollection(collectionId);
         });
         var gqlResponse = await gqlClient.GetArticle(articleId);
 
         // Assert
-        exception.Content!.ShouldContain(Collection.Errors.NotFound.Code);
+        exception.Message!.ShouldContain(Collection.Errors.NotFound.Code);
         gqlResponse.ArticleId.ShouldBe(articleId);
     }
 
@@ -76,13 +76,13 @@ public sealed class DeleteCollectionTests(CustomWebApplicationFactory factory) :
         const string collectionId = "collection-id";
 
         // Act
-        var exception = await Should.ThrowAsync<GraphQLHttpRequestException>(async () =>
+        var exception = await Should.ThrowAsync<GraphQLException>(async () =>
         {
             await gqlClient.DeleteCollection(collectionId);
         });
 
         // Assert
-        exception.Content!.ShouldContain("AUTH_NOT_AUTHORIZED");
+        exception.Message!.ShouldContain("The current user is not authorized to access this resource.");
     }
 
     [Fact]
@@ -93,12 +93,12 @@ public sealed class DeleteCollectionTests(CustomWebApplicationFactory factory) :
         const string collectionId = "collection-id";
 
         // Act
-        var exception = await Should.ThrowAsync<GraphQLHttpRequestException>(async () =>
+        var exception = await Should.ThrowAsync<GraphQLException>(async () =>
         {
             await gqlClient.DeleteCollection(collectionId);
         });
 
         // Assert
-        exception.Content!.ShouldContain("AUTH_NOT_AUTHORIZED");
+        exception.Message!.ShouldContain("The current user is not authorized to access this resource.");
     }
 }

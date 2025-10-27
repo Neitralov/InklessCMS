@@ -54,13 +54,13 @@ public sealed class GetCollectionTests(CustomWebApplicationFactory factory) : Ba
         const string collectionId = "collection-id";
 
         // Act
-        var exception = await Should.ThrowAsync<GraphQLHttpRequestException>(async () =>
+        var exception = await Should.ThrowAsync<GraphQLException>(async () =>
         {
             await gqlClient.GetCollection(collectionId);
         });
 
         // Assert
-        exception.Content!.ShouldContain(Collection.Errors.NotFound.Code);
+        exception.Message!.ShouldContain(Collection.Errors.NotFound.Code);
     }
 
     [Fact]
@@ -71,13 +71,13 @@ public sealed class GetCollectionTests(CustomWebApplicationFactory factory) : Ba
         const string collectionId = "collection-id";
 
         // Act
-        var exception = await Should.ThrowAsync<GraphQLHttpRequestException>(async () =>
+        var exception = await Should.ThrowAsync<GraphQLException>(async () =>
         {
             await gqlClient.GetCollection(collectionId);
         });
 
         // Assert
-        exception.Content!.ShouldContain("AUTH_NOT_AUTHORIZED");
+        exception.Message!.ShouldContain("The current user is not authorized to access this resource.");
     }
 
     [Fact]
@@ -88,12 +88,12 @@ public sealed class GetCollectionTests(CustomWebApplicationFactory factory) : Ba
         const string collectionId = "collection-id";
 
         // Act
-        var exception = await Should.ThrowAsync<GraphQLHttpRequestException>(async () =>
+        var exception = await Should.ThrowAsync<GraphQLException>(async () =>
         {
             await gqlClient.GetCollection(collectionId);
         });
 
         // Assert
-        exception.Content!.ShouldContain("AUTH_NOT_AUTHORIZED");
+        exception.Message!.ShouldContain("The current user is not authorized to access this resource.");
     }
 }

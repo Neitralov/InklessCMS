@@ -5,7 +5,7 @@ public sealed class GqlCollectionQueries
 {
     [GraphQLName("collections")]
     [GraphQLDescription("Список коллекций")]
-    public async Task<GqlCollection[]> GetCollectionsAsync([Service] ICollectionRepository collectionRepository)
+    public async Task<GqlCollection[]> GetCollectionsAsync(ICollectionRepository collectionRepository)
     {
         var collections = await collectionRepository.GetCollectionsAsync();
 
@@ -15,9 +15,7 @@ public sealed class GqlCollectionQueries
     [GraphQLName("collection")]
     [GraphQLDescription("Коллекция")]
     [GqlAuthorize(Policy = "CanManageArticles")]
-    public async Task<GqlCollection> GetCollectionAsync(
-        [Service] ICollectionRepository collectionRepository,
-        string collectionId)
+    public async Task<GqlCollection> GetCollectionAsync(ICollectionRepository collectionRepository, string collectionId)
     {
         var getCollectionResult = await collectionRepository.FindCollectionByIdAsync(collectionId);
 
@@ -32,8 +30,8 @@ public sealed class GqlCollectionQueries
     [GraphQLName("publishedArticlesFromCollection")]
     [GraphQLDescription("Опубликованные статьи из коллекции")]
     public async Task<GqlArticle[]> GetPublishedArticlesFromCollectionAsync(
-        [Service] ICollectionRepository collectionRepository,
-        [Service] IHttpContextAccessor httpContextAccessor,
+        ICollectionRepository collectionRepository,
+        IHttpContextAccessor httpContextAccessor,
         string collectionId,
         PageOptions pageOptions,
         CancellationToken cancellationToken)

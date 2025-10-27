@@ -45,13 +45,13 @@ public sealed class GetArticleTests(CustomWebApplicationFactory factory) : BaseI
         const string articleId = "article-id";
 
         // Act
-        var exception = await Should.ThrowAsync<GraphQLHttpRequestException>(async () =>
+        var exception = await Should.ThrowAsync<GraphQLException>(async () =>
         {
             await gqlClient.GetArticle(articleId);
         });
         
         // Assert
-        exception.Content!.ShouldContain(Article.Errors.NotFound.Code);
+        exception.Message!.ShouldContain(Article.Errors.NotFound.Code);
     }
 
     [Fact]
@@ -69,12 +69,12 @@ public sealed class GetArticleTests(CustomWebApplicationFactory factory) : BaseI
         });
 
         // Act
-        var exception = await Should.ThrowAsync<GraphQLHttpRequestException>(async () =>
+        var exception = await Should.ThrowAsync<GraphQLException>(async () =>
         {
             await gqlClient.GetArticle(articleId);
         });
         
         // Assert
-        exception.Content!.ShouldContain(Article.Errors.NotFound.Code);
+        exception.Message!.ShouldContain(Article.Errors.NotFound.Code);
     }
 }

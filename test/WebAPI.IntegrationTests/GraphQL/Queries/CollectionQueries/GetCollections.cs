@@ -8,7 +8,10 @@ public static partial class Queries
     {
         var gqlResponse = await gqlClient.SendQueryAsync(
             request: GetCollections(),
-            defineResponseType: () => new { collectionQueries = new { collections = new List<GqlCollection>() }});
+            defineResponseType: () => new { collectionQueries = new { collections = new List<GqlCollection>() } });
+            
+        if (gqlResponse.Errors is not null)
+            throw new GraphQLException(message: gqlResponse.Errors.First().Message);
         
         return gqlResponse.Data.collectionQueries.collections;
     }

@@ -41,13 +41,13 @@ public sealed class UpdateCollectionTests(CustomWebApplicationFactory factory) :
         const string collectionId = "collection-id";
 
         // Act
-        var exception = await Should.ThrowAsync<GraphQLHttpRequestException>(async () =>
+        var exception = await Should.ThrowAsync<GraphQLException>(async () =>
         {
             await gqlClient.UpdateCollection(Requests.Collection.CollectionInput with { CollectionId = collectionId });
         });
 
         // Assert
-        exception.Content!.ShouldContain(Collection.Errors.NotFound.Code);
+        exception.Message!.ShouldContain(Collection.Errors.NotFound.Code);
     }
 
     [Fact]
@@ -66,7 +66,7 @@ public sealed class UpdateCollectionTests(CustomWebApplicationFactory factory) :
         });
 
         // Act
-        var exception = await Should.ThrowAsync<GraphQLHttpRequestException>(async () =>
+        var exception = await Should.ThrowAsync<GraphQLException>(async () =>
         {
             await gqlClient.UpdateCollection(Requests.Collection.CollectionInput with
             {
@@ -76,7 +76,7 @@ public sealed class UpdateCollectionTests(CustomWebApplicationFactory factory) :
         });
 
         // Assert
-        exception.Content!.ShouldContain(Collection.Errors.InvalidTitleLength.Code);
+        exception.Message!.ShouldContain(Collection.Errors.InvalidTitleLength.Code);
     }
 
     [Fact]
@@ -86,13 +86,13 @@ public sealed class UpdateCollectionTests(CustomWebApplicationFactory factory) :
         var gqlClient = _factory.CreateClient().ToGqlClient();
 
         // Act
-        var exception = await Should.ThrowAsync<GraphQLHttpRequestException>(async () =>
+        var exception = await Should.ThrowAsync<GraphQLException>(async () =>
         {
             await gqlClient.UpdateCollection(Requests.Collection.CollectionInput);
         });
 
         // Assert
-        exception.Content!.ShouldContain("AUTH_NOT_AUTHORIZED");
+        exception.Message!.ShouldContain("The current user is not authorized to access this resource.");
     }
 
     [Fact]
@@ -102,12 +102,12 @@ public sealed class UpdateCollectionTests(CustomWebApplicationFactory factory) :
         var gqlClient = _factory.AuthorizeAs(UserTypes.User).CreateClient().ToGqlClient();
 
         // Act
-        var exception = await Should.ThrowAsync<GraphQLHttpRequestException>(async () =>
+        var exception = await Should.ThrowAsync<GraphQLException>(async () =>
         {
             await gqlClient.UpdateCollection(Requests.Collection.CollectionInput);
         });
 
         // Assert
-        exception.Content!.ShouldContain("AUTH_NOT_AUTHORIZED");
+        exception.Message!.ShouldContain("The current user is not authorized to access this resource.");
     }
 }

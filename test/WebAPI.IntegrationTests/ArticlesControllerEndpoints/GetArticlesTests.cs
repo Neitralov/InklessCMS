@@ -44,13 +44,13 @@ public sealed class GetArticlesTests(CustomWebApplicationFactory factory) : Base
         var gqlClient = _factory.CreateClient().ToGqlClient();
         
         // Act
-        var exception = await Should.ThrowAsync<GraphQLHttpRequestException>(async () =>
+        var exception = await Should.ThrowAsync<GraphQLException>(async () =>
         {
             await gqlClient.GetArticles(new PageOptions { Page = 1, Size = 10 });
         });
         
         // Assert
-        exception.Content!.ShouldContain("AUTH_NOT_AUTHORIZED");
+        exception.Message!.ShouldContain("The current user is not authorized to access this resource.");
     }
 
     [Fact]
@@ -60,13 +60,13 @@ public sealed class GetArticlesTests(CustomWebApplicationFactory factory) : Base
         var gqlClient = _factory.AuthorizeAs(UserTypes.User).CreateClient().ToGqlClient();
         
         // Act
-        var exception = await Should.ThrowAsync<GraphQLHttpRequestException>(async () =>
+        var exception = await Should.ThrowAsync<GraphQLException>(async () =>
         {
             await gqlClient.GetArticles(new PageOptions { Page = 1, Size = 10 });
         });
         
         // Assert
-        exception.Content!.ShouldContain("AUTH_NOT_AUTHORIZED");
+        exception.Message!.ShouldContain("The current user is not authorized to access this resource.");
     }
 
     [Fact]

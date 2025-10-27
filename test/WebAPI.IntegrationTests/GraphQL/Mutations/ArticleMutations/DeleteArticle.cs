@@ -6,7 +6,10 @@ public static partial class Mutations
     {
         var gqlResponse = await gqlClient.SendMutationAsync(
             request: DeleteArticle(articleId),
-            defineResponseType: () => new { articleMutations = new { deleteArticle = string.Empty }});
+            defineResponseType: () => new { articleMutations = new { deleteArticle = string.Empty } });
+            
+        if (gqlResponse.Errors is not null)
+            throw new GraphQLException(message: gqlResponse.Errors.First().Message);
         
         return gqlResponse.Data.articleMutations.deleteArticle;
     }

@@ -6,8 +6,8 @@ public sealed class GqlUserMutations
     [GraphQLName("login")]
     [GraphQLDescription("Войти в аккаунт")]
     public async Task<GqlTokens> LoginAsync(
-        [Service] IUserRepository userRepository,
-        [Service] IOptions<JwtOptions> jwtOptions,
+        IUserRepository userRepository,
+        IOptions<JwtOptions> jwtOptions,
         LoginUserRequest request)
     {
         var user = await userRepository.FindUserByEmailAsync(request.Email);
@@ -40,8 +40,8 @@ public sealed class GqlUserMutations
     [GraphQLName("refreshTokens")]
     [GraphQLDescription("Обновить access и refresh токены")]
     public async Task<GqlTokens> RefreshTokensAsync(
-        [Service] IUserRepository userRepository,
-        [Service] IOptions<JwtOptions> jwtOptions,
+        IUserRepository userRepository,
+        IOptions<JwtOptions> jwtOptions,
         RefreshUserTokensRequest request)
     {
         var userEmail = AccessToken.GetEmailFromRawToken(request.ExpiredAccessToken, jwtOptions);

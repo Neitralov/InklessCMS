@@ -8,7 +8,10 @@ public static partial class Queries
     {
         var gqlResponse = await gqlClient.SendQueryAsync(
             request: GetArticle(articleId),
-            defineResponseType: () => new { articleQueries = new { article = new GqlArticle() }});
+            defineResponseType: () => new { articleQueries = new { article = new GqlArticle() } });
+            
+        if (gqlResponse.Errors is not null)
+            throw new GraphQLException(message: gqlResponse.Errors.First().Message);
         
         return gqlResponse.Data.articleQueries.article;
     }

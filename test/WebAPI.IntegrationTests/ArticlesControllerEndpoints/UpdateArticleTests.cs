@@ -42,13 +42,13 @@ public sealed class UpdateArticleTests(CustomWebApplicationFactory factory) : Ba
         const string articleId = "article-id";
 
         // Act
-        var exception = await Should.ThrowAsync<GraphQLHttpRequestException>(async () =>
+        var exception = await Should.ThrowAsync<GraphQLException>(async () =>
         {
             await gqlClient.UpdateArticle(Requests.Article.ArticleInput with { ArticleId = articleId });
         });
 
         // Assert
-        exception.Content!.ShouldContain(Article.Errors.NotFound.Code);
+        exception.Message!.ShouldContain(Article.Errors.NotFound.Code);
     }
 
     [Fact]
@@ -62,7 +62,7 @@ public sealed class UpdateArticleTests(CustomWebApplicationFactory factory) : Ba
         await gqlClient.CreateArticle(Requests.Article.ArticleInput with { ArticleId = articleId });
 
         // Act
-        var exception = await Should.ThrowAsync<GraphQLHttpRequestException>(async () =>
+        var exception = await Should.ThrowAsync<GraphQLException>(async () =>
         {
             await gqlClient.UpdateArticle(Requests.Article.ArticleInput with
             {
@@ -72,7 +72,7 @@ public sealed class UpdateArticleTests(CustomWebApplicationFactory factory) : Ba
         });
 
         // Assert
-        exception.Content!.ShouldContain(Article.Errors.InvalidTitleLength.Code);
+        exception.Message!.ShouldContain(Article.Errors.InvalidTitleLength.Code);
     }
 
     [Fact]
@@ -83,13 +83,13 @@ public sealed class UpdateArticleTests(CustomWebApplicationFactory factory) : Ba
         const string articleId = "article-id";
 
         // Act
-        var exception = await Should.ThrowAsync<GraphQLHttpRequestException>(async () =>
+        var exception = await Should.ThrowAsync<GraphQLException>(async () =>
         {
             await gqlClient.UpdateArticle(Requests.Article.ArticleInput with { ArticleId = articleId });
         });
         
         // Assert
-        exception.Content!.ShouldContain("AUTH_NOT_AUTHORIZED");
+        exception.Message!.ShouldContain("The current user is not authorized to access this resource.");
     }
 
     [Fact]
@@ -100,12 +100,12 @@ public sealed class UpdateArticleTests(CustomWebApplicationFactory factory) : Ba
         const string articleId = "article-id";
 
         // Act
-        var exception = await Should.ThrowAsync<GraphQLHttpRequestException>(async () =>
+        var exception = await Should.ThrowAsync<GraphQLException>(async () =>
         {
             await gqlClient.UpdateArticle(Requests.Article.ArticleInput with { ArticleId = articleId });
         });
         
         // Assert
-        exception.Content!.ShouldContain("AUTH_NOT_AUTHORIZED");
+        exception.Message!.ShouldContain("The current user is not authorized to access this resource.");
     }
 }

@@ -9,6 +9,9 @@ public static partial class Mutations
         var gqlResponse = await gqlClient.SendMutationAsync(
             request: IncreaseViews(articleId),
             defineResponseType: () => new { articleMutations = new { increaseViewsCounter = new GqlArticle() } });
+            
+        if (gqlResponse.Errors is not null)
+            throw new GraphQLException(message: gqlResponse.Errors.First().Message);
 
         return gqlResponse.Data.articleMutations.increaseViewsCounter;
     }

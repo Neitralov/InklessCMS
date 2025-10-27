@@ -59,13 +59,13 @@ public sealed class GetPublishedArticlesFromCollectionTests(CustomWebApplication
         const string collectionId = "collection-id";
 
         // Act
-        var exception = await Should.ThrowAsync<GraphQLHttpRequestException>(async () =>
+        var exception = await Should.ThrowAsync<GraphQLException>(async () =>
         {
             await gqlClient.GetPublishedArticlesFromCollection(collectionId, new PageOptions { Page = 1, Size = 10 });
         });
 
         // Assert
-        exception.Content!.ShouldContain(Collection.Errors.NotFound.Code);
+        exception.Message!.ShouldContain(Collection.Errors.NotFound.Code);
     }
 
     [Fact]

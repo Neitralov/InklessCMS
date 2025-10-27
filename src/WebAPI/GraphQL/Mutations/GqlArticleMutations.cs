@@ -6,9 +6,7 @@ public sealed class GqlArticleMutations
     [GraphQLName("createArticle")]
     [GraphQLDescription("Создать статью")]
     [GqlAuthorize(Policy = "CanManageArticles")]
-    public async Task<GqlArticle> CreateArticleAsync(
-        [Service] IArticleRepository articleRepository,
-        GqlArticleInput input)
+    public async Task<GqlArticle> CreateArticleAsync(IArticleRepository articleRepository, GqlArticleInput input)
     {
         var requestToArticleResult = CreateArticleFrom(input);
 
@@ -29,9 +27,7 @@ public sealed class GqlArticleMutations
     [GraphQLName("updateArticle")]
     [GraphQLDescription("Обновить статью")]
     [GqlAuthorize(Policy = "CanManageArticles")]
-    public async Task<GqlArticle> UpdateArticleAsync(
-        [Service] IArticleRepository articleRepository,
-        GqlArticleInput input)
+    public async Task<GqlArticle> UpdateArticleAsync(IArticleRepository articleRepository, GqlArticleInput input)
     {
         var requestToArticleResult = CreateArticleFrom(input);
 
@@ -54,9 +50,7 @@ public sealed class GqlArticleMutations
     [GraphQLName("changePinState")]
     [GraphQLDescription("Закрепить/открепить статью")]
     [GqlAuthorize(Policy = "CanManageArticles")]
-    public async Task<GqlArticle> ChangePinStateAsync(
-        [Service] IArticleRepository articleRepository,
-        string articleId)
+    public async Task<GqlArticle> ChangePinStateAsync(IArticleRepository articleRepository, string articleId)
     {
         var article = await articleRepository.FindArticleByIdAsync(articleId);
 
@@ -71,9 +65,7 @@ public sealed class GqlArticleMutations
 
     [GraphQLName("increaseViewsCounter")]
     [GraphQLDescription("Увеличить счетчик просмотров статьи на единицу")]
-    public async Task<GqlArticle> IncreaseViewsCounterAsync(
-        [Service] IArticleRepository articleRepository,
-        string articleId)
+    public async Task<GqlArticle> IncreaseViewsCounterAsync(IArticleRepository articleRepository, string articleId)
     {
         var article = await articleRepository.FindArticleByIdAsync(articleId);
 
@@ -89,9 +81,7 @@ public sealed class GqlArticleMutations
     [GraphQLName("deleteArticle")]
     [GraphQLDescription("Удалить статью")]
     [GqlAuthorize(Policy = "CanManageArticles")]
-    public async Task<string> DeleteArticleAsync(
-        [Service] IArticleRepository articleRepository,
-        string articleId)
+    public async Task<string> DeleteArticleAsync(IArticleRepository articleRepository, string articleId)
     {
         var result = await articleRepository.DeleteArticleAsync(articleId);
 

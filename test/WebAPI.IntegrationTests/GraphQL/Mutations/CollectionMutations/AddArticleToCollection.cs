@@ -9,6 +9,9 @@ public static partial class Mutations
         var gqlResponse = await gqlClient.SendMutationAsync(
             request: AddArticleToCollection(collectionId, articleId),
             defineResponseType: () => new { collectionMutations = new { addArticleToCollection = new GqlCollection() } });
+            
+        if (gqlResponse.Errors is not null)
+            throw new GraphQLException(message: gqlResponse.Errors.First().Message);
 
         return gqlResponse.Data.collectionMutations.addArticleToCollection;
     }

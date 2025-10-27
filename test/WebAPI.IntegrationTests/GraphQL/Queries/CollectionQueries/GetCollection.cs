@@ -9,6 +9,9 @@ public static partial class Queries
         var gqlResponse = await gqlClient.SendQueryAsync(
             request: GetCollection(collectionId),
             defineResponseType: () => new { collectionQueries = new { collection = new GqlCollection() }});
+
+        if (gqlResponse.Errors is not null)
+            throw new GraphQLException(message: gqlResponse.Errors.First().Message);
         
         return gqlResponse.Data.collectionQueries.collection;
     }

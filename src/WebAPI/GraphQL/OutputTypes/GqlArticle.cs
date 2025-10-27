@@ -5,19 +5,19 @@ public sealed class GqlArticle
 {
     [GraphQLName("articleId")]
     [GraphQLDescription("some-article-id")]
-    public string ArticleId { get; init; }
+    public string ArticleId { get; init; } = string.Empty;
 
     [GraphQLName("title")]
     [GraphQLDescription("Заголовок статьи")]
-    public string Title { get; init; }
+    public string Title { get; init; } = string.Empty;
 
     [GraphQLName("description")]
     [GraphQLDescription("Описание статьи")]
-    public string Description { get; init; }
+    public string Description { get; init; } = string.Empty;
 
     [GraphQLName("text")]
     [GraphQLDescription("Содержимое статьи")]
-    public string Text { get; init; }
+    public string Text { get; init; } = string.Empty;
 
     [GraphQLName("isPublished")]
     [GraphQLDescription("true")]

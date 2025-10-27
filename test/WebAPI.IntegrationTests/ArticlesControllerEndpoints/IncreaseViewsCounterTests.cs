@@ -34,12 +34,12 @@ public sealed class IncreaseViewsCounterTests(CustomWebApplicationFactory factor
         const string articleId = "article-id";
 
         // Act
-        var exception = await Should.ThrowAsync<GraphQLHttpRequestException>(async () =>
+        var exception = await Should.ThrowAsync<GraphQLException>(async () =>
         {
             await gqlClient.IncreaseViews(articleId);
         });
 
         // Assert
-        exception.Content!.ShouldContain(Article.Errors.NotFound.Code);
+        exception.Message!.ShouldContain(Article.Errors.NotFound.Code);
     }
 }

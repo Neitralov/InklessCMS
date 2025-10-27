@@ -27,13 +27,13 @@ public sealed class CreateArticleTests(CustomWebApplicationFactory factory) : Ba
         const string invalidArticleId = "Inv@lid-Id";
 
         // Act
-        var exception = await Should.ThrowAsync<GraphQLHttpRequestException>(async () =>
+        var exception = await Should.ThrowAsync<GraphQLException>(async () =>
         {
             await gqlClient.CreateArticle(Requests.Article.ArticleInput with { ArticleId = invalidArticleId });
         });
         
         // Assert
-        exception.Content!.ShouldContain(Article.Errors.InvalidId.Code);
+        exception.Message!.ShouldContain(Article.Errors.InvalidId.Code);
     }
 
     [Fact]
@@ -43,13 +43,13 @@ public sealed class CreateArticleTests(CustomWebApplicationFactory factory) : Ba
         var gqlClient = _factory.CreateClient().ToGqlClient();
         
         // Act
-        var exception = await Should.ThrowAsync<GraphQLHttpRequestException>(async () =>
+        var exception = await Should.ThrowAsync<GraphQLException>(async () =>
         {
             await gqlClient.CreateArticle(Requests.Article.ArticleInput);
         });
         
         // Assert
-        exception.Content!.ShouldContain("AUTH_NOT_AUTHORIZED");
+        exception.Message!.ShouldContain("The current user is not authorized to access this resource.");
     }
 
     [Fact]
@@ -59,12 +59,12 @@ public sealed class CreateArticleTests(CustomWebApplicationFactory factory) : Ba
         var gqlClient = _factory.AuthorizeAs(UserTypes.User).CreateClient().ToGqlClient();
 
         // Act
-        var exception = await Should.ThrowAsync<GraphQLHttpRequestException>(async () =>
+        var exception = await Should.ThrowAsync<GraphQLException>(async () =>
         {
             await gqlClient.CreateArticle(Requests.Article.ArticleInput);
         });
         
         // Assert
-        exception.Content!.ShouldContain("AUTH_NOT_AUTHORIZED");
+        exception.Message!.ShouldContain("The current user is not authorized to access this resource.");
     }
 }

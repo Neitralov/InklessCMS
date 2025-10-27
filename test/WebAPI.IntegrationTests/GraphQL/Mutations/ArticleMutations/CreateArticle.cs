@@ -8,7 +8,10 @@ public static partial class Mutations
     {
         var gqlResponse = await gqlClient.SendMutationAsync(
             request: CreateArticle(input),
-            defineResponseType: () => new { articleMutations = new { createArticle = new GqlArticle() }});
+            defineResponseType: () => new { articleMutations = new { createArticle = new GqlArticle() } });
+            
+        if (gqlResponse.Errors is not null)
+            throw new GraphQLException(message: gqlResponse.Errors.First().Message);
         
         return gqlResponse.Data.articleMutations.createArticle;
     }

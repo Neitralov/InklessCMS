@@ -19,14 +19,14 @@ public sealed class DeleteArticleTests(CustomWebApplicationFactory factory) : Ba
 
         // Act
         var deleteArticleResponse = await gqlClient.DeleteArticle(articleId);
-        var exception = await Should.ThrowAsync<GraphQLHttpRequestException>(async () =>
+        var exception = await Should.ThrowAsync<GraphQLException>(async () =>
         {
             await gqlClient.GetArticle(articleId);
         });
 
         // Assert
         deleteArticleResponse.ShouldBe(articleId);
-        exception.Content!.ShouldContain(Article.Errors.NotFound.Code);
+        exception.Message!.ShouldContain(Article.Errors.NotFound.Code);
     }
 
     [Fact]
@@ -37,13 +37,13 @@ public sealed class DeleteArticleTests(CustomWebApplicationFactory factory) : Ba
         const string articleId = "article-id";
 
         // Act
-        var exception = await Should.ThrowAsync<GraphQLHttpRequestException>(async () =>
+        var exception = await Should.ThrowAsync<GraphQLException>(async () =>
         {
             await gqlClient.DeleteArticle(articleId);
         });
 
         // Assert
-        exception.Content!.ShouldContain(Article.Errors.NotFound.Code);
+        exception.Message!.ShouldContain(Article.Errors.NotFound.Code);
     }
 
     [Fact]
@@ -54,13 +54,13 @@ public sealed class DeleteArticleTests(CustomWebApplicationFactory factory) : Ba
         const string articleId = "article-id";
 
         // Act
-        var exception = await Should.ThrowAsync<GraphQLHttpRequestException>(async () =>
+        var exception = await Should.ThrowAsync<GraphQLException>(async () =>
         {
             await gqlClient.DeleteArticle(articleId);
         });
 
         // Assert
-        exception.Content!.ShouldContain("AUTH_NOT_AUTHORIZED");
+        exception.Message!.ShouldContain("The current user is not authorized to access this resource.");
     }
 
     [Fact]
@@ -71,12 +71,12 @@ public sealed class DeleteArticleTests(CustomWebApplicationFactory factory) : Ba
         const string articleId = "article-id";
 
         // Act
-        var exception = await Should.ThrowAsync<GraphQLHttpRequestException>(async () =>
+        var exception = await Should.ThrowAsync<GraphQLException>(async () =>
         {
             await gqlClient.DeleteArticle(articleId);
         });
 
         // Assert
-        exception.Content!.ShouldContain("AUTH_NOT_AUTHORIZED");
+        exception.Message!.ShouldContain("The current user is not authorized to access this resource.");
     }
 }

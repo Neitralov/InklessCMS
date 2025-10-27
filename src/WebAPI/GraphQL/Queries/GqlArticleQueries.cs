@@ -7,8 +7,8 @@ public sealed class GqlArticleQueries
     [GraphQLDescription("Список всех статей")]
     [GqlAuthorize(Policy = "CanManageArticles")]
     public async Task<GqlArticle[]> GetArticlesAsync(
-        [Service] IArticleRepository articleRepository,
-        [Service] IHttpContextAccessor httpContextAccessor,
+        IArticleRepository articleRepository,
+        IHttpContextAccessor httpContextAccessor,
         PageOptions pageOptions,
         CancellationToken cancellationToken)
     {
@@ -24,8 +24,8 @@ public sealed class GqlArticleQueries
     [GraphQLName("publishedArticles")]
     [GraphQLDescription("Список опубликованных статей")]
     public async Task<GqlArticle[]> GetPublishedArticlesAsync(
-        [Service] IArticleRepository articleRepository,
-        [Service] IHttpContextAccessor httpContextAccessor,
+        IArticleRepository articleRepository,
+        IHttpContextAccessor httpContextAccessor,
         PageOptions pageOptions,
         CancellationToken cancellationToken)
     {
@@ -42,9 +42,9 @@ public sealed class GqlArticleQueries
     [GraphQLName("article")]
     [GraphQLDescription("Статья")]
     public async Task<GqlArticle> GetArticleAsync(
-        [Service] IArticleRepository articleRepository,
-        [Service] IAuthorizationService authService,
-        [Service] IHttpContextAccessor httpContextAccessor,
+        IArticleRepository articleRepository,
+        IAuthorizationService authService,
+        IHttpContextAccessor httpContextAccessor,
         string articleId)
     {
         var getArticleResult = await articleRepository.FindArticleByIdAsync(articleId);

@@ -5,11 +5,11 @@ public sealed class GqlCollection
 {
     [GraphQLName("collectionId")]
     [GraphQLDescription("some-collection-id")]
-    public string CollectionId { get; init; }
+    public string CollectionId { get; init; } = string.Empty;
 
     [GraphQLName("title")]
     [GraphQLDescription("Название коллекции")]
-    public string Title { get; init; }
+    public string Title { get; init; } = string.Empty;
 
     [GraphQLName("articles")]
     [GraphQLDescription("Статьи коллекции")]

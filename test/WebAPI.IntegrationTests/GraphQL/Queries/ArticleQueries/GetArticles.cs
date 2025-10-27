@@ -10,7 +10,10 @@ public static partial class Queries
     {
         var gqlResponse = await gqlClient.SendQueryAsync(
             request: GetArticles(pageOptions),
-            defineResponseType: () => new { articleQueries = new { articles = new List<GqlArticle>() }});
+            defineResponseType: () => new { articleQueries = new { articles = new List<GqlArticle>() } });
+            
+        if (gqlResponse.Errors is not null)
+            throw new GraphQLException(message: gqlResponse.Errors.First().Message);
         
         return gqlResponse.Data.articleQueries.articles;
     }
