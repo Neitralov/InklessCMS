@@ -1,75 +1,78 @@
-namespace WebAPI.IntegrationTests.CollectionsControllerEndpoints;
+namespace WebAPI.IntegrationTests.CollectionsTests;
 
 [Collection("Tests")]
-public sealed class DeleteCollectionTests(CustomWebApplicationFactory factory) : BaseIntegrationTest(factory)
+public sealed class GetCollectionTests(CustomWebApplicationFactory factory) : BaseIntegrationTest(factory)
 {
     private readonly CustomWebApplicationFactory _factory = factory;
 
     [Fact]
-    public async Task CollectionCanBeDeleted()
+    public async Task EmptyListWillBeReturnedIfCollectionIsEmpty()
     {
         // Arrange
         var gqlClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient().ToGqlClient();
-
         const string collectionId = "collection-id";
+
         await gqlClient.CreateCollection(Inputs.Collection.CollectionInput with { CollectionId = collectionId });
 
         // Act
-        await gqlClient.DeleteCollection(collectionId);
-        var exception = await Should.ThrowAsync<GraphQLException>(async () =>
-        {
-            await gqlClient.GetCollection(collectionId);
-        });
-        
+        var gqlResponse = await gqlClient.GetCollection(collectionId);
+
         // Assert
-        exception.Message!.ShouldContain(Collection.Errors.NotFound.Code);
+        gqlResponse.Articles.ShouldBeEmpty();
     }
 
     [Fact]
-    public async Task CollectionCannotBeDeletedIfItDoesNotExist()
+    public async Task ArticlesWillBeReturnedIfCollectionContainsArticles()
     {
         // Arrange
         var gqlClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient().ToGqlClient();
         const string collectionId = "collection-id";
+        const int numberOfArticles = 2;
 
-        // Act
-        var exception = await Should.ThrowAsync<GraphQLException>(async () =>
-        {
-            await gqlClient.GetCollection(collectionId);
-        });
-        
-        // Assert
-        exception.Message!.ShouldContain(Collection.Errors.NotFound.Code);
-    }
-
-    [Fact]
-    public async Task CascadingDeletionOfArticlesWontOccurIfDeleteCollectionWithArticles()
-    {
-        // Arrange
-        var gqlClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient().ToGqlClient();
-
-        const string collectionId = "collection-id";
         await gqlClient.CreateCollection(Inputs.Collection.CollectionInput with { CollectionId = collectionId });
 
-        const string articleId = "article-id";
-        await gqlClient.CreateArticle(Inputs.Article.ArticleInput with { ArticleId = articleId });
-        await gqlClient.AddArticleToCollection(collectionId, articleId);
+        const string firstArticleId = "article-1";
+        await gqlClient.CreateArticle(Inputs.Article.ArticleInput with
+        {
+            ArticleId = firstArticleId,
+            IsPublished = true
+        });
+        await gqlClient.AddArticleToCollection(collectionId, firstArticleId);
+
+        const string secondArticleId = "article-2";
+        await gqlClient.CreateArticle(Inputs.Article.ArticleInput with
+        {
+            ArticleId = secondArticleId,
+            IsPublished = false
+        });
+        await gqlClient.AddArticleToCollection(collectionId, secondArticleId);
 
         // Act
-        await gqlClient.DeleteCollection(collectionId);
+        var gqlResponse = await gqlClient.GetCollection(collectionId);
+
+        // Assert
+        gqlResponse?.Articles?.Count().ShouldBe(numberOfArticles);
+    }
+
+    [Fact]
+    public async Task ArticlesWontBeReturnedIfCollectionDoesNotExist()
+    {
+        // Arrange
+        var gqlClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient().ToGqlClient();
+        const string collectionId = "collection-id";
+
+        // Act
         var exception = await Should.ThrowAsync<GraphQLException>(async () =>
         {
             await gqlClient.GetCollection(collectionId);
         });
-        var gqlResponse = await gqlClient.GetArticle(articleId);
 
         // Assert
         exception.Message!.ShouldContain(Collection.Errors.NotFound.Code);
-        gqlResponse.ArticleId.ShouldBe(articleId);
     }
 
     [Fact]
-    public async Task OnlyAuthorizedUserCanDeleteCollection()
+    public async Task OnlyAuthorizedUserCanGetCollection()
     {
         // Arrange
         var gqlClient = _factory.CreateClient().ToGqlClient();
@@ -78,7 +81,7 @@ public sealed class DeleteCollectionTests(CustomWebApplicationFactory factory) :
         // Act
         var exception = await Should.ThrowAsync<GraphQLException>(async () =>
         {
-            await gqlClient.DeleteCollection(collectionId);
+            await gqlClient.GetCollection(collectionId);
         });
 
         // Assert
@@ -86,7 +89,7 @@ public sealed class DeleteCollectionTests(CustomWebApplicationFactory factory) :
     }
 
     [Fact]
-    public async Task OnlyUserWithCanManageArticlesClaimCanDeleteCollection()
+    public async Task OnlyUserWithCanManageArticlesClaimCanGetCollection()
     {
         // Arrange
         var gqlClient = _factory.AuthorizeAs(UserTypes.User).CreateClient().ToGqlClient();
@@ -95,7 +98,7 @@ public sealed class DeleteCollectionTests(CustomWebApplicationFactory factory) :
         // Act
         var exception = await Should.ThrowAsync<GraphQLException>(async () =>
         {
-            await gqlClient.DeleteCollection(collectionId);
+            await gqlClient.GetCollection(collectionId);
         });
 
         // Assert

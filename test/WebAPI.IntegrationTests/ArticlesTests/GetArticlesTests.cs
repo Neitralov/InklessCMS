@@ -1,4 +1,4 @@
-namespace WebAPI.IntegrationTests.ArticlesControllerEndpoints;
+namespace WebAPI.IntegrationTests.ArticlesTests;
 
 [Collection("Tests")]
 public sealed class GetArticlesTests(CustomWebApplicationFactory factory) : BaseIntegrationTest(factory)

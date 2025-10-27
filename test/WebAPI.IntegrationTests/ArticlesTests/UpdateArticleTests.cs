@@ -1,6 +1,4 @@
-using Domain.Articles;
-
-namespace WebAPI.IntegrationTests.ArticlesControllerEndpoints;
+namespace WebAPI.IntegrationTests.ArticlesTests;
 
 [Collection("Tests")]
 public sealed class UpdateArticleTests(CustomWebApplicationFactory factory) : BaseIntegrationTest(factory)

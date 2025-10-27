@@ -1,5 +1,3 @@
-using WebAPI.IntegrationTests.GraphQL.Fragments;
-
 namespace WebAPI.IntegrationTests.GraphQL.Mutations.CollectionMutations;
 
 public static partial class Mutations

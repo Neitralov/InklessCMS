@@ -1,5 +1,3 @@
-using Domain.Authorization;
-
 namespace WebAPI.IntegrationTests.UsersControllerEdpoints;
 
 [Collection("Tests")]

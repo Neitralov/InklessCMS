@@ -1,4 +1,4 @@
-namespace Domain.Tests.Users;
+namespace Domain.Tests;
 
 public sealed class UserTests
 {

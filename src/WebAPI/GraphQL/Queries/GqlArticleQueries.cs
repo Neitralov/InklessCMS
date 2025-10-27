@@ -14,9 +14,8 @@ public sealed class GqlArticleQueries
     {
         var articles = await articleRepository.GetArticlesAsync(pageOptions, cancellationToken);
 
-        if (httpContextAccessor.HttpContext is not null)
-            httpContextAccessor.HttpContext.Response.Headers
-                .Append("X-Total-Count", articles.TotalCount.ToString());
+        httpContextAccessor.HttpContext?.Response.Headers
+            .Append("X-Total-Count", articles.TotalCount.ToString());
 
         return articles.ToGqlArticles();
     }
@@ -31,11 +30,9 @@ public sealed class GqlArticleQueries
     {
         var publishedArticles = await articleRepository.GetPublishedArticlesAsync(pageOptions, cancellationToken);
 
-        if (httpContextAccessor.HttpContext is not null)
-            httpContextAccessor.HttpContext.Response.Headers
-                .Append("X-Total-Count", publishedArticles.TotalCount.ToString());
+        httpContextAccessor.HttpContext?.Response.Headers
+            .Append("X-Total-Count", publishedArticles.TotalCount.ToString());
 
-        // TODO: Нужно написать мапперы, как это сделано в REST сейчас
         return publishedArticles.ToGqlArticles();
     }
 

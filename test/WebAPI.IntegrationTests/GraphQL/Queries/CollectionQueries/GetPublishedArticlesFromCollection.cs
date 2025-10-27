@@ -1,5 +1,3 @@
-using WebAPI.IntegrationTests.GraphQL.Fragments;
-
 namespace WebAPI.IntegrationTests.GraphQL.Queries.CollectionQueries;
 
 public static partial class Queries
@@ -11,7 +9,10 @@ public static partial class Queries
     {
         var gqlResponse = await gqlClient.SendQueryAsync(
             request: GetPublishedArticlesFromCollection(collectionId, pageOptions),
-            defineResponseType: () => new { collectionQueries = new { publishedArticlesFromCollection = new List<GqlArticle>() } });
+            defineResponseType: () => new
+            {
+                collectionQueries = new { publishedArticlesFromCollection = new List<GqlArticle>() }
+            });
             
         if (gqlResponse.Errors is not null)
             throw new GraphQLException(message: gqlResponse.Errors.First().Message);

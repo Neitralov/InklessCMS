@@ -1,4 +1,4 @@
-namespace Domain.Tests.Collections;
+namespace Domain.Tests;
 
 public sealed class CollectionTests
 {

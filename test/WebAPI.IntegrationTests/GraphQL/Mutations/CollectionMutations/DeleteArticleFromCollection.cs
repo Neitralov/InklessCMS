@@ -2,7 +2,10 @@ namespace WebAPI.IntegrationTests.GraphQL.Mutations.CollectionMutations;
 
 public static partial class Mutations
 {
-    public static async Task<string> DeleteArticleFromCollection(this GraphQLHttpClient gqlClient, string collectionId, string articleId)
+    public static async Task<string> DeleteArticleFromCollection(
+        this GraphQLHttpClient gqlClient,
+        string collectionId,
+        string articleId)
     {
         var gqlResponse = await gqlClient.SendMutationAsync(
             request: DeleteArticleFromCollection(collectionId, articleId),

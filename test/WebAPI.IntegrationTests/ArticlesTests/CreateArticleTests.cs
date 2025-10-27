@@ -1,60 +1,59 @@
-namespace WebAPI.IntegrationTests.CollectionsControllerEndpoints;
+namespace WebAPI.IntegrationTests.ArticlesTests;
 
 [Collection("Tests")]
-public sealed class CreateCollectionTests(CustomWebApplicationFactory factory) : BaseIntegrationTest(factory)
+public sealed class CreateArticleTests(CustomWebApplicationFactory factory) : BaseIntegrationTest(factory)
 {
     private readonly CustomWebApplicationFactory _factory = factory;
 
     [Fact]
-    public async Task CollectionCanBeCreated()
+    public async Task ArticleCanBeCreated()
     {
         // Arrange
         var gqlClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient().ToGqlClient();
-        const string collectionId = "collection-id";
+        const string articleId = "article-id";
 
         // Act
-        var gqlResponse = await gqlClient.CreateCollection(
-            Inputs.Collection.CollectionInput with { CollectionId = collectionId });
+        var gqlResponse = await gqlClient.CreateArticle(Inputs.Article.ArticleInput with { ArticleId = articleId });
 
         // Assert
-        gqlResponse.CollectionId.ShouldBe(collectionId);
+        gqlResponse.ArticleId.ShouldBe(articleId);
     }
 
     [Fact]
-    public async Task InvalidCollectionCannotBeCreated()
+    public async Task InvalidArticleCannotBeCreated()
     {
         // Arrange
         var gqlClient = _factory.AuthorizeAs(UserTypes.Admin).CreateClient().ToGqlClient();
-        const string collectionId = "inv@lid-id";
+        const string invalidArticleId = "Inv@lid-Id";
 
         // Act
         var exception = await Should.ThrowAsync<GraphQLException>(async () =>
         {
-            await gqlClient.CreateCollection(Inputs.Collection.CollectionInput with { CollectionId = collectionId });
+            await gqlClient.CreateArticle(Inputs.Article.ArticleInput with { ArticleId = invalidArticleId });
         });
         
         // Assert
-        exception.Message!.ShouldContain(Collection.Errors.InvalidId.Code);
+        exception.Message!.ShouldContain(Article.Errors.InvalidId.Code);
     }
 
     [Fact]
-    public async Task OnlyAuthorizedUserCanCreateCollection()
+    public async Task OnlyAuthorizedUserCanCreateArticle()
     {
         // Arrange
         var gqlClient = _factory.CreateClient().ToGqlClient();
-
+        
         // Act
         var exception = await Should.ThrowAsync<GraphQLException>(async () =>
         {
-            await gqlClient.CreateCollection(Inputs.Collection.CollectionInput);
+            await gqlClient.CreateArticle(Inputs.Article.ArticleInput);
         });
-
+        
         // Assert
         exception.Message!.ShouldContain("The current user is not authorized to access this resource.");
     }
 
     [Fact]
-    public async Task OnlyUserWithCanManageArticlesClaimCanCreateCollection()
+    public async Task OnlyUserWithCanManageArticlesClaimCanCreateArticle()
     {
         // Arrange
         var gqlClient = _factory.AuthorizeAs(UserTypes.User).CreateClient().ToGqlClient();
@@ -62,9 +61,9 @@ public sealed class CreateCollectionTests(CustomWebApplicationFactory factory) :
         // Act
         var exception = await Should.ThrowAsync<GraphQLException>(async () =>
         {
-            await gqlClient.CreateCollection(Inputs.Collection.CollectionInput);
+            await gqlClient.CreateArticle(Inputs.Article.ArticleInput);
         });
-
+        
         // Assert
         exception.Message!.ShouldContain("The current user is not authorized to access this resource.");
     }

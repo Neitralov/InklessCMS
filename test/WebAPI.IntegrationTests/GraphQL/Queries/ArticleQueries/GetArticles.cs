@@ -1,5 +1,3 @@
-using WebAPI.IntegrationTests.GraphQL.Fragments;
-
 namespace WebAPI.IntegrationTests.GraphQL.Queries.ArticleQueries;
 
 public static partial class Queries

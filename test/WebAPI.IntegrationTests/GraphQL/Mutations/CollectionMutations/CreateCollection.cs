@@ -1,10 +1,10 @@
-using WebAPI.IntegrationTests.GraphQL.Fragments;
-
 namespace WebAPI.IntegrationTests.GraphQL.Mutations.CollectionMutations;
 
 public static partial class Mutations
 {
-    public static async Task<GqlCollection> CreateCollection(this GraphQLHttpClient gqlClient, GqlCollectionInput input)
+    public static async Task<GqlCollection> CreateCollection(
+        this GraphQLHttpClient gqlClient,
+        GqlCollectionInput input)
     {
         var gqlResponse = await gqlClient.SendMutationAsync(
             request: CreateCollection(input),

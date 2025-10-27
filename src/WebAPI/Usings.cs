@@ -20,5 +20,4 @@ global using WebAPI.GraphQL.Mutations;
 global using WebAPI.GraphQL.InputTypes;
 global using WebAPI.GraphQL.OutputTypes;
 
-global using Error = ErrorOr.Error;
 global using GqlAuthorize = HotChocolate.Authorization.AuthorizeAttribute;

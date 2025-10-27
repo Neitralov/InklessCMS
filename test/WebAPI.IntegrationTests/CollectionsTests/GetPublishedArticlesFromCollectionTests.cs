@@ -1,4 +1,4 @@
-namespace WebAPI.IntegrationTests.CollectionsControllerEndpoints;
+namespace WebAPI.IntegrationTests.CollectionsTests;
 
 [Collection("Tests")]
 public sealed class GetPublishedArticlesFromCollectionTests(CustomWebApplicationFactory factory)
@@ -18,7 +18,8 @@ public sealed class GetPublishedArticlesFromCollectionTests(CustomWebApplication
         var gqlClient = _factory.CreateClient().ToGqlClient();
 
         // Act
-        var gqlResponse = await gqlClient.GetPublishedArticlesFromCollection(collectionId, new PageOptions { Page = 1, Size = 10 });
+        var gqlResponse =
+            await gqlClient.GetPublishedArticlesFromCollection(collectionId, new PageOptions { Page = 1, Size = 10 });
 
         // Assert
         gqlResponse.ShouldBeEmpty();
@@ -35,17 +36,26 @@ public sealed class GetPublishedArticlesFromCollectionTests(CustomWebApplication
         await gqlAdminClient.CreateCollection(Inputs.Collection.CollectionInput with { CollectionId = collectionId });
 
         const string firstArticleId = "article-1";
-        await gqlAdminClient.CreateArticle(Inputs.Article.ArticleInput with { ArticleId = firstArticleId, IsPublished = true });
+        await gqlAdminClient.CreateArticle(Inputs.Article.ArticleInput with
+        {
+            ArticleId = firstArticleId,
+            IsPublished = true
+        });
         await gqlAdminClient.AddArticleToCollection(collectionId, firstArticleId);
 
         const string secondArticleId = "article-2";
-        await gqlAdminClient.CreateArticle(Inputs.Article.ArticleInput with { ArticleId = secondArticleId, IsPublished = false });
+        await gqlAdminClient.CreateArticle(Inputs.Article.ArticleInput with
+        {
+            ArticleId = secondArticleId,
+            IsPublished = false
+        });
         await gqlAdminClient.AddArticleToCollection(collectionId, secondArticleId);
 
         var gqlClient = _factory.CreateClient().ToGqlClient();
 
         // Act
-        var gqlResponse = await gqlClient.GetPublishedArticlesFromCollection(collectionId, new PageOptions { Page = 1, Size = 10 });
+        var gqlResponse =
+            await gqlClient.GetPublishedArticlesFromCollection(collectionId, new PageOptions { Page = 1, Size = 10 });
 
         // Assert
         gqlResponse.Count.ShouldBe(numberOfPublishedArticles);

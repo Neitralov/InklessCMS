@@ -1,4 +1,4 @@
-namespace Domain.Tests.Authorization;
+namespace Domain.Tests;
 
 public sealed class UserSessionTests
 {
