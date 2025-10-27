@@ -1,4 +1,4 @@
-namespace WebAPI.IntegrationTests.UsersControllerEdpoints;
+namespace WebAPI.IntegrationTests.UsersTests;
 
 [Collection("Tests")]
 public sealed class LoginTests(CustomWebApplicationFactory factory) : BaseIntegrationTest(factory)
