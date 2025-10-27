@@ -16,7 +16,8 @@
 * Статьи обладают счетчиком, фиксирующим количество просмотров/чтений.
 * Реализована постраничная пагинация для статей.
 * Статьи можно группировать в коллекции.
-* Интерактивная документация Scalar.
+* API полностью на GraphQL.
+* Интерактивная документация в Nitro.
 * Аутентификация посредством JWT токенов (access + refresh).
 
 # 🛠️ Сборка
@@ -25,9 +26,10 @@
 4. Убедитесь, что имеете [Make](https://en.wikipedia.org/wiki/Make_(software)).
 5. Клонируйте репозиторий `git clone https://github.com/Neitralov/InklessCMS.git`.
 6. Перейдите в папку проекта `cd InklessCMS`
-7. Запустите сборку `make`
+7. Запустите БД `make run-db`
+8. Запустите сборку `make`
 
-Зайти в интерактивную документацию можно по адресу: `http://localhost:8080/scalar`
+Зайти в интерактивную документацию можно по адресу: `http://localhost:8080/graphql`
 
 # 🧰 Стек технологий
 Backend:
@@ -36,15 +38,15 @@ Backend:
 * [EF Core](https://learn.microsoft.com/ru-ru/ef/core/)
 * [PostgreSQL](https://hub.docker.com/_/postgres)
 * [ErrorOr](https://github.com/amantinband/error-or)
-* [Scalar](https://github.com/scalar/scalar)
-* [Swashbuckle.AspNetCore](https://github.com/domaindrivendev/Swashbuckle.AspNetCore)
-* [Swashbuckle.AspNetCore.Filters](https://github.com/mattfrear/Swashbuckle.AspNetCore.Filters)
+* [GraphQL (HotChocolate)](https://github.com/ChilliCream/graphql-platform)
 
 Тесты:
 * [xUnit](https://github.com/xunit/xunit)
 * [Moq](https://github.com/devlooped/moq)
 * [Shouldly](https://github.com/shouldly/shouldly)
 * [Respawn](https://github.com/jbogard/Respawn)
+* [Testcontainers](https://github.com/testcontainers/testcontainers-dotnet)
+* [GraphQL Client](https://github.com/graphql-dotnet/graphql-client)
 
 # 📊 Статистика по количеству строк кода
 
@@ -53,12 +55,12 @@ Backend:
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-C#                              49            318            114           1370
-MSBuild script                   5             20              0             90
+C#                              44            328              0           1320
+MSBuild script                   4             18              0             77
 JSON                             4              0              0             68
 Dockerfile                       2              0              0              9
 -------------------------------------------------------------------------------
-SUM:                            60            338            114           1537
+SUM:                            54            346              0           1474
 -------------------------------------------------------------------------------
 ```
 
@@ -68,10 +70,10 @@ SUM:                            60            338            114           1537
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-C#                              31            382            265           1549
-MSBuild script                   2             10              0             52
+C#                              51            464            264           2128
+MSBuild script                   2             10              0             57
 -------------------------------------------------------------------------------
-SUM:                            33            392            265           1601
+SUM:                            53            474            264           2185
 -------------------------------------------------------------------------------
 ```
 
