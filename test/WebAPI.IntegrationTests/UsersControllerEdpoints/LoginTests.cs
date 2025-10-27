@@ -9,32 +9,29 @@ public sealed class LoginTests(CustomWebApplicationFactory factory) : BaseIntegr
     public async Task ItIsPossibleToLoginInAdminAccount()
     {
         // Arrange
-        var client = _factory.CreateClient();
+        var gqlClient = _factory.CreateClient().ToGqlClient();
 
         // Act
-        var response = await client.PostAsJsonAsync(
-            requestUri: "/api/users/login",
-            value: Requests.User.GetLoginUserRequest());
+        var gqlResponse = await gqlClient.Login(Requests.User.LoginInput);
 
         // Assert
-        response.StatusCode.ShouldBe(HttpStatusCode.OK);
-        var loginResponse = await response.Content.ReadFromJsonAsync<LoginUserResponse>();
-        loginResponse?.RefreshToken.ShouldNotBeEmpty();
-        loginResponse?.AccessToken.ShouldNotBeEmpty();
+        gqlResponse.RefreshToken.ShouldNotBeEmpty();
+        gqlResponse.AccessToken.ShouldNotBeEmpty();
     }
 
     [Fact]
     public async Task ItIsImpossibleToLoginInAdminAccountWithInvalidData()
     {
         // Arrange
-        var client = _factory.CreateClient();
+        var gqlClient = _factory.CreateClient().ToGqlClient();
 
         // Act
-        var response = await client.PostAsJsonAsync(
-            requestUri: "/api/users/login",
-            value: Requests.User.GetLoginUserRequest() with { Password = "invalid" });
+        var exception = await Should.ThrowAsync<GraphQLException>(async () =>
+        {
+            await gqlClient.Login(Requests.User.LoginInput with { Password = "Invalid" });
+        });
 
         // Assert
-        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+        exception.Message.ShouldBe(User.Errors.IncorrectEmailOrPassword.Code);
     }
 }

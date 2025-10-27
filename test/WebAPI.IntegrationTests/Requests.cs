@@ -43,6 +43,18 @@ public static class Requests
 
     public static class User
     {
+        public static GqlLoginInput LoginInput { get; } = new()
+        {
+            Email = "admin@example.ru",
+            Password = "admin"
+        };
+
+        public static GqlRefreshTokenInput RefreshTokenInput { get; } = new()
+        {
+            ExpiredAccessToken = "placeYourAccessToken",
+            RefreshToken = "placeYourRefreshToken"
+        };
+
         public static LoginUserRequest GetLoginUserRequest() => new
         (
             Email: "admin@example.ru",

@@ -1,3 +1,5 @@
+using Domain.Authorization;
+
 namespace WebAPI.IntegrationTests.UsersControllerEdpoints;
 
 [Collection("Tests")]
@@ -9,53 +11,42 @@ public sealed class RefreshTokensTests(CustomWebApplicationFactory factory) : Ba
     public async Task ItIsPossibleToRefreshActualTokens()
     {
         // Arrange
-        var client = _factory.CreateClient();
+        var gqlClient = _factory.CreateClient().ToGqlClient();
 
-        var getLoginUserResponse = await client.PostAsJsonAsync(
-            requestUri: "/api/users/login",
-            value: Requests.User.GetLoginUserRequest());
-
-        var creditnails = (await getLoginUserResponse.Content.ReadFromJsonAsync<LoginUserResponse>())!;
+        var creditnails = await gqlClient.Login(Requests.User.LoginInput);
 
         // Act
-        var response = await client.PostAsJsonAsync(
-            requestUri: "/api/users/refresh-tokens",
-            value: Requests.User.GetRefreshTokenRequest() with
-            {
-                RefreshToken = creditnails.RefreshToken,
-                ExpiredAccessToken = creditnails.AccessToken
-            });
+        var gqlResponse = await gqlClient.RefreshTokens(Requests.User.RefreshTokenInput with
+        {
+            ExpiredAccessToken = creditnails.AccessToken,
+            RefreshToken = creditnails.RefreshToken
+        });
 
         // Assert
-        response.StatusCode.ShouldBe(HttpStatusCode.OK);
-        var loginResponse = await response.Content.ReadFromJsonAsync<LoginUserResponse>();
-        loginResponse?.RefreshToken.ShouldNotBeEmpty();
-        loginResponse?.AccessToken.ShouldNotBeEmpty();
+        gqlResponse.RefreshToken.ShouldNotBeEmpty();
+        gqlResponse.AccessToken.ShouldNotBeEmpty();
     }
 
     [Fact]
     public async Task ItIsImpossibleToRefreshInvalidAccessTokens()
     {
         // Arrange
-        var client = _factory.CreateClient();
+        var gqlClient = _factory.CreateClient().ToGqlClient();
 
-        var getLoginUserResponse = await client.PostAsJsonAsync(
-            requestUri: "/api/users/login",
-            value: Requests.User.GetLoginUserRequest());
-
-        var creditnails = (await getLoginUserResponse.Content.ReadFromJsonAsync<LoginUserResponse>())!;
+        var creditnails = await gqlClient.Login(Requests.User.LoginInput);
 
         // Act
-        var response = await client.PostAsJsonAsync(
-            requestUri: "/api/users/refresh-tokens",
-            value: Requests.User.GetRefreshTokenRequest() with
+        var exception = await Should.ThrowAsync<GraphQLException>(async () =>
+        {
+            await gqlClient.RefreshTokens(Requests.User.RefreshTokenInput with
             {
-                RefreshToken = creditnails.RefreshToken,
-                ExpiredAccessToken = "invalid-access-token"
+                ExpiredAccessToken = "invalid-access-token",
+                RefreshToken = creditnails.RefreshToken
             });
+        });
 
         // Assert
-        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+        exception.Message.ShouldBe(AccessToken.Errors.InvalidToken.Code);
     }
 
     [Fact]

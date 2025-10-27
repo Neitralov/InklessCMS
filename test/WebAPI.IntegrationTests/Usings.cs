@@ -30,5 +30,6 @@ global using WebAPI.Contracts.Collection;
 global using WebAPI.Contracts.User;
 global using WebAPI.IntegrationTests.GraphQL.Mutations.ArticleMutations;
 global using WebAPI.IntegrationTests.GraphQL.Mutations.CollectionMutations;
+global using WebAPI.IntegrationTests.GraphQL.Mutations.UserMutations;
 global using WebAPI.IntegrationTests.GraphQL.Queries.ArticleQueries;
 global using WebAPI.IntegrationTests.GraphQL.Queries.CollectionQueries;

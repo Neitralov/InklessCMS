@@ -8,14 +8,14 @@ public sealed class GqlUserMutations
     public async Task<GqlTokens> LoginAsync(
         IUserRepository userRepository,
         IOptions<JwtOptions> jwtOptions,
-        LoginUserRequest request)
+        GqlLoginInput input)
     {
-        var user = await userRepository.FindUserByEmailAsync(request.Email);
+        var user = await userRepository.FindUserByEmailAsync(input.Email);
 
         if (user.Errors.Contains(User.Errors.NotFound))
             throw new Exception(User.Errors.IncorrectEmailOrPassword.Code);
 
-        if (user.Value.VerifyPasswordHash(request.Password) is false)
+        if (user.Value.VerifyPasswordHash(input.Password) is false)
             throw new Exception(User.Errors.IncorrectEmailOrPassword.Code);
 
         var userSession = UserSession.Create(user.Value.UserId);
@@ -28,7 +28,11 @@ public sealed class GqlUserMutations
 
         var accessToken = AccessToken.Create(user.Value, jwtOptions);
 
-        return new GqlTokens(accessToken, userSession.RefreshToken);
+        return new GqlTokens
+        {
+            AccessToken = accessToken.Token,
+            RefreshToken = userSession.RefreshToken.Token
+        };
 
 
         async Task<bool> AreThereTooManySessionsPerUserAsync(Guid userId)
@@ -42,9 +46,9 @@ public sealed class GqlUserMutations
     public async Task<GqlTokens> RefreshTokensAsync(
         IUserRepository userRepository,
         IOptions<JwtOptions> jwtOptions,
-        RefreshUserTokensRequest request)
+        GqlRefreshTokenInput input)
     {
-        var userEmail = AccessToken.GetEmailFromRawToken(request.ExpiredAccessToken, jwtOptions);
+        var userEmail = AccessToken.GetEmailFromRawToken(input.ExpiredAccessToken, jwtOptions);
 
         if (userEmail.IsError)
             throw new Exception(userEmail.FirstError.Code);
@@ -54,7 +58,7 @@ public sealed class GqlUserMutations
         if (user.IsError)
             throw new Exception(user.FirstError.Code);
 
-        var refreshToken = new RefreshToken(request.RefreshToken);
+        var refreshToken = new RefreshToken(input.RefreshToken);
         var userSession = await userRepository.GetUserSessionAsync(user.Value.UserId, refreshToken);
 
         if (userSession.IsError)
@@ -65,6 +69,10 @@ public sealed class GqlUserMutations
 
         var newAccessToken = AccessToken.Create(user.Value, jwtOptions);
 
-        return new GqlTokens(newAccessToken, userSession.Value.RefreshToken);
+        return new GqlTokens
+        {
+            AccessToken = newAccessToken.Token,
+            RefreshToken = userSession.Value.RefreshToken.Token
+        };
     }
 }
