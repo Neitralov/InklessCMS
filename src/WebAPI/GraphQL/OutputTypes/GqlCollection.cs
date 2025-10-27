@@ -24,5 +24,8 @@ public static class GqlCollectionExtensions
         Title = collection.Title,
         Articles = collection.Articles.Select(article => article.ToGqlArticle())
     };
+
+    public static GqlCollection[] ToGqlCollections(this List<Collection> collections) =>
+        [.. collections.Select(collection => collection.ToGqlCollection())];
 }
 

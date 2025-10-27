@@ -1,5 +1,4 @@
 global using System.Data.Common;
-global using System.Net;
 global using System.Security.Claims;
 global using System.Text.Encodings.Web;
 
@@ -25,9 +24,6 @@ global using Domain.Users;
 global using Domain.PagedList;
 global using WebAPI.GraphQL.InputTypes;
 global using WebAPI.GraphQL.OutputTypes;
-global using WebAPI.Contracts.Article;
-global using WebAPI.Contracts.Collection;
-global using WebAPI.Contracts.User;
 global using WebAPI.IntegrationTests.GraphQL.Mutations.ArticleMutations;
 global using WebAPI.IntegrationTests.GraphQL.Mutations.CollectionMutations;
 global using WebAPI.IntegrationTests.GraphQL.Mutations.UserMutations;

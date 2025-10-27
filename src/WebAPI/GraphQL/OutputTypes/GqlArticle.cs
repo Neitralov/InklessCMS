@@ -49,4 +49,7 @@ public static class GqlArticleExtensions
         Views = article.Views,
         IsPinned = article.IsPinned
     };
+
+    public static GqlArticle[] ToGqlArticles(this List<Article> articles) =>
+        [.. articles.Select(article => article.ToGqlArticle())];
 }

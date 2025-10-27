@@ -22,23 +22,6 @@ public static class Requests
             CollectionId = "collection-id",
             Title = "Title"
         };
-        
-        public static CreateCollectionRequest GetCreateCollectionRequest() => new
-        (
-            CollectionId: "collection-id",
-            Title: "Title"
-        );
-
-        public static UpdateCollectionRequest GetUpdateCollectionRequest() => new
-        (
-            CollectionId: "collection-id",
-            Title: "Title"
-        );
-
-        public static AddArticleToCollectionRequest GetAddArticleToCollectionRequest() => new
-        (
-            ArticleId: "article-id"
-        );
     }
 
     public static class User
@@ -54,17 +37,5 @@ public static class Requests
             ExpiredAccessToken = "placeYourAccessToken",
             RefreshToken = "placeYourRefreshToken"
         };
-
-        public static LoginUserRequest GetLoginUserRequest() => new
-        (
-            Email: "admin@example.ru",
-            Password: "admin"
-        );
-
-        public static RefreshUserTokensRequest GetRefreshTokenRequest() => new
-        (
-            RefreshToken: "refresh-token",
-            ExpiredAccessToken: "expired-access-token"
-        );
     }
 }

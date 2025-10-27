@@ -1,9 +1,3 @@
-global using System.ComponentModel.DataAnnotations;
-global using System.Security.Claims;
-
-global using Microsoft.OpenApi.Models;
-global using Microsoft.AspNetCore.Mvc;
-global using Microsoft.AspNetCore.Mvc.ModelBinding;
 global using Microsoft.AspNetCore.Authorization;
 global using Microsoft.AspNetCore.Authentication.JwtBearer;
 global using Microsoft.EntityFrameworkCore;
@@ -21,9 +15,6 @@ global using Domain.Collections;
 global using Domain.Users;
 global using Domain.PagedList;
 global using WebAPI;
-global using WebAPI.Contracts.Article;
-global using WebAPI.Contracts.Collection;
-global using WebAPI.Contracts.User;
 global using WebAPI.GraphQL.Queries;
 global using WebAPI.GraphQL.Mutations;
 global using WebAPI.GraphQL.InputTypes;

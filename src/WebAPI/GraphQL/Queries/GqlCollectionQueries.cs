@@ -9,7 +9,7 @@ public sealed class GqlCollectionQueries
     {
         var collections = await collectionRepository.GetCollectionsAsync();
 
-        return [.. collections.Select(collection => collection.ToGqlCollection())];
+        return collections.ToGqlCollections();
     }
 
     [GraphQLName("collection")]
@@ -50,6 +50,6 @@ public sealed class GqlCollectionQueries
         httpContextAccessor.HttpContext?.Response.Headers
             .Append("X-Total-Count", publishedArticlesFromCollection.TotalCount.ToString());
 
-        return [.. publishedArticlesFromCollection.Select(article => article.ToGqlArticle())];
+        return publishedArticlesFromCollection.ToGqlArticles();
     }
 }

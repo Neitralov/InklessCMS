@@ -18,7 +18,7 @@ public sealed class GqlArticleQueries
             httpContextAccessor.HttpContext.Response.Headers
                 .Append("X-Total-Count", articles.TotalCount.ToString());
 
-        return articles.Select(article => article.ToGqlArticle()).ToArray();
+        return articles.ToGqlArticles();
     }
 
     [GraphQLName("publishedArticles")]
@@ -36,7 +36,7 @@ public sealed class GqlArticleQueries
                 .Append("X-Total-Count", publishedArticles.TotalCount.ToString());
 
         // TODO: Нужно написать мапперы, как это сделано в REST сейчас
-        return publishedArticles.Select(article => article.ToGqlArticle()).ToArray();
+        return publishedArticles.ToGqlArticles();
     }
 
     [GraphQLName("article")]
