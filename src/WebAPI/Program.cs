@@ -21,17 +21,11 @@ builder.Services.AddAuthorizationBuilder()
         configurePolicy: policyBuilder => policyBuilder.RequireClaim(nameof(User.CanManageArticles), true.ToString()));
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwagger();
 
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger(options =>
-    {
-        options.RouteTemplate = "/openapi/{documentName}.json";
-    });
-    app.MapScalarApiReference();
     app.UseDeveloperExceptionPage();
 }
 else

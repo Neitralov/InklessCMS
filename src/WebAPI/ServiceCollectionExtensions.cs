@@ -30,32 +30,6 @@ public static class ServiceCollectionExtensions
                 .WithExposedHeaders("X-Total-Count")));
     }
 
-    public static void AddSwagger(this IServiceCollection services)
-    {
-        services.AddSwaggerGen(options =>
-        {
-            options.SwaggerDoc("v1", new OpenApiInfo { Title = "Inkless API", Version = "0.3" });
-
-            var xmlDocPaths =
-                Directory.GetFiles(AppContext.BaseDirectory, "*.xml", SearchOption.TopDirectoryOnly).ToList();
-            xmlDocPaths.ForEach(xmlDocPath => options.IncludeXmlComments(xmlDocPath));
-
-            var jwtSecurityScheme = new OpenApiSecurityScheme
-            {
-                In = ParameterLocation.Header,
-                Description = "Please enter JWT token",
-                Name = "Authorization",
-                Type = SecuritySchemeType.Http,
-                BearerFormat = "JWT",
-                Scheme = JwtBearerDefaults.AuthenticationScheme
-            };
-
-            options.AddSecurityDefinition(jwtSecurityScheme.Scheme, jwtSecurityScheme);
-            options.OperationFilter<AppendAuthorizeToSummaryOperationFilter>();
-            options.OperationFilter<SecurityRequirementsOperationFilter>(true, JwtBearerDefaults.AuthenticationScheme);
-        });
-    }
-
     public static void AddJwtBearerAuthentication(this IServiceCollection services, IConfiguration configuration)
     {
         services

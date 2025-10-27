@@ -11,8 +11,6 @@ global using Microsoft.IdentityModel.Tokens;
 global using Microsoft.Extensions.Options;
 
 global using ErrorOr;
-global using Swashbuckle.AspNetCore.Filters;
-global using Scalar.AspNetCore;
 global using HotChocolate;
 
 global using Database;
